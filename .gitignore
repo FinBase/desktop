@@ -1,12 +1,57 @@
-*.class
+# Local configuration file (sdk path, etc) #
+local.properties
+/.idea/dataSources.local.xml
 
-# Mobile Tools for Java (J2ME)
+# IntelliJ project files #
+*.iws
+/.idea/workspace.xml
+/.idea/tasks.xml
+/.idea/shelf/
+
+# Eclipse project files #
+.classpath
+.project
+
+# Gradle files #
+.gradle/
+build/
+out/
+/.idea/gradle.xml
+/.idea/libraries/
+
+# Generated files #
+bin/
+gen/
+
+# Signing files #
+.signing/
+
+# Output files #
+*.class
+*.dex
+*.apk
+*.ap_
+
+# Mobile Tools for Java (J2ME) #
 .mtj.tmp/
 
-# Package Files #
-*.jar
-*.war
-*.ear
+# Log Files #
+*.log
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
+# OS-specific #
+Thumbs.db
+.DS_Store
+
+# Packages #
+# it's better to unpack these files and commit the raw source
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# Some experiments .. #
+/src/main/java/at/mjst/finbase/desktop/xperiments/
