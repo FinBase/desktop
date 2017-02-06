@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.Pane?>
+<Pane xmlns:fx="http://javafx.com/fxml/1" minHeight="-Infinity" minWidth="-Infinity" prefHeight="391.0"
+      prefWidth="546.0" xmlns="http://javafx.com/javafx/8.0.76-ea"
+      fx:controller="at.mjst.finbase.desktop.controller.main.AuditLogController">
+    <children>
+        <TableView fx:id="tabView" layoutX="14.0" layoutY="14.0" prefHeight="357.0" prefWidth="353.0">
+            <columns>
+                <TableColumn prefWidth="75.0" text="C1" />
+                <TableColumn prefWidth="75.0" text="C2" />
+            </columns>
+        </TableView>
+    </children>
+</Pane>

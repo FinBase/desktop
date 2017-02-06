@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ResourceBundleManager">
+    <file url="file://$PROJECT_DIR$/src/main/resources/at/mjst/finbase/desktop/i18n/captions_de_AT.properties" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/at/mjst/finbase/desktop/i18n/captions_en_US.properties" />
+    <custom-resource-bundle>
+      <file value="file://$PROJECT_DIR$/src/main/resources/at/mjst/finbase/desktop/i18n/captions_de_AT.properties" />
+      <file value="file://$PROJECT_DIR$/src/main/resources/at/mjst/finbase/desktop/i18n/captions_en_US.properties" />
+      <base-name>captions</base-name>
+    </custom-resource-bundle>
+  </component>
+</project>

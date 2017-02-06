@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.BorderPane?>
+<ScrollPane xmlns:fx="http://javafx.com/fxml/1" fitToHeight="true" fitToWidth="true" prefHeight="600.0"
+            prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.92">
+    <BorderPane minHeight="-Infinity" minWidth="-Infinity">
+        <top>
+            <fx:include source="top/Pane.fxml" BorderPane.alignment="CENTER"/>
+        </top>
+        <center>
+            <fx:include source="main/Pane.fxml" BorderPane.alignment="CENTER"/>
+        </center>
+    </BorderPane>
+</ScrollPane>

@@ -1,0 +1,63 @@
+/*
+ * Copyright (c) 2017, Ing. Michael J. Stallinger and/or his affiliates. All rights reserved.
+ * This source code is subject to license terms, see the LICENSE file for details.
+ */
+apply plugin: 'java'
+
+group 'at.mjst'
+version = '1.0.0'
+
+String getVersion() {
+    Properties props = new Properties()
+    File propsFile = new File('version.properties')
+    props.load(propsFile.newDataInputStream())
+    Integer major = (new Date().format('y') as Integer)
+    Integer minor = (new Date().format('M') as Integer)
+    Integer build = ((props.getProperty('build')) as Integer)
+    return "${major}.${sprintf('%02d', minor)}.${sprintf('%02d', build)}"
+}
+
+version getVersion()
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // annotations to be used with IntelliJ
+    compile 'org.jetbrains:annotations:+'
+    // dependency-Injection framework (we'll try to usa a simple one)
+    compile 'com.google.inject:guice:4.1.0'
+    compile 'com.google.inject.extensions:guice-persist:4.1.0'
+//    compile 'com.google.inject.extensions:guice-assistedinject:4.1.+'
+    // google guava, core libraries, especially because of the eventBus-class
+    compile 'com.google.guava:guava:21.+'
+    // persistence: mySQL-driver
+    compile 'mysql:mysql-connector-java:5.1.+'
+    // since we plan to use an embedded database (such as H2, sqLite, ...) alongside with mySQL, we'll use hibernate
+    // .. but we're going to use hibernate JPA, since it is more standardized and compatible with guice
+    compile 'org.hibernate:hibernate-core:5.2.+'
+    compile 'org.hibernate:hibernate-c3p0:5.2.+' // the connection pool...
+//    compile 'org.hibernate:hibernate-validator:5.2.+'
+//    // unit-testing
+//    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+task updateVersion << {
+    Properties props = new Properties()
+    File propsFile = new File('version.properties')
+    props.load(propsFile.newDataInputStream())
+    Integer major = (new Date().format('y') as Integer)
+    Integer minor = (new Date().format('M') as Integer)
+    Integer build
+    if ((major != (props.getProperty('major') as Integer)) || (minor != (props.getProperty('minor') as Integer))) {
+        props.setProperty('major', major.toString())
+        props.setProperty('minor', minor.toString())
+        build = 0
+    } else {
+        build = ((props.getProperty('build')) as Integer)
+    }
+    build++
+    props.setProperty('build', build.toString())
+    props.store(propsFile.newWriter(), null)
+}
