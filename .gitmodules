@@ -1,0 +1,3 @@
+[submodule "src/main/resources/at/mjst/finbase/datamodel"]
+	path = src/main/resources/at/mjst/finbase/datamodel
+	url = https://github.com/FinBase/datamodel.git
