@@ -1,5 +1,7 @@
 # The FinBase desktop app
 FinBase is a JavaFX-based mySQL desktop application, that helps you organize, categorize and analyze your personal financial affairs.
+## Releases
+No release yet.
 ## Dependencies
 This program depends on the following packages:
 * The FinBase [datamodel] (https://github.com/FinBase/datamodel)
