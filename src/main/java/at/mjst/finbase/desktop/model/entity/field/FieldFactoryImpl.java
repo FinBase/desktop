@@ -16,7 +16,7 @@ import java.util.Map;
  */
 public class FieldFactoryImpl implements FieldFactory
 {
-    private static final Map<Class, FieldProvider> typeMap = new HashMap<>();
+    private static final Map<Class<?>, FieldProvider> typeMap = new HashMap<>();
 
     static {
         synchronized (typeMap) {
@@ -35,7 +35,7 @@ public class FieldFactoryImpl implements FieldFactory
      * @param provider anonymous class (method reference) to the fields constructor
      * @see FieldProvider
      */
-    private static synchronized void register(Class dataType, FieldProvider provider)
+    private static synchronized void register(Class<?> dataType, FieldProvider provider)
     {
         if (typeMap.containsKey(dataType)) {
             throw new RuntimeException(String.format("Map already contains Field of type %s!", dataType.getName()));
@@ -44,7 +44,7 @@ public class FieldFactoryImpl implements FieldFactory
     }
 
     @Override
-    public Field getNewFieldInstance(String fieldName, Class dataType)
+    public Field<?> getNewFieldInstance(String fieldName, Class<?> dataType)
     {
         FieldProvider builder = getFromMap(dataType);
         return builder.createInstance(fieldName);
@@ -56,10 +56,11 @@ public class FieldFactoryImpl implements FieldFactory
      * @param dataType desired data-type
      * @return a {@link FieldProvider} capable of creating a new Instance of {@link Field}
      */
-    private FieldProvider getFromMap(Class dataType)
+    private FieldProvider getFromMap(Class<?> dataType)
     {
         synchronized (typeMap) {
-            return typeMap.get(dataType); // ToDo: sync. really necessary?
+            return typeMap.get(dataType);
+            // ToDo: sync. really necessary? Might not be necessary, since the factory is already initialized, long before other threads come into play
         }
     }
 
@@ -77,6 +78,6 @@ public class FieldFactoryImpl implements FieldFactory
          * @param fieldName desired name.
          * @return a new instance of {@link Field}
          */
-        Field createInstance(String fieldName);
+        Field<?> createInstance(String fieldName);
     }
 }

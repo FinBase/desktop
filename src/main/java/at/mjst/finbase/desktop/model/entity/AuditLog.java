@@ -20,8 +20,6 @@ import at.mjst.finbase.desktop.ResourceLocations;
 import at.mjst.finbase.desktop.model.entity.field.LongField;
 import at.mjst.finbase.desktop.model.entity.field.StringField;
 import at.mjst.finbase.desktop.model.entity.field.TimestampField;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
 
 /**
  * AuditLog entity. Represents an entry storing user login/logout audit data.
@@ -35,38 +33,31 @@ import javafx.beans.property.SimpleObjectProperty;
 @Table(name = AuditLog.TABLE_AUDITLOG, schema = ResourceLocations.SCHEMA_FINBASE)
 public class AuditLog extends AbstractEntity
 {
-    // TableName
-    static final String TABLE_AUDITLOG = "aul_auditlog";
+    public static final String TABLE_AUDITLOG = "aul_auditlog";
     // Constants should be held optionally - values must exactly match real column-names!
-    private static final String FIELD_ID = "id";
-    private static final String FIELD_USER = "user";
-    private static final String FIELD_TIMESTAMP_ON = "timestamp_on";
-    private static final String FIELD_TIMESTAMP_OFF = "timestamp_off";
-    private static final String FIELD_APPLICATION = "application";
-    // These properties are wrapped into 'Field'-Objects at construction time to access them via column-names!
-    private ObjectProperty<Long> id;
-    private ObjectProperty<String> user;
-    private ObjectProperty<Timestamp> timestampOn;
-    private ObjectProperty<Timestamp> timestampOff;
-    private ObjectProperty<String> application;
+    public static final String FIELD_ID = "id";
+    public static final String FIELD_APPLICATION = "application";
+    public static final String FIELD_USER = "user";
+    public static final String FIELD_TIMESTAMP_ON = "timestamp_on";
+    public static final String FIELD_TIMESTAMP_OFF = "timestamp_off";
+    // These 'Field'-Objects wrap ObjectProperties<>, to access them via column-names!
+    private LongField id = new LongField(FIELD_ID, fieldMap);
+    private StringField user = new StringField(FIELD_USER, fieldMap);
+    private TimestampField timestampOn = new TimestampField(FIELD_TIMESTAMP_ON, fieldMap);
+    private TimestampField timestampOff = new TimestampField(FIELD_TIMESTAMP_OFF, fieldMap);
+    private StringField application = new StringField(FIELD_APPLICATION, fieldMap);
 
-    /**
-     * Manually creates the value(object)-properties and their wrapping fields.
-     */
-    @Override
-    public void generateFields()
+    public AuditLog(String test1, Timestamp timestamp, String appl1)
     {
-        super.generateFields();
-        id = new SimpleObjectProperty<>();
-        addField(new LongField(FIELD_ID, id));
-        user = new SimpleObjectProperty<>();
-        addField(new StringField(FIELD_USER, user));
-        timestampOn = new SimpleObjectProperty<>();
-        addField(new TimestampField(FIELD_TIMESTAMP_ON, timestampOn));
-        timestampOff = new SimpleObjectProperty<>();
-        addField(new TimestampField(FIELD_TIMESTAMP_OFF, timestampOff));
-        application = new SimpleObjectProperty<>();
-        addField(new StringField(FIELD_APPLICATION, application));
+        this();
+        setUser(test1);
+        setTimestampOn(timestamp);
+        setApplication(appl1);
+    }
+
+    public AuditLog()
+    {
+        super();
     }
 
     @Id
@@ -74,59 +65,59 @@ public class AuditLog extends AbstractEntity
     @Column(name = FIELD_ID, nullable = false, updatable = false)
     public Long getId()
     {
-        return id.get();
+        return id.getValue();
     }
 
     private void setId(Long id)
     {
-        this.id.set(id);
+        this.id.setValue(id);
     }
 
     @Basic
     @Column(name = FIELD_USER, nullable = false, length = 81)
     public String getUser()
     {
-        return user.get();
+        return user.getValue();
     }
 
     public void setUser(String user)
     {
-        this.user.set(user);
+        this.user.setValue(user);
     }
 
     @Basic
     @Column(name = FIELD_TIMESTAMP_ON, nullable = false)
     public Timestamp getTimestampOn()
     {
-        return timestampOn.get();
+        return timestampOn.getValue();
     }
 
     public void setTimestampOn(Timestamp timestamp)
     {
-        this.timestampOn.set(timestamp);
+        this.timestampOn.setValue(timestamp);
     }
 
     @Basic
     @Column(name = FIELD_TIMESTAMP_OFF)
     public Timestamp getTimestampOff()
     {
-        return timestampOff.get();
+        return timestampOff.getValue();
     }
 
     public void setTimestampOff(Timestamp timestamp)
     {
-        this.timestampOff.set(timestamp);
+        this.timestampOff.setValue(timestamp);
     }
 
     @Basic
     @Column(name = FIELD_APPLICATION, nullable = false, length = 45)
     public String getApplication()
     {
-        return application.get();
+        return application.getValue();
     }
 
     public void setApplication(String application)
     {
-        this.application.set(application);
+        this.application.setValue(application);
     }
 }

@@ -4,6 +4,8 @@
  */
 package at.mjst.finbase.desktop.model.entity.field;
 
+import java.util.Map;
+
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
@@ -27,6 +29,20 @@ public abstract class AbstractField<T> implements Field<T>
      * This fields name
      */
     private String name;
+
+    /**
+     * Creates an instance of this class.
+     *
+     * @param fieldName the fields fieldName
+     * @param fieldMap  an optional map to add this field to
+     */
+    AbstractField(String fieldName, Map<String, Field<?>> fieldMap)
+    {
+        this(fieldName);
+        if (fieldMap != null) {
+            fieldMap.put(fieldName, this);
+        }
+    }
 
     /**
      * Creates an instance of this class. The property-attribute is created internally.

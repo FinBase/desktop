@@ -4,7 +4,7 @@
  */
 package at.mjst.finbase.desktop.model.entity.field;
 
-import javafx.beans.property.ObjectProperty;
+import java.util.Map;
 
 /**
  * Concrete implementation of {@link AbstractField}, wrapping an {@link Integer}.
@@ -15,10 +15,10 @@ import javafx.beans.property.ObjectProperty;
 public class IntegerField extends AbstractField<Integer>
 {
     /**
-     * Implement to make this class instantiatable by the
+     * Implement to make this class instantiable by the
      * {@link at.mjst.finbase.desktop.model.entity.field.FieldFactoryImpl.FieldProvider}.
      *
-     * @param fieldName desired fieldName.
+     * @param fieldName the fields fieldName
      */
     IntegerField(String fieldName)
     {
@@ -26,13 +26,19 @@ public class IntegerField extends AbstractField<Integer>
     }
 
     /**
-     * Used to manually create an instance. If property is not provided, it will be created and owned automatically!
+     * Creates an instance of this class.
      *
      * @param fieldName the fields fieldName
-     * @param property  ObjectProperty to be wrapped
+     * @param fieldMap  an optional map to add this field to
      */
-    public IntegerField(String fieldName, ObjectProperty<Integer> property)
+    public IntegerField(String fieldName, Map<String, Field<?>> fieldMap)
     {
-        super(fieldName, property);
+        super(fieldName, fieldMap);
+    }
+
+    @Override
+    public Class<Integer> getType()
+    {
+        return Integer.class;
     }
 }

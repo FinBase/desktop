@@ -5,8 +5,7 @@
 package at.mjst.finbase.desktop.model.entity.field;
 
 import java.sql.Timestamp;
-
-import javafx.beans.property.ObjectProperty;
+import java.util.Map;
 
 /**
  * Concrete implementation of {@link AbstractField}, wrapping a {@link Timestamp}.
@@ -28,13 +27,19 @@ public class TimestampField extends AbstractField<Timestamp>
     }
 
     /**
-     * Used to manually create an instance. If property is not provided, it will be created and owned automatically!
+     * Creates an instance of this class.
      *
      * @param fieldName the fields fieldName
-     * @param property  ObjectProperty to be wrapped
+     * @param fieldMap  an optional map to add this field to
      */
-    public TimestampField(String fieldName, ObjectProperty<Timestamp> property)
+    public TimestampField(String fieldName, Map<String, Field<?>> fieldMap)
     {
-        super(fieldName, property);
+        super(fieldName, fieldMap);
+    }
+
+    @Override
+    public Class<Timestamp> getType()
+    {
+        return Timestamp.class;
     }
 }

@@ -12,11 +12,17 @@ import javafx.beans.value.ObservableValue;
  *
  * Note that instances, implementing {@link Field} are NOT injected by the DI-framework for performance considerations!
  *
+ * @param <T> any (serializable) value to be represented by field
  * @author Ing. Michael J. Stallinger (projects@mjst.at)
  * @since 2017-01-18
  */
 public interface Field<T>
 {
+    /**
+     * @return the type represented by this field
+     */
+    Class<T> getType();
+
     /**
      * @return this fields name
      */

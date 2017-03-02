@@ -13,6 +13,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import at.mjst.finbase.desktop.ResourceLocations;
+import at.mjst.finbase.desktop.model.entity.field.IntegerField;
+import at.mjst.finbase.desktop.model.entity.field.StringField;
 
 /**
  * ToDo: Short class description
@@ -24,12 +26,17 @@ import at.mjst.finbase.desktop.ResourceLocations;
 @Table(name = Account.TABLE_ACCOUNT, schema = ResourceLocations.SCHEMA_FINBASE)
 public class Account extends AbstractEntity
 {
-    static final String TABLE_ACCOUNT = "acc_account";
+    public static final String TABLE_ACCOUNT = "acc_account";
     // Constants should be held optionally - values must exactly match real column-names!
-    private static final String FIELD_ID = "id";
-    private static final String FIELD_NAME = "name";
-    private static final String FIELD_DESCRIPTION = "description";
-    private static final String FIELD_FLAGS = "flags";
+    public static final String FIELD_ID = "id";
+    public static final String FIELD_NAME = "name";
+    public static final String FIELD_DESCRIPTION = "description";
+    public static final String FIELD_FLAGS = "flags";
+    // These 'Field'-Objects wrap ObjectProperties<>, to access them via column-names!
+    private IntegerField id = new IntegerField(FIELD_ID, fieldMap);
+    private StringField name = new StringField(FIELD_NAME, fieldMap);
+    private StringField description = new StringField(FIELD_DESCRIPTION, fieldMap);
+    private IntegerField flags = new IntegerField(FIELD_FLAGS, fieldMap);
 
     public Account(String name, String description)
     {
@@ -54,47 +61,47 @@ public class Account extends AbstractEntity
     @Column(name = FIELD_ID, nullable = false, updatable = false)
     public Integer getId()
     {
-        return getValueAsInteger(FIELD_ID);
+        return id.getValue();
     }
 
     private void setId(Integer id)
     {
-        setValueAsInteger(FIELD_ID, id);
+        this.id.setValue(id);
     }
 
     @Basic
     @Column(name = FIELD_NAME, nullable = false, length = 50)
     public String getName()
     {
-        return getValueAsString(FIELD_NAME);
+        return name.getValue();
     }
 
     public void setName(String name)
     {
-        setValueAsString(FIELD_NAME, name);
+        this.name.setValue(name);
     }
 
     @Basic
     @Column(name = FIELD_DESCRIPTION, length = 200)
     public String getDescription()
     {
-        return getValueAsString(FIELD_DESCRIPTION);
+        return description.getValue();
     }
 
     public void setDescription(String description)
     {
-        setValueAsString(FIELD_DESCRIPTION, description);
+        this.description.setValue(description);
     }
 
     @Basic
     @Column(name = FIELD_FLAGS, nullable = false)
     public Integer getFlags()
     {
-        return getValueAsInteger(FIELD_FLAGS);
+        return flags.getValue();
     }
 
     public void setFlags(Integer flags)
     {
-        setValueAsInteger(FIELD_FLAGS, flags);
+        this.flags.setValue(flags);
     }
 }

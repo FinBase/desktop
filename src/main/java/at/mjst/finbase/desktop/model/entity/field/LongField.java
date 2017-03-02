@@ -4,7 +4,7 @@
  */
 package at.mjst.finbase.desktop.model.entity.field;
 
-import javafx.beans.property.ObjectProperty;
+import java.util.Map;
 
 /**
  * Concrete implementation of {@link AbstractField}, wrapping a {@link Long}.
@@ -14,6 +14,17 @@ import javafx.beans.property.ObjectProperty;
  */
 public class LongField extends AbstractField<Long>
 {
+    /**
+     * Creates an instance of this class.
+     *
+     * @param fieldName the fields fieldName
+     * @param fieldMap  an optional map to add this field to
+     */
+    public LongField(String fieldName, Map<String, Field<?>> fieldMap)
+    {
+        super(fieldName, fieldMap);
+    }
+
     /**
      * Implement to make this class instantiatable by the
      * {@link at.mjst.finbase.desktop.model.entity.field.FieldFactoryImpl.FieldProvider}.
@@ -25,14 +36,9 @@ public class LongField extends AbstractField<Long>
         super(fieldName);
     }
 
-    /**
-     * Used to manually create an instance. If property is not provided, it will be created and owned automatically!
-     *
-     * @param fieldName the fields fieldName
-     * @param property  ObjectProperty to be wrapped
-     */
-    public LongField(String fieldName, ObjectProperty<Long> property)
+    @Override
+    public Class<Long> getType()
     {
-        super(fieldName, property);
+        return Long.class;
     }
 }

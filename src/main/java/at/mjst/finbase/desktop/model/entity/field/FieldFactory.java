@@ -19,5 +19,5 @@ public interface FieldFactory
      * @param dataType  the data-type wrapped by the future field
      * @return a new instance of {@link Field} with the given name and data-type
      */
-    Field getNewFieldInstance(String fieldName, Class dataType);
+    Field<?> getNewFieldInstance(String fieldName, Class<?> dataType);
 }
