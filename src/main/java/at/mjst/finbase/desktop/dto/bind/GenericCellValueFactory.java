@@ -4,6 +4,8 @@
  */
 package at.mjst.finbase.desktop.dto.bind;
 
+import org.jetbrains.annotations.NonNls;
+
 import at.mjst.finbase.desktop.model.entity.Entity;
 import at.mjst.finbase.desktop.model.entity.field.Field;
 import javafx.beans.value.ObservableValue;
@@ -16,14 +18,22 @@ import javafx.util.Callback;
  * @author Ing. Michael J. Stallinger (projects@mjst.at)
  * @since 2017-01-19
  */
-public class GenericCellValueFactory<I, T extends Field<I>, E extends Entity>
-        implements Callback<TableColumn.CellDataFeatures<E, I>, ObservableValue<I>>
+public class GenericCellValueFactory<S extends Entity, T>
+        implements Callback<TableColumn.CellDataFeatures<S, T>, ObservableValue<T>>
 {
-    private Class<T> type;
+    @NonNls
+    private static final String ERR_DATA_TYPE = "Field datatype mismatch for '%s'";
+    private final Class<T> dataType;
+    private String fieldName;
 
-    public GenericCellValueFactory(Class<T> type)
+    /**
+     * @param fieldName field by name assigned to column
+     * @param dataType  expected field data type
+     */
+    public GenericCellValueFactory(String fieldName, Class<T> dataType)
     {
-        this.type = type;
+        this.fieldName = fieldName;
+        this.dataType = dataType;
     }
 
     /**
@@ -35,9 +45,16 @@ public class GenericCellValueFactory<I, T extends Field<I>, E extends Entity>
      * @return An object of type R that may be determined based on the provided parameter value.
      */
     @Override
-    public ObservableValue<I> call(TableColumn.CellDataFeatures<E, I> cellData)
+    @SuppressWarnings("unchecked")
+    public ObservableValue<T> call(TableColumn.CellDataFeatures<S, T> cellData)
     {
-        Field<I> field = cellData.getValue().getField(cellData.getTableColumn().getId(), type);
-        return field.getObservableValue();
+        Field<?> field = cellData.getValue().getField(fieldName);
+        // getId() of cellData.getTableColumn() will/might be the same, however we reference our own fieldName here!
+        // alternative: Field<T> field = entity.getField(cellData.getTableColumn().getId(), type);
+        if (field.getType() == dataType) {
+            return (ObservableValue<T>) field.getObservableValue();
+        } else {
+            throw new RuntimeException(String.format(ERR_DATA_TYPE, fieldName));
+        }
     }
 }
