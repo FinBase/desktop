@@ -14,13 +14,17 @@ import javafx.beans.value.ObservableValue;
  * Wrapper around instances of {@link ObservableValue<>} to enable
  * enumeration of {@link at.mjst.finbase.desktop.model.entity.Entity}-columns.
  *
- * Note that instances of {@link AbstractField} are NOT injected by the DI-framework for performance considerations!
+ * Note that instances of {@link BaseField} are NOT injected by the DI-framework for performance considerations!
  *
  * @author Ing. Michael J. Stallinger (projects@mjst.at)
  * @since 2017-01-18
  */
-public abstract class AbstractField<T> implements Field<T>
+public class BaseField<T> implements Field<T>
 {
+    /**
+     * The fields data type
+     */
+    private Class<T> dataType;
     /**
      * The property to be wrapped
      */
@@ -36,7 +40,7 @@ public abstract class AbstractField<T> implements Field<T>
      * @param fieldName the fields fieldName
      * @param fieldMap  an optional map to add this field to
      */
-    AbstractField(String fieldName, Map<String, Field<?>> fieldMap)
+    public BaseField(String fieldName, Map<String, Field<?>> fieldMap)
     {
         this(fieldName);
         if (fieldMap != null) {
@@ -49,7 +53,7 @@ public abstract class AbstractField<T> implements Field<T>
      *
      * @param fieldName The fields fieldName
      */
-    AbstractField(String fieldName)
+    BaseField(String fieldName)
     {
         this(fieldName, new SimpleObjectProperty<>());
     }
@@ -60,10 +64,31 @@ public abstract class AbstractField<T> implements Field<T>
      * @param fieldName The fields name
      * @param property  ObjectProperty to be wrapped
      */
-    AbstractField(String fieldName, ObjectProperty<T> property)
+    BaseField(String fieldName, ObjectProperty<T> property)
     {
         this.name = fieldName;
         this.property = property;
+    }
+
+    /**
+     * Creates an instance of this class.
+     *
+     * @param fieldName the fields fieldName
+     * @param fieldMap  an optional map to add this field to
+     */
+    public BaseField(String fieldName, Class<T> dataType, Map<String, Field<?>> fieldMap)
+    {
+        this(fieldName);
+        this.dataType = dataType;
+        if (fieldMap != null) {
+            fieldMap.put(fieldName, this);
+        }
+    }
+
+    @Override
+    public final Class<T> getType()
+    {
+        return dataType;
     }
 
     /**

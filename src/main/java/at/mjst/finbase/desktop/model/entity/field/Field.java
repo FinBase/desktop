@@ -29,7 +29,7 @@ public interface Field<T>
     String getName();
 
     /**
-     * Returns the {@link ObservableValue<>} interface of {@link AbstractField#property}.
+     * Returns the {@link ObservableValue<>} interface of {@link BaseField#property}.
      *
      * @return {@link ObservableValue<>}
      */

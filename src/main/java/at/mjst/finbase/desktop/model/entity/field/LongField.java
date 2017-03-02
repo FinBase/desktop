@@ -7,12 +7,12 @@ package at.mjst.finbase.desktop.model.entity.field;
 import java.util.Map;
 
 /**
- * Concrete implementation of {@link AbstractField}, wrapping a {@link Long}.
+ * Concrete implementation of {@link BaseField}, wrapping a {@link Long}.
  *
  * @author Ing. Michael J. Stallinger (projects@mjst.at)
  * @since 2017-01-18
  */
-public class LongField extends AbstractField<Long>
+public class LongField extends BaseField<Long>
 {
     /**
      * Creates an instance of this class.
@@ -22,23 +22,6 @@ public class LongField extends AbstractField<Long>
      */
     public LongField(String fieldName, Map<String, Field<?>> fieldMap)
     {
-        super(fieldName, fieldMap);
-    }
-
-    /**
-     * Implement to make this class instantiatable by the
-     * {@link at.mjst.finbase.desktop.model.entity.field.FieldFactoryImpl.FieldProvider}.
-     *
-     * @param fieldName desired fieldName.
-     */
-    LongField(String fieldName)
-    {
-        super(fieldName);
-    }
-
-    @Override
-    public Class<Long> getType()
-    {
-        return Long.class;
+        super(fieldName, Long.class, fieldMap);
     }
 }

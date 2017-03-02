@@ -7,24 +7,13 @@ package at.mjst.finbase.desktop.model.entity.field;
 import java.util.Map;
 
 /**
- * Concrete implementation of {@link AbstractField}, wrapping a {@link String}.
+ * Concrete implementation of {@link BaseField}, wrapping a {@link String}.
  *
  * @author Ing. Michael J. Stallinger (projects@mjst.at)
  * @since 2017-01-18
  */
-public class StringField extends AbstractField<String>
+public class StringField extends BaseField<String>
 {
-    /**
-     * Implement to make this class instantiatable by the
-     * {@link at.mjst.finbase.desktop.model.entity.field.FieldFactoryImpl.FieldProvider}.
-     *
-     * @param fieldName desired fieldName.
-     */
-    StringField(String fieldName)
-    {
-        super(fieldName);
-    }
-
     /**
      * Creates an instance of this class.
      *
@@ -33,12 +22,6 @@ public class StringField extends AbstractField<String>
      */
     public StringField(String fieldName, Map<String, Field<?>> fieldMap)
     {
-        super(fieldName, fieldMap);
-    }
-
-    @Override
-    public Class<String> getType()
-    {
-        return String.class;
+        super(fieldName, String.class, fieldMap);
     }
 }

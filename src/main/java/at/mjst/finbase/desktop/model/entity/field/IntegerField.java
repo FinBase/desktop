@@ -7,24 +7,13 @@ package at.mjst.finbase.desktop.model.entity.field;
 import java.util.Map;
 
 /**
- * Concrete implementation of {@link AbstractField}, wrapping an {@link Integer}.
+ * Concrete implementation of {@link BaseField}, wrapping an {@link Integer}.
  *
  * @author Ing. Michael J. Stallinger (projects@mjst.at)
  * @since 2017-01-18
  */
-public class IntegerField extends AbstractField<Integer>
+public class IntegerField extends BaseField<Integer>
 {
-    /**
-     * Implement to make this class instantiable by the
-     * {@link at.mjst.finbase.desktop.model.entity.field.FieldFactoryImpl.FieldProvider}.
-     *
-     * @param fieldName the fields fieldName
-     */
-    IntegerField(String fieldName)
-    {
-        super(fieldName);
-    }
-
     /**
      * Creates an instance of this class.
      *
@@ -33,12 +22,6 @@ public class IntegerField extends AbstractField<Integer>
      */
     public IntegerField(String fieldName, Map<String, Field<?>> fieldMap)
     {
-        super(fieldName, fieldMap);
-    }
-
-    @Override
-    public Class<Integer> getType()
-    {
-        return Integer.class;
+        super(fieldName, Integer.class, fieldMap);
     }
 }
