@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import at.mjst.finbase.desktop.model.entity.field.Field;
+import at.mjst.finbase.desktop.model.entity.field.FieldIdentifier;
+import at.mjst.finbase.desktop.model.entity.field.FieldRegistry;
 
 /**
  * This is the superclass of all data-entities.
@@ -17,21 +19,14 @@ import at.mjst.finbase.desktop.model.entity.field.Field;
  * @author Ing. Michael J. Stallinger (projects@mjst.at)
  * @since 2017-01-17
  */
-public class AbstractEntity implements Entity
+public abstract class AbstractEntity implements Entity, FieldRegistry
 {
     @NonNls
     private static final String FMT_TO_STRING = "%s=%s";
     /**
      * Map, containing all entities fields
      */
-    final Map<String, Field<?>> fieldMap = new HashMap<>();
-
-    /**
-     * If called, builds the Field-objects for storing the value-properties.
-     */
-    AbstractEntity()
-    {
-    }
+    private final Map<String, Field<?>> fieldMap = new HashMap<>();
 
     @Override
     public int hashCode()
@@ -88,8 +83,27 @@ public class AbstractEntity implements Entity
     //    }
 
     @Override
+    public void registerField(Field<?> field)
+    {
+        fieldMap.put(field.identifier().fieldName(), field);
+    }
+
+    @Override
+    public abstract String tableName();
+
+    @Override
     public Field<?> getField(String fieldName)
     {
         return fieldMap.get(fieldName);
+    }
+
+    @Override
+    public Field<?> getField(FieldIdentifier identifier)
+    {
+        if (identifier.equals(tableName())) {
+            return fieldMap.get(identifier.fieldName());
+        } else {
+            return null;
+        }
     }
 }

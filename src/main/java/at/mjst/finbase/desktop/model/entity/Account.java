@@ -33,10 +33,10 @@ public class Account extends AbstractEntity
     public static final String FIELD_DESCRIPTION = "description";
     public static final String FIELD_FLAGS = "flags";
     // These 'Field'-Objects wrap ObjectProperties<>, to access them via column-names!
-    private IntegerField id = new IntegerField(FIELD_ID, fieldMap);
-    private StringField name = new StringField(FIELD_NAME, fieldMap);
-    private StringField description = new StringField(FIELD_DESCRIPTION, fieldMap);
-    private IntegerField flags = new IntegerField(FIELD_FLAGS, fieldMap);
+    private IntegerField id = new IntegerField(FIELD_ID, this);
+    private StringField name = new StringField(FIELD_NAME, this);
+    private StringField description = new StringField(FIELD_DESCRIPTION, this);
+    private IntegerField flags = new IntegerField(FIELD_FLAGS, this);
 
     public Account(String name, String description)
     {
@@ -51,6 +51,12 @@ public class Account extends AbstractEntity
     public Account()
     {
         super();
+    }
+
+    @Override
+    public String tableName()
+    {
+        return TABLE_ACCOUNT;
     }
 
     /**

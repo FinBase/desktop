@@ -5,7 +5,6 @@
 package at.mjst.finbase.desktop.model.entity.field;
 
 import java.sql.Timestamp;
-import java.util.Map;
 
 /**
  * Concrete implementation of {@link BaseField}, wrapping a {@link Timestamp}.
@@ -19,10 +18,10 @@ public class TimestampField extends BaseField<Timestamp>
      * Creates an instance of this class.
      *
      * @param fieldName the fields fieldName
-     * @param fieldMap  an optional map to add this field to
+     * @param registry  an optional map to add this field to
      */
-    public TimestampField(String fieldName, Map<String, Field<?>> fieldMap)
+    public TimestampField(String fieldName, FieldRegistry registry)
     {
-        super(fieldName, Timestamp.class, fieldMap);
+        super(fieldName, registry, Timestamp.class);
     }
 }

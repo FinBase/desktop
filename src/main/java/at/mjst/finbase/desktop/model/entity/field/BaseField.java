@@ -4,8 +4,6 @@
  */
 package at.mjst.finbase.desktop.model.entity.field;
 
-import java.util.Map;
-
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
@@ -22,89 +20,58 @@ import javafx.beans.value.ObservableValue;
 public class BaseField<T> implements Field<T>
 {
     /**
-     * The fields data type
-     */
-    private Class<T> dataType;
-    /**
      * The property to be wrapped
      */
     private ObjectProperty<T> property;
     /**
-     * This fields name
+     * The fields data type
      */
-    private String name;
+    private Class<T> dataType;
+    /**
+     * This fields identifier
+     */
+    private FieldIdentifier identifier;
 
     /**
-     * Creates an instance of this class.
-     *
-     * @param fieldName the fields fieldName
-     * @param fieldMap  an optional map to add this field to
+     * @param fieldName the fields name
+     * @param registry  an optional object able to register this field to
+     * @param dataType  the fields data type
      */
-    public BaseField(String fieldName, Map<String, Field<?>> fieldMap)
+    BaseField(String fieldName, FieldRegistry registry, Class<T> dataType)
     {
-        this(fieldName);
-        if (fieldMap != null) {
-            fieldMap.put(fieldName, this);
-        }
+        this(new ImmutableFieldIdentifier(registry.tableName(), fieldName), dataType, new SimpleObjectProperty<>());
+        registry.registerField(this);
     }
 
     /**
-     * Creates an instance of this class. The property-attribute is created internally.
-     *
-     * @param fieldName The fields fieldName
+     * @param identifier the fields identifier
+     * @param dataType   the fields data type
+     * @param property   the property to be wrapped
      */
-    BaseField(String fieldName)
+    private BaseField(FieldIdentifier identifier, Class<T> dataType, SimpleObjectProperty<T> property)
     {
-        this(fieldName, new SimpleObjectProperty<>());
-    }
-
-    /**
-     * Creates an instance of this class
-     *
-     * @param fieldName The fields name
-     * @param property  ObjectProperty to be wrapped
-     */
-    BaseField(String fieldName, ObjectProperty<T> property)
-    {
-        this.name = fieldName;
+        this.identifier = identifier;
+        this.dataType = dataType;
         this.property = property;
     }
 
-    /**
-     * Creates an instance of this class.
-     *
-     * @param fieldName the fields fieldName
-     * @param fieldMap  an optional map to add this field to
-     */
-    public BaseField(String fieldName, Class<T> dataType, Map<String, Field<?>> fieldMap)
-    {
-        this(fieldName);
-        this.dataType = dataType;
-        if (fieldMap != null) {
-            fieldMap.put(fieldName, this);
-        }
-    }
-
     @Override
-    public final Class<T> getType()
+    public final Class<T> dataType()
     {
         return dataType;
     }
 
-    /**
-     * @return this fields name
-     */
     @Override
-    public String getName()
+    public FieldIdentifier identifier()
     {
-        return name;
+        return identifier;
     }
 
     /**
      * @return {@link ObservableValue<>} interface of {@link #property}
      */
     @Override
-    public ObservableValue<T> getObservableValue()
+    public ObservableValue<T> observableValue()
     {
         return property;
     }

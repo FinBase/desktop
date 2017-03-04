@@ -41,23 +41,33 @@ public class AuditLog extends AbstractEntity
     public static final String FIELD_TIMESTAMP_ON = "timestamp_on";
     public static final String FIELD_TIMESTAMP_OFF = "timestamp_off";
     // These 'Field'-Objects wrap ObjectProperties<>, to access them via column-names!
-    private LongField id = new LongField(FIELD_ID, fieldMap);
-    private StringField user = new StringField(FIELD_USER, fieldMap);
-    private TimestampField timestampOn = new TimestampField(FIELD_TIMESTAMP_ON, fieldMap);
-    private TimestampField timestampOff = new TimestampField(FIELD_TIMESTAMP_OFF, fieldMap);
-    private StringField application = new StringField(FIELD_APPLICATION, fieldMap);
+    private LongField id = new LongField(FIELD_ID, this);
+    private StringField user = new StringField(FIELD_USER, this);
+    private TimestampField timestampOn = new TimestampField(FIELD_TIMESTAMP_ON, this);
+    private TimestampField timestampOff = new TimestampField(FIELD_TIMESTAMP_OFF, this);
+    private StringField application = new StringField(FIELD_APPLICATION, this);
 
-    public AuditLog(String test1, Timestamp timestamp, String appl1)
+    public AuditLog(Long id, String test1, Timestamp timestamp, String appl1)
     {
         this();
+        setId(id);
         setUser(test1);
         setTimestampOn(timestamp);
         setApplication(appl1);
     }
 
+    /**
+     * A no-args constructor for entities is always needed!
+     */
     public AuditLog()
     {
         super();
+    }
+
+    @Override
+    public String tableName()
+    {
+        return TABLE_AUDITLOG;
     }
 
     @Id

@@ -21,6 +21,5 @@ public class Module extends AbstractModule
     @Override
     protected void configure()
     {
-        install(new at.mjst.finbase.desktop.model.entity.field.Module());
     }
 }

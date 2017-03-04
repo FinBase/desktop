@@ -5,6 +5,7 @@
 package at.mjst.finbase.desktop.model.entity;
 
 import at.mjst.finbase.desktop.model.entity.field.Field;
+import at.mjst.finbase.desktop.model.entity.field.FieldIdentifier;
 
 /**
  * ToDo: Short class description
@@ -14,6 +15,10 @@ import at.mjst.finbase.desktop.model.entity.field.Field;
  */
 public interface Entity
 {
+    /**
+     * @return the current table name
+     */
+    String tableName();
     //    /**
     //     * Returns a {@link Field} by name, casted to the corresponding class.
     //     *
@@ -31,4 +36,13 @@ public interface Entity
      * @return a {@link Field} instance
      */
     Field<?> getField(String fieldName);
+
+    /**
+     * Returns a {@link Field} by name, the superclass will be returned. If the field does not match with the entities
+     * table name, this method tries to find a field of eventually existing relations.
+     *
+     * @param identifier unique identifier of the field to be found
+     * @return a {@link Field} instance
+     */
+    Field<?> getField(FieldIdentifier identifier);
 }

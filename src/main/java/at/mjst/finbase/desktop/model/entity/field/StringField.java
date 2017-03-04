@@ -4,8 +4,6 @@
  */
 package at.mjst.finbase.desktop.model.entity.field;
 
-import java.util.Map;
-
 /**
  * Concrete implementation of {@link BaseField}, wrapping a {@link String}.
  *
@@ -18,10 +16,10 @@ public class StringField extends BaseField<String>
      * Creates an instance of this class.
      *
      * @param fieldName the fields fieldName
-     * @param fieldMap  an optional map to add this field to
+     * @param registry  an optional map to add this field to
      */
-    public StringField(String fieldName, Map<String, Field<?>> fieldMap)
+    public StringField(String fieldName, FieldRegistry registry)
     {
-        super(fieldName, String.class, fieldMap);
+        super(fieldName, registry, String.class);
     }
 }

@@ -4,8 +4,6 @@
  */
 package at.mjst.finbase.desktop.model.entity.field;
 
-import java.util.Map;
-
 /**
  * Concrete implementation of {@link BaseField}, wrapping an {@link Integer}.
  *
@@ -18,10 +16,10 @@ public class IntegerField extends BaseField<Integer>
      * Creates an instance of this class.
      *
      * @param fieldName the fields fieldName
-     * @param fieldMap  an optional map to add this field to
+     * @param registry  an optional map to add this field to
      */
-    public IntegerField(String fieldName, Map<String, Field<?>> fieldMap)
+    public IntegerField(String fieldName, FieldRegistry registry)
     {
-        super(fieldName, Integer.class, fieldMap);
+        super(fieldName, registry, Integer.class);
     }
 }

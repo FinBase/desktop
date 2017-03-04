@@ -4,8 +4,6 @@
  */
 package at.mjst.finbase.desktop.model.entity.field;
 
-import java.util.Map;
-
 /**
  * Concrete implementation of {@link BaseField}, wrapping a {@link Long}.
  *
@@ -18,10 +16,10 @@ public class LongField extends BaseField<Long>
      * Creates an instance of this class.
      *
      * @param fieldName the fields fieldName
-     * @param fieldMap  an optional map to add this field to
+     * @param registry  an optional map to add this field to
      */
-    public LongField(String fieldName, Map<String, Field<?>> fieldMap)
+    public LongField(String fieldName, FieldRegistry registry)
     {
-        super(fieldName, Long.class, fieldMap);
+        super(fieldName, registry, Long.class);
     }
 }

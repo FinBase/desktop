@@ -21,19 +21,19 @@ public interface Field<T>
     /**
      * @return the type represented by this field
      */
-    Class<T> getType();
+    Class<T> dataType();
 
     /**
-     * @return this fields name
+     * @return this fields identifier {@link FieldIdentifier}
      */
-    String getName();
+    FieldIdentifier identifier();
 
     /**
      * Returns the {@link ObservableValue<>} interface of {@link BaseField#property}.
      *
      * @return {@link ObservableValue<>}
      */
-    ObservableValue<T> getObservableValue();
+    ObservableValue<T> observableValue();
 
     /**
      * @return the value of type <T>
