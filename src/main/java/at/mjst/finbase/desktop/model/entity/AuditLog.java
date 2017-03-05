@@ -7,6 +7,7 @@ package at.mjst.finbase.desktop.model.entity;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.sql.Timestamp;
+import java.util.Collection;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -17,6 +18,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import at.mjst.finbase.desktop.ResourceLocations;
+import at.mjst.finbase.desktop.model.entity.field.Field;
 import at.mjst.finbase.desktop.model.entity.field.LongField;
 import at.mjst.finbase.desktop.model.entity.field.StringField;
 import at.mjst.finbase.desktop.model.entity.field.TimestampField;
@@ -68,6 +70,11 @@ public class AuditLog extends AbstractEntity
     public String tableName()
     {
         return TABLE_AUDITLOG;
+    }
+
+    @Override
+    void buildBusinessKey(Collection<Field<?>> businessKey)
+    {
     }
 
     @Id

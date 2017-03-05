@@ -6,7 +6,9 @@ package at.mjst.finbase.desktop.model.entity;
 
 import org.jetbrains.annotations.NonNls;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 import at.mjst.finbase.desktop.model.entity.field.Field;
@@ -25,35 +27,39 @@ public abstract class AbstractEntity implements Entity, FieldRegistry
     private static final String FMT_TO_STRING = "%s=%s";
     @NonNls
     private static final String ERR_KEY_FIELD_MISSING = "Field '%s' is not registered!";
-    /**
-     * Map, containing all the entities fields
-     */
+    // Map, containing all the entities fields
     private final Map<String, Field<?>> fieldMap = new HashMap<>();
-    private Field<?>[] businessKey;
-    private int hashCode; // ToDo: the hash-code
+    // BusinessKey
+    private boolean businessKeyInitialized = false;
+    private Collection<Field<?>> businessKey = new LinkedList<>();
+    // hashCode
+    private int hashCode = 0;
 
     @Override
     public int hashCode()
     {
-        if (getBusinessKey() == null) {
-            return super.hashCode();
+        if (hashCode <= 0) {
+            if (getBusinessKey() == null) {
+                hashCode = super.hashCode();
+            } else {
+                final int PRIME = 31;
+                hashCode = 0;
+                for (Field<?> field : getBusinessKey()) {
+                    Object o = field.getValue();
+                    hashCode = PRIME * hashCode + (o != null ? o.hashCode() : 0);
+                }
+            }
         }
-        validateFieldMapInitialized();
-        int result = 0; // ToDo: reimplement!
-        for (Field<?> field : fieldMap.values()) {
-            // regarding to generated entities from IntelliJ JPA-Module
-            Object o = field.getValue();
-            result = 31 * result + (o != null ? o.hashCode() : 0);
-        }
-        return result;
+        return hashCode;
     }
 
     @Override
     public boolean equals(Object o)
     {
         if (super.equals(o)) return true; // ToDo: test getClass...!
-        if ((o == null) || (o.getClass() != this.getClass()) || (getBusinessKey() == null)) return false;
-        validateFieldMapInitialized();
+        if ((o == null) || (o.getClass() != getClass()) || (o.hashCode() != hashCode()) || (getBusinessKey() == null)) {
+            return false;
+        }
         for (Field<?> field : getBusinessKey()) {
             Object thisPropertyValue = field.getValue();
             Object thatPropertyValue = ((AbstractEntity) o).getField(field.identifier()).getValue();
@@ -80,6 +86,14 @@ public abstract class AbstractEntity implements Entity, FieldRegistry
         return result.toString();
     }
 
+    /**
+     * @return true, if there are already elements in an existing fieldMap, false otherwise
+     */
+    private boolean fieldMapInitialized()
+    {
+        return (fieldMap.size() > 0);
+    }
+
     @Override
     public abstract String tableName();
 
@@ -94,50 +108,39 @@ public abstract class AbstractEntity implements Entity, FieldRegistry
     {
         if (identifier.equals(tableName())) {
             return fieldMap.get(identifier.fieldName());
+            // return fieldType.cast(getField(fieldName)); -- typed approach
         } else {
             return null; // ToDo: return registered dependencies ...
         }
     }
-    //    @Override
-    //    public <T extends Field<?>> T getField(String fieldName, Class<T> fieldType)
-    //    {
-    //        return fieldType.cast(getField(fieldName));
-    //    }
 
     /**
      * @return the defined 'business key'. These are the key fields for the equals() and hashCode()-Methods.
      */
-    private Field<?>[] getBusinessKey()
+    private Collection<Field<?>> getBusinessKey()
     {
-        if (businessKey == null) {
-            businessKey = buildBusinessKey();
+        if (!businessKeyInitialized) {
+            buildBusinessKey(businessKey);
             validateFieldsRegistered(businessKey);
+            businessKeyInitialized = true;
         }
         return businessKey;
     }
 
     /**
-     * Throws a {@link RuntimeException}, if there are no elements existing in the fieldMap.
+     * Builds a new business key field collection. Refer to {@link AbstractEntity#getBusinessKey} for further
+     * information.
+     *
+     * @param businessKey collection, to add the fields to
      */
-    private void validateFieldMapInitialized()
-    {
-        if (!fieldMapInitialized()) throw new RuntimeException("FieldMap is not initialized/no fields!");
-    }
-
-    /**
-     * @return a new businessKey. Refer to {@link AbstractEntity#getBusinessKey} for further information.
-     */
-    Field<?>[] buildBusinessKey()
-    {
-        return null;
-    }
+    abstract void buildBusinessKey(Collection<Field<?>> businessKey);
 
     /**
      * Checks, if all fields from the array are this entities fields
      *
      * @param fields the {@link Field}s to check
      */
-    private void validateFieldsRegistered(Field<?>[] fields)
+    private void validateFieldsRegistered(Collection<Field<?>> fields)
     {
         if (fields == null) return;
         for (Field<?> field : fields) {
@@ -147,17 +150,18 @@ public abstract class AbstractEntity implements Entity, FieldRegistry
         }
     }
 
-    /**
-     * @return true, if there are already elements in an existing fieldMap, false otherwise
-     */
-    private boolean fieldMapInitialized()
-    {
-        return (fieldMap.size() > 0);
-    }
-
     @Override
     public void registerField(Field<?> field)
     {
         fieldMap.put(field.identifier().fieldName(), field);
+        field.observableValue().addListener(observable -> resetHashCode());
+    }
+
+    /**
+     * Internally resets an already calculated hashCode for this Entity
+     */
+    private void resetHashCode()
+    {
+        hashCode = 0;
     }
 }

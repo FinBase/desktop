@@ -4,6 +4,8 @@
  */
 package at.mjst.finbase.desktop.model.entity;
 
+import java.util.Collection;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,6 +15,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import at.mjst.finbase.desktop.ResourceLocations;
+import at.mjst.finbase.desktop.model.entity.field.Field;
 import at.mjst.finbase.desktop.model.entity.field.IntegerField;
 import at.mjst.finbase.desktop.model.entity.field.StringField;
 
@@ -57,6 +60,11 @@ public class Account extends AbstractEntity
     public String tableName()
     {
         return TABLE_ACCOUNT;
+    }
+
+    @Override
+    void buildBusinessKey(Collection<Field<?>> businessKey)
+    {
     }
 
     /**
