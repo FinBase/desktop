@@ -49,6 +49,9 @@ public class AuditLog extends AbstractEntity
     private TimestampField timestampOff = new TimestampField(FIELD_TIMESTAMP_OFF, this);
     private StringField application = new StringField(FIELD_APPLICATION, this);
 
+    /**
+     * For testing purposes only
+     */
     public AuditLog(Long id, String test1, Timestamp timestamp, String appl1)
     {
         this();

@@ -30,20 +30,18 @@ public abstract class AbstractEntity implements Entity, FieldRegistry
     // Map, containing all the entities fields
     private final Map<String, Field<?>> fieldMap = new HashMap<>();
     // BusinessKey
-    private boolean businessKeyInitialized = false;
-    private Collection<Field<?>> businessKey = new LinkedList<>();
+    private Collection<Field<?>> businessKey;
     // hashCode
     private int hashCode = 0;
 
     @Override
     public int hashCode()
     {
-        if (hashCode <= 0) {
-            if (getBusinessKey() == null) {
+        if (hashCode == 0) {
+            if (getBusinessKey().size() == 0) {
                 hashCode = super.hashCode();
             } else {
                 final int PRIME = 31;
-                hashCode = 0;
                 for (Field<?> field : getBusinessKey()) {
                     Object o = field.getValue();
                     hashCode = PRIME * hashCode + (o != null ? o.hashCode() : 0);
@@ -57,7 +55,12 @@ public abstract class AbstractEntity implements Entity, FieldRegistry
     public boolean equals(Object o)
     {
         if (super.equals(o)) return true; // ToDo: test getClass...!
-        if ((o == null) || (o.getClass() != getClass()) || (o.hashCode() != hashCode()) || (getBusinessKey() == null)) {
+        if ((o == null)
+                || (o.getClass() != this.getClass())
+                || (o.hashCode() != this.hashCode())
+                || (getBusinessKey().size() == 0)) {
+            // if the hashCode does not match, the objects are definitely different
+            //  - that does NOT mean, that if the hashCodes were equal, the objects might be equal too!
             return false;
         }
         for (Field<?> field : getBusinessKey()) {
@@ -75,23 +78,12 @@ public abstract class AbstractEntity implements Entity, FieldRegistry
     @Override
     public String toString()
     {
-        if (!fieldMapInitialized()) {
-            return super.toString();
-        }
-        StringBuilder result = new StringBuilder();
+        StringBuilder result = new StringBuilder(super.toString());
         for (Map.Entry<String, Field<?>> entry : fieldMap.entrySet()) {
             if (result.length() > 0) result.append(", ");
             result.append(String.format(FMT_TO_STRING, entry.getKey(), entry.getValue().getValue()));
         }
         return result.toString();
-    }
-
-    /**
-     * @return true, if there are already elements in an existing fieldMap, false otherwise
-     */
-    private boolean fieldMapInitialized()
-    {
-        return (fieldMap.size() > 0);
     }
 
     @Override
@@ -108,7 +100,7 @@ public abstract class AbstractEntity implements Entity, FieldRegistry
     {
         if (identifier.equals(tableName())) {
             return fieldMap.get(identifier.fieldName());
-            // return fieldType.cast(getField(fieldName)); -- typed approach
+            // return fieldType.cast(getField(..)); -- typed approach
         } else {
             return null; // ToDo: return registered dependencies ...
         }
@@ -119,10 +111,10 @@ public abstract class AbstractEntity implements Entity, FieldRegistry
      */
     private Collection<Field<?>> getBusinessKey()
     {
-        if (!businessKeyInitialized) {
+        if (businessKey == null) {
+            businessKey = new LinkedList<>();
             buildBusinessKey(businessKey);
             validateFieldsRegistered(businessKey);
-            businessKeyInitialized = true;
         }
         return businessKey;
     }
