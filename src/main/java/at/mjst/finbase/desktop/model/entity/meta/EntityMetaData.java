@@ -23,7 +23,7 @@ public class EntityMetaData
      * @param tableName table, that is represented by this metadata
      * @param fields    field-metadata contained within this table
      */
-    public EntityMetaData(String tableName, Map<String, FieldMetaData<?>> fields)
+    EntityMetaData(String tableName, Map<String, FieldMetaData<?>> fields)
     {
         this.tableName = tableName;
         this.fields = Collections.unmodifiableMap(fields);
@@ -40,7 +40,7 @@ public class EntityMetaData
     /**
      * @return the tableName
      */
-    public String getTableName()
+    public String tableName()
     {
         return tableName;
     }

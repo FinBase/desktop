@@ -28,7 +28,7 @@ public class FieldMetaData<T>
     /**
      * @return the name for the field described
      */
-    public String getFieldName()
+    public String fieldName()
     {
         return fieldName;
     }
@@ -36,7 +36,7 @@ public class FieldMetaData<T>
     /**
      * @return the dataType of the described {@link at.mjst.finbase.desktop.model.entity.field.Field}
      */
-    public Class<T> getDataType()
+    public Class<T> dataType()
     {
         return dataType;
     }
