@@ -54,7 +54,7 @@ public abstract class AbstractEntity implements Entity, FieldRegistry
     @Override
     public boolean equals(Object o)
     {
-        if (super.equals(o)) return true; // ToDo: test getClass...!
+        if (super.equals(o)) return true;
         if ((o == null)
                 || (o.getClass() != this.getClass())
                 || (o.hashCode() != this.hashCode())
@@ -80,7 +80,7 @@ public abstract class AbstractEntity implements Entity, FieldRegistry
     {
         StringBuilder result = new StringBuilder(super.toString());
         for (Map.Entry<String, Field<?>> entry : fieldMap.entrySet()) {
-            if (result.length() > 0) result.append(", ");
+            if (result.length() > 0) result.append(";");
             result.append(String.format(FMT_TO_STRING, entry.getKey(), entry.getValue().getValue()));
         }
         return result.toString();
