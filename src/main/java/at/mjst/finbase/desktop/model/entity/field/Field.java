@@ -4,6 +4,7 @@
  */
 package at.mjst.finbase.desktop.model.entity.field;
 
+import at.mjst.finbase.desktop.model.entity.meta.FieldIdentifier;
 import javafx.beans.value.ObservableValue;
 
 /**
@@ -27,6 +28,11 @@ public interface Field<T>
      * @return this fields identifier {@link FieldIdentifier}
      */
     FieldIdentifier identifier();
+
+    /**
+     * @return the standalone field name
+     */
+    String fieldName();
 
     /**
      * Returns the {@link ObservableValue<>} interface of {@link BaseField#property}.

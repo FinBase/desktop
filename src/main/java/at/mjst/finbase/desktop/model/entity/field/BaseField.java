@@ -4,6 +4,8 @@
  */
 package at.mjst.finbase.desktop.model.entity.field;
 
+import at.mjst.finbase.desktop.model.entity.meta.FieldIdentifier;
+import at.mjst.finbase.desktop.model.entity.meta.ImmutableFieldIdentifier;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
@@ -65,6 +67,12 @@ public class BaseField<T> implements Field<T>
     public FieldIdentifier identifier()
     {
         return identifier;
+    }
+
+    @Override
+    public String fieldName()
+    {
+        return identifier().fieldName();
     }
 
     /**

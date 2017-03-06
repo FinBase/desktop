@@ -7,13 +7,14 @@ package at.mjst.finbase.desktop.model.entity;
 import org.jetbrains.annotations.NonNls;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
 import at.mjst.finbase.desktop.model.entity.field.Field;
-import at.mjst.finbase.desktop.model.entity.field.FieldIdentifier;
 import at.mjst.finbase.desktop.model.entity.field.FieldRegistry;
+import at.mjst.finbase.desktop.model.entity.meta.FieldIdentifier;
 
 /**
  * This is the superclass of all data-entities.
@@ -98,12 +99,18 @@ public abstract class AbstractEntity implements Entity, FieldRegistry
     @Override
     public Field<?> getField(FieldIdentifier identifier)
     {
-        if (identifier.equals(tableName())) {
+        if (identifier.equalsTableName(tableName())) {
             return fieldMap.get(identifier.fieldName());
             // return fieldType.cast(getField(..)); -- typed approach
         } else {
             return null; // ToDo: return registered dependencies ...
         }
+    }
+
+    @Override
+    public Collection<Field<?>> getFields()
+    {
+        return Collections.unmodifiableCollection(fieldMap.values());
     }
 
     /**

@@ -4,8 +4,10 @@
  */
 package at.mjst.finbase.desktop.model.entity;
 
+import java.util.Collection;
+
 import at.mjst.finbase.desktop.model.entity.field.Field;
-import at.mjst.finbase.desktop.model.entity.field.FieldIdentifier;
+import at.mjst.finbase.desktop.model.entity.meta.FieldIdentifier;
 
 /**
  * ToDo: Short class description
@@ -45,4 +47,9 @@ public interface Entity
      * @return a {@link Field} instance
      */
     Field<?> getField(FieldIdentifier identifier);
+
+    /**
+     * @return an unmodifiable Collection of the entities {@link Field}s
+     */
+    Collection<Field<?>> getFields();
 }

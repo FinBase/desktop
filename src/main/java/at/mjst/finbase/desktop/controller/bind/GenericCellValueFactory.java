@@ -8,13 +8,13 @@ import org.jetbrains.annotations.NonNls;
 
 import at.mjst.finbase.desktop.model.entity.Entity;
 import at.mjst.finbase.desktop.model.entity.field.Field;
-import at.mjst.finbase.desktop.model.entity.field.FieldIdentifier;
+import at.mjst.finbase.desktop.model.entity.meta.FieldIdentifier;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TableColumn;
 import javafx.util.Callback;
 
 /**
- * ToDo: Short class description
+ * Implements the {@link Callback}-interface to provide tableView data from entities supporting {@link Field}s.
  *
  * @author Ing. Michael J. Stallinger (projects@mjst.at)
  * @since 2017-01-19
