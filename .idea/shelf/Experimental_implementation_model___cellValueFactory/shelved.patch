@@ -1,0 +1,199 @@
+Index: src/main/java/at/mjst/finbase/desktop/model/entity/EntityInitializer.java
+===================================================================
+--- src/main/java/at/mjst/finbase/desktop/model/entity/EntityInitializer.java	
++++ src/main/java/at/mjst/finbase/desktop/model/entity/EntityInitializer.java	
+@@ -0,0 +1,37 @@
++/*
++ * Copyright (c) 2017, Ing. Michael J. Stallinger and/or his affiliates. All rights reserved.
++ * This source code is subject to license terms, see the LICENSE file for details.
++ */
++package at.mjst.finbase.desktop.model.entity;
++
++import com.google.inject.Inject;
++
++import at.mjst.finbase.desktop.model.entity.field.FieldFactory;
++import at.mjst.finbase.desktop.model.entity.meta.EntityReflector;
++
++/**
++ * This class ensures the injection
++ *
++ * @author Ing. Michael J. Stallinger (projects@mjst.at)
++ * @since 2017-02-27
++ */
++public class EntityInitializer
++{
++    @Inject
++    private EntityReflector entityReflector;
++    @Inject
++    private FieldFactory fieldFactory;
++
++    /**
++     * Initializes static contexts, needed for our {@link AbstractEntity} class.
++     */
++    public void initialize()
++    {
++        // According to <a href="http://stackoverflow.com/a/11648163/700165">this stackOverflow article</a>, it is not
++        // advised to use DI for entities. So, we have to statically set, which factories and other helpers to use for
++        // our entity-fields here - these helpers HAVE to BE THREADSAFE!
++        // - however, this implementation might be changed some day...
++        AbstractEntity.setEntityReflector(entityReflector);
++        AbstractEntity.setFieldFactory(fieldFactory);
++    }
++}
+Index: src/main/java/at/mjst/finbase/desktop/model/entity/field/Module.java
+===================================================================
+--- src/main/java/at/mjst/finbase/desktop/model/entity/field/Module.java	(date 1487632269000)
++++ src/main/java/at/mjst/finbase/desktop/model/entity/field/Module.java	
+@@ -14,43 +14,9 @@
+  */
+ public class Module extends AbstractModule
+ {
+-    private static ThreadLocal<FieldFactory> defaultFieldFactory = new ThreadLocal<>();
+-
+-    /**
+-     * According to
+-     * <a href="http://stackoverflow.com/questions/11638311/can-you-use-dependency-injection-in-persistent-entities">
+-     * this stackOverflow article</a>, it is not advised to use DI for entities. So, we have to statically
+-     * set, which factory to use for our entity-fields here. However, this might be changed some day...
+-     *
+-     * @return a new instance of the current FieldFactory implementation.
+-     */
+-    public static FieldFactory getFieldFactoryInstance()
+-    {
+-        try {
+-            if (defaultFieldFactory.get() == null) {
+-                FieldFactory factory = getFieldFactoryClass().newInstance();
+-                defaultFieldFactory.set(factory);
+-                return factory;
+-            } else {
+-                return defaultFieldFactory.get();
+-            }
+-        } catch (InstantiationException | IllegalAccessException e) {
+-            e.printStackTrace();
+-            return null;
+-        }
+-    }
+-
+-    /**
+-     * @return the class of the current {@link FieldFactory}-implementation.
+-     */
+-    private static Class<? extends FieldFactory> getFieldFactoryClass()
+-    {
+-        return FieldFactoryImpl.class;
+-    }
+-
+     @Override
+     protected void configure()
+     {
+-        bind(FieldFactory.class).to(getFieldFactoryClass());
++        bind(FieldFactory.class).to(FieldFactoryImpl.class);
+     }
+ }
+Index: src/main/java/at/mjst/finbase/desktop/FinBase.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/at/mjst/finbase/desktop/FinBase.java	(date 1487632269000)
++++ src/main/java/at/mjst/finbase/desktop/FinBase.java	
+@@ -14,6 +14,7 @@
+ import java.util.ArrayList;
+ 
+ import at.mjst.finbase.desktop.controller.ControllerFactory;
++import at.mjst.finbase.desktop.model.entity.EntityInitializer;
+ import at.mjst.finbase.desktop.model.service.LoginService;
+ import at.mjst.finbase.desktop.util.NlsManager;
+ import javafx.application.Application;
+@@ -65,6 +66,13 @@
+     {
+         super.init();
+         initInjector();
++        prepareEntity();
++    }
++
++    private void prepareEntity()
++    {
++        EntityInitializer initializer = getInjector().getInstance(EntityInitializer.class);
++        initializer.initialize();
+     }
+ 
+     /**
+Index: src/main/java/at/mjst/finbase/desktop/model/entity/field/FieldFactoryImpl.java
+===================================================================
+--- src/main/java/at/mjst/finbase/desktop/model/entity/field/FieldFactoryImpl.java	(date 1487632269000)
++++ src/main/java/at/mjst/finbase/desktop/model/entity/field/FieldFactoryImpl.java	
+@@ -16,7 +16,7 @@
+  */
+ public class FieldFactoryImpl implements FieldFactory
+ {
+-    private static final Map<Class, FieldProvider> typeMap = new HashMap<>();
++    private static final Map<Class<?>, FieldProvider> typeMap = new HashMap<>();
+ 
+     static {
+         synchronized (typeMap) {
+@@ -35,7 +35,7 @@
+      * @param provider anonymous class (method reference) to the fields constructor
+      * @see FieldProvider
+      */
+-    private static synchronized void register(Class dataType, FieldProvider provider)
++    private static synchronized void register(Class<?> dataType, FieldProvider provider)
+     {
+         if (typeMap.containsKey(dataType)) {
+             throw new RuntimeException(String.format("Map already contains Field of type %s!", dataType.getName()));
+@@ -44,7 +44,7 @@
+     }
+ 
+     @Override
+-    public Field getNewFieldInstance(String fieldName, Class dataType)
++    public Field<?> getNewFieldInstance(String fieldName, Class<?> dataType)
+     {
+         FieldProvider builder = getFromMap(dataType);
+         return builder.createInstance(fieldName);
+@@ -56,10 +56,11 @@
+      * @param dataType desired data-type
+      * @return a {@link FieldProvider} capable of creating a new Instance of {@link Field}
+      */
+-    private FieldProvider getFromMap(Class dataType)
++    private FieldProvider getFromMap(Class<?> dataType)
+     {
+         synchronized (typeMap) {
+-            return typeMap.get(dataType); // ToDo: sync. really necessary?
++            return typeMap.get(dataType);
++            // ToDo: sync. really necessary? Might not be necessary, since the factory is already initialized, long before other threads come into play
+         }
+     }
+ 
+@@ -77,6 +78,6 @@
+          * @param fieldName desired name.
+          * @return a new instance of {@link Field}
+          */
+-        Field createInstance(String fieldName);
++        Field<?> createInstance(String fieldName);
+     }
+ }
+Index: src/main/java/at/mjst/finbase/desktop/model/entity/field/FieldFactory.java
+===================================================================
+--- src/main/java/at/mjst/finbase/desktop/model/entity/field/FieldFactory.java	(date 1487632269000)
++++ src/main/java/at/mjst/finbase/desktop/model/entity/field/FieldFactory.java	
+@@ -19,5 +19,5 @@
+      * @param dataType  the data-type wrapped by the future field
+      * @return a new instance of {@link Field} with the given name and data-type
+      */
+-    Field getNewFieldInstance(String fieldName, Class dataType);
++    Field<?> getNewFieldInstance(String fieldName, Class<?> dataType);
+ }
+Index: src/main/java/at/mjst/finbase/desktop/model/entity/Module.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/at/mjst/finbase/desktop/model/entity/Module.java	(date 1487632269000)
++++ src/main/java/at/mjst/finbase/desktop/model/entity/Module.java	
+@@ -21,6 +21,7 @@
+     @Override
+     protected void configure()
+     {
++        install(new at.mjst.finbase.desktop.model.entity.meta.Module());
+         install(new at.mjst.finbase.desktop.model.entity.field.Module());
+     }
+ }

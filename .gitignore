@@ -6,7 +6,6 @@ local.properties
 *.iws
 /.idea/workspace.xml
 /.idea/tasks.xml
-/.idea/shelf/
 /.idea/dictionaries/
 
 # Eclipse project files #
