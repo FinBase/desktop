@@ -1,0 +1,484 @@
+Index: src/main/resources/at/mjst/finbase/desktop/view/main/Pane.fxml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/resources/at/mjst/finbase/desktop/view/main/Pane.fxml	(revision 15b60a1fd1d8e04f1a57b5b24b9082fd95a2f541)
++++ src/main/resources/at/mjst/finbase/desktop/view/main/Pane.fxml	(revision )
+@@ -7,19 +7,19 @@
+          tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8.0.76-ea"
+          fx:controller="at.mjst.finbase.desktop.controller.main.TabController">
+     <tabs>
+-        <Tab text="Accounts">
++        <Tab fx:id="auditTab" text="Audit">
+             <content>
+-                <fx:include source="Account.fxml" />
++                <fx:include source="AuditLog.fxml"/>
+             </content>
+         </Tab>
+-        <Tab text="Transactions">
++        <Tab fx:id="accountTab" text="Accounts">
+             <content>
+-                <Pane />
++                <fx:include source="Account.fxml"/>
+             </content>
+         </Tab>
+-        <Tab fx:id="auditTab" onSelectionChanged="#osc" text="Audit">
++        <Tab fx:id="traTab" text="Transactions">
+             <content>
+-                <fx:include source="AuditLog.fxml" />
++                <Pane/>
+             </content>
+         </Tab>
+     </tabs>
+Index: src/main/java/at/mjst/finbase/desktop/controller/main/AccountTableController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/at/mjst/finbase/desktop/controller/main/AccountTableController.java	(revision )
++++ src/main/java/at/mjst/finbase/desktop/controller/main/AccountTableController.java	(revision )
+@@ -0,0 +1,79 @@
++/*
++ * Copyright (c) 2017, Ing. Michael J. Stallinger and/or his affiliates. All rights reserved.
++ * This source code is subject to license terms, see the LICENSE file for details.
++ */
++package at.mjst.finbase.desktop.controller.main;
++
++import com.google.common.eventbus.Subscribe;
++
++import java.net.URL;
++import java.util.ResourceBundle;
++
++import at.mjst.finbase.desktop.controller.events.EventBusListener;
++import at.mjst.finbase.desktop.controller.events.LoginEvent;
++import at.mjst.finbase.desktop.model.entity.Account;
++import at.mjst.finbase.desktop.view.CustomTableView;
++import javafx.fxml.Initializable;
++import javafx.scene.control.TableColumn;
++
++/**
++ * ToDo: Short class description
++ *
++ * @author Ing. Michael J. Stallinger (projects@mjst.at)
++ * @since 2017-02-22
++ */
++public class AccountTableController implements Initializable, EventBusListener
++{
++    public CustomTableView<Account> tabView;
++    public TableColumn<Account, Integer> id;
++    public TableColumn<Account, String> name;
++
++    @Override
++    public void initialize(URL location, ResourceBundle resources)
++    {
++        //        Account definitionEntity = new Account();
++        //        for (TableColumn<Account, ?> tc : tabView.getColumns()) {
++        //            System.out.println(tc.getId() + " - " + tc.getText());
++        //            Field<?> f = definitionEntity.getField(tc.getId());
++        //            //            tc.getCellData()
++        //            tc.setCellValueFactory(new GenericCellValueFactory<>(f.getClass()));
++        //        }
++        //        // ToDo: think of: what's the better approach? if someday there might be a fieldSelection like in BMD?
++        //        id.setCellFactory(new Callback<TableColumn<Account, Integer>, TableCell<Account, Integer>>()
++        //        {
++        //            @Override
++        //            public TableCell<Account, Integer> call(TableColumn<Account, Integer> param)
++        //            {
++        //                return null;
++        //            }
++        //        });
++    }
++
++    @Subscribe
++    public void handleLoginEvent(LoginEvent event)
++    {
++        //
++        //        //        ObservableList<AuditLog> data = FXCollections.observableArrayList(aulDAO.queryAll());
++        //        //        tabView.setItems(data);
++        //        // build columns?!
++        //        //        tabView.getColumns().removeIf(); -- remove old columns except controlColumn!
++        //        // DAOs erst kreieren, wenn login sichergestellt werden konnte!
++        //        //    @Inject
++        //        //    private AuditLogDAO aulDAO;
++        //        System.out.println("AccountTAB received LoginEvent!");
++        //        // todo: load data here, if tab is active!!
++        //        ArrayList<Account> al = new ArrayList<>();
++        //        Account aul;
++        //        for (int i = 0; i < 1000; i++) {
++        //            aul = new Account();
++        //            aul.setName("TESTname" + i);
++        ////            aul.setApplication("MyAPP" + i);
++        ////            aul.setTimestampOn(new Timestamp(new Date().getTime()));
++        ////            aul.setTimestampOff(new Timestamp(new Date().getTime()));
++        //            al.add(aul);
++        //        }
++        //        ObservableList<Account> data = FXCollections.observableArrayList(al);
++        //        // set data...
++        //        tabView.setItems(data);
++    }
++}
+Index: src/main/java/at/mjst/finbase/desktop/controller/main/TableController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/at/mjst/finbase/desktop/controller/main/TableController.java	(revision )
++++ src/main/java/at/mjst/finbase/desktop/controller/main/TableController.java	(revision )
+@@ -0,0 +1,107 @@
++/*
++ * Copyright (c) 2017, Ing. Michael J. Stallinger and/or his affiliates. All rights reserved.
++ * This source code is subject to license terms, see the LICENSE file for details.
++ */
++package at.mjst.finbase.desktop.controller.main;
++
++import at.mjst.finbase.desktop.model.entity.AuditLog;
++import at.mjst.finbase.desktop.model.entity.Entity;
++import at.mjst.finbase.desktop.model.entity.field.Field;
++import at.mjst.finbase.desktop.model.entity.meta.FieldIdentifier;
++import at.mjst.finbase.desktop.model.entity.meta.ImmutableFieldIdentifier;
++import at.mjst.finbase.desktop.view.CustomTableView;
++import javafx.fxml.FXML;
++import javafx.scene.control.TableCell;
++import javafx.scene.control.TableColumn;
++import javafx.util.Callback;
++
++/**
++ * ToDo: Short class description
++ *
++ * @param <S> The type of the objects contained within the TableView.
++ * @author Ing. Michael J. Stallinger (projects@mjst.at)
++ * @since 2017-02-23
++ */
++public class TableController<S extends Entity>
++{
++    @FXML
++    public CustomTableView<S> tabView;
++    public TableColumn<S, ?> controlColumn;
++
++    //    @SuppressWarnings("unchecked") // this one should be ok...
++    public void generateColumns()
++    {
++        AuditLog definitionEntity = new AuditLog(); // todo: how to get this DefinitionEntry from derived class?
++        // ToDo: if we use the entityReflector, it will only provide the raw datatype -> generate field for GenericCellValueFactory from factory?
++        // ToDo: is this already the best aproach!? -> FeldRawTyp von Reflector holen => Feld erzeugen f. uebergabe!
++        for (String fieldName : getFieldSelection()) {
++            System.out.println(fieldName);
++            Field<?> field = definitionEntity.getField(fieldName);
++            // todo: factory or something
++            // todo:  generator by type from entity!
++            TableColumn<S, ?> col = null;
++            if (field.dataType() == Long.class) {
++                TableColumn<S, Long> colL;
++                colL = generateTableColumn2(new ImmutableFieldIdentifier("", fieldName), field.getClass());
++                // cell factory can only be applied for exact type!
++                colL.setCellFactory(new Callback<TableColumn<S, Long>, TableCell<S, Long>>()
++                {
++                    @Override
++                    public TableCell<S, Long> call(TableColumn<S, Long> param)
++                    {
++                        return null;
++                    }
++                });
++                tabView.getColumns().add(colL);
++                col = colL;
++            } else if (field.dataType() == String.class) {
++                TableColumn<S, String> colS;
++                colS = generateTableColumn2(new ImmutableFieldIdentifier("", fieldName), field.getClass());
++                tabView.getColumns().add(colS);
++                col = colS;
++            }
++            if (col != null) {
++                //
++                //                col.setMinWidth(50);
++                //                col.setText(getFieldDisplayName(fieldName));
++                //                col.setId(fieldName);
++                //            TableColumn<S, String> col = generateTableColumn(fieldName, field.getClass());
++                tabView.getColumns().add(col);
++            }
++        }
++    }
++
++    /**
++     * @return the current selection of fields to be displayed
++     */
++    public String[] getFieldSelection()
++    {
++        return new String[]{"id"};
++    }
++
++    //    // todo: from generator by field-type
++    //    public <I, T extends Field<I>, E extends Entity> TableColumn<E, I> generateTableColumn(String fieldName,
++    //                                                                                           Class<T> field)
++    //    {
++    //        TableColumn<E, I> col = new TableColumn<>();
++    ////        col.setCellValueFactory(new GenericCellValueFactory<>(fieldName,field));
++    ////        col.setMinWidth(50);
++    ////        col.setText(getFieldDisplayName(fieldName));
++    ////        col.setId(fieldName);
++    //        return col;
++    //    }
++    public <I, T extends Field<I>> TableColumn<S, I> generateTableColumn2(FieldIdentifier fieldId, Class<T> field)
++    {
++        TableColumn<S, I> col = new TableColumn<>();
++        //        col.setCellValueFactory(new GenericCellValueFactory<>(fieldId, field));
++        col.setMinWidth(50);
++        col.setText(getFieldDisplayName(fieldId.fieldName()));
++        col.setId(fieldId.fieldName());
++        return col;
++    }
++
++    public String getFieldDisplayName(String fieldName)
++    {
++        return "D:" + fieldName;
++    }
++}
+Index: src/main/resources/at/mjst/finbase/desktop/view/main/AuditLog.fxml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/resources/at/mjst/finbase/desktop/view/main/AuditLog.fxml	(revision 15b60a1fd1d8e04f1a57b5b24b9082fd95a2f541)
++++ src/main/resources/at/mjst/finbase/desktop/view/main/AuditLog.fxml	(revision )
+@@ -1,17 +1,30 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ 
++<?import at.mjst.finbase.desktop.view.CustomTableView?>
+ <?import javafx.scene.control.TableColumn?>
+-<?import javafx.scene.control.TableView?>
+-<?import javafx.scene.layout.Pane?>
+-<Pane xmlns:fx="http://javafx.com/fxml/1" minHeight="-Infinity" minWidth="-Infinity" prefHeight="391.0"
+-      prefWidth="546.0" xmlns="http://javafx.com/javafx/8.0.76-ea"
+-      fx:controller="at.mjst.finbase.desktop.controller.main.AuditLogController">
+-    <children>
+-        <TableView fx:id="tabView" layoutX="14.0" layoutY="14.0" prefHeight="357.0" prefWidth="353.0">
++<?import javafx.scene.layout.BorderPane?>
++<?import javafx.scene.layout.HBox?>
++<BorderPane xmlns:fx="http://javafx.com/fxml/1" minHeight="-Infinity" minWidth="-Infinity"
++            style="-fx-background-color: red;" xmlns="http://javafx.com/javafx/8.0.112"
++            fx:controller="at.mjst.finbase.desktop.controller.main.AuditLogController">
++    <top>
++        <HBox prefHeight="50.0" prefWidth="100"/>
++    </top>
++    <left>
++        <HBox prefHeight="100.0" prefWidth="100"/>
++    </left>
++    <center>
++        <CustomTableView fx:id="tabView">
+             <columns>
+-                <TableColumn prefWidth="75.0" text="C1" />
+-                <TableColumn prefWidth="75.0" text="C2" />
++                <TableColumn id="cc" fx:id="controlColumn" prefWidth="75.0" text="CC"/>
+             </columns>
+-        </TableView>
+-    </children>
+-</Pane>
++        </CustomTableView>
++    </center>
++    <right>
++        <HBox prefHeight="100.0" prefWidth="100"/>
++    </right>
++    <bottom>
++        <HBox prefHeight="50.0" prefWidth="100"/>
++    </bottom>
++
++</BorderPane>
+Index: src/main/java/at/mjst/finbase/desktop/controller/events/TabActivationEvent.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/at/mjst/finbase/desktop/controller/events/TabActivationEvent.java	(revision 15b60a1fd1d8e04f1a57b5b24b9082fd95a2f541)
++++ src/main/java/at/mjst/finbase/desktop/controller/events/TabActivationEvent.java	(revision )
+@@ -20,4 +20,9 @@
+     {
+         this.activeTab = activeTab;
+     }
++
++    public Tab getActiveTab()
++    {
++        return activeTab;
++    }
+ }
+Index: src/main/java/at/mjst/finbase/desktop/controller/main/AuditLogController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/at/mjst/finbase/desktop/controller/main/AuditLogController.java	(revision 15b60a1fd1d8e04f1a57b5b24b9082fd95a2f541)
++++ src/main/java/at/mjst/finbase/desktop/controller/main/AuditLogController.java	(revision )
+@@ -7,14 +7,24 @@
+ import com.google.common.eventbus.Subscribe;
+ 
+ import java.net.URL;
++import java.sql.Timestamp;
++import java.util.ArrayList;
++import java.util.Date;
+ import java.util.ResourceBundle;
+ 
+ import at.mjst.finbase.desktop.controller.events.EventBusListener;
++import at.mjst.finbase.desktop.controller.events.LoginEvent;
+ import at.mjst.finbase.desktop.controller.events.TabActivationEvent;
+ import at.mjst.finbase.desktop.model.entity.AuditLog;
+-import javafx.fxml.FXML;
++import javafx.collections.FXCollections;
++import javafx.collections.ObservableList;
+ import javafx.fxml.Initializable;
+-import javafx.scene.control.TableView;
++
++import static at.mjst.finbase.desktop.model.entity.AuditLog.FIELD_APPLICATION;
++import static at.mjst.finbase.desktop.model.entity.AuditLog.FIELD_ID;
++import static at.mjst.finbase.desktop.model.entity.AuditLog.FIELD_TIMESTAMP_OFF;
++import static at.mjst.finbase.desktop.model.entity.AuditLog.FIELD_TIMESTAMP_ON;
++import static at.mjst.finbase.desktop.model.entity.AuditLog.FIELD_USER;
+ 
+ /**
+  * ToDo: Short class description
+@@ -22,13 +32,18 @@
+  * @author Ing. Michael J. Stallinger (projects@mjst.at)
+  * @since 2016-07-22
+  */
+-public class AuditLogController implements Initializable, EventBusListener
++public class AuditLogController extends TableController<AuditLog> implements Initializable, EventBusListener
+ {
+-    @FXML
+-    public TableView<AuditLog> tabView;
+-    // DAOs erst kreieren, wenn login sichergestellt werden konnte!
+-    //    @Inject
+-    //    private AuditLogDAO aulDAO;
++    // ToDo: implement controller for the tableView ONLY - communicate with other frames around using eventBus!
++
++    @Override
++    public String[] getFieldSelection()
++    {
++        return new String[]{
++                FIELD_ID, FIELD_USER, FIELD_TIMESTAMP_ON, FIELD_TIMESTAMP_OFF, FIELD_APPLICATION};
++        // ToDo: load from a fieldConfiguration some day...
++        // ToDo: identify field with tableName, since there can and will be joins!
++    }
+ 
+     /**
+      * Called to initialize a controller after its root element has been completely processed.
+@@ -40,19 +55,49 @@
+     @Override
+     public void initialize(URL location, ResourceBundle resources)
+     {
++        System.out.println("Initialize");
+         // ToDo: fill columns from entity!
+         tabView.setEditable(false); // set the table non-editable
++    }
++
++    @Subscribe
++    public void handleLoginEvent(LoginEvent event)
++    {
++        generateColumns();
+         //        ObservableList<AuditLog> data = FXCollections.observableArrayList(aulDAO.queryAll());
+         //        tabView.setItems(data);
++        // build columns?!
++        //        tabView.getColumns().removeIf(); -- remove old columns except controlColumn!
++        // DAOs erst kreieren, wenn login sichergestellt werden konnte!
++        //    @Inject
++        //    private AuditLogDAO aulDAO;
++        System.out.println("AuditLogTAB received LoginEvent!");
++        // todo: load data here, if tab is active!!
++        ArrayList<AuditLog> al = new ArrayList<>();
++        AuditLog aul;
++        for (int i = 0; i < 1000; i++) {
++            aul = new AuditLog();
++            aul.setUser("TEST" + i);
++            aul.setApplication("MyAPP" + i);
++            aul.setTimestampOn(new Timestamp(new Date().getTime()));
++            aul.setTimestampOff(new Timestamp(new Date().getTime()));
++            al.add(aul);
++        }
++        ObservableList<AuditLog> data = FXCollections.observableArrayList(al);
++        // set data...
++        tabView.setItems(data);
+     }
+ 
+     @Subscribe
+-    public void handleLoginEvent(TabActivationEvent event)
++    public void handleTabActivationEvent(TabActivationEvent event)
+     {
+-        // ToDo: decouple db-access via *Service-Classes
++        // ToDo: decouple db-access via *Service/DAO-Classes
+         //        Injector injector = Guice.createInjector(...);
+         //        CreditCardProcessor creditCardProcessor = new PayPalCreditCardProcessor();
+         //        injector.injectMembers(creditCardProcessor);
+-        System.out.println("AuditLog received TabActivationEvent!");
++        System.out.println("AuditLog received TabActivationEvent! " + event.getActiveTab() + " with id " + event
++                .getActiveTab()
++                .getId());
++        // todo: load data here, if becomes active!!
+     }
+ }
+Index: src/main/java/at/mjst/finbase/desktop/controller/main/TabController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/at/mjst/finbase/desktop/controller/main/TabController.java	(revision 15b60a1fd1d8e04f1a57b5b24b9082fd95a2f541)
++++ src/main/java/at/mjst/finbase/desktop/controller/main/TabController.java	(revision )
+@@ -18,7 +18,6 @@
+ import at.mjst.finbase.desktop.controller.events.TabActivationEvent;
+ import javafx.beans.value.ChangeListener;
+ import javafx.beans.value.ObservableValue;
+-import javafx.event.Event;
+ import javafx.fxml.Initializable;
+ import javafx.scene.control.Tab;
+ import javafx.scene.control.TabPane;
+@@ -33,6 +32,8 @@
+ {
+     public TabPane tabPane;
+     public Tab auditTab;
++    public Tab accountTab;
++    public Tab traTab;
+     @Inject
+     Injector injector;
+ 
+@@ -62,11 +63,6 @@
+         tabPane.getSelectionModel().selectedItemProperty().addListener(
+                 injector.getInstance(ActiveTabChangeListener.class));
+     }
+-
+-    public void osc(Event event)
+-    {
+-        System.out.println("OSC");
+-    }
+ }
+ 
+ class ActiveTabChangeListener implements ChangeListener<Tab>
+Index: src/main/resources/at/mjst/finbase/desktop/view/main/Account.fxml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/resources/at/mjst/finbase/desktop/view/main/Account.fxml	(revision 15b60a1fd1d8e04f1a57b5b24b9082fd95a2f541)
++++ src/main/resources/at/mjst/finbase/desktop/view/main/Account.fxml	(revision )
+@@ -1,16 +1,19 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ 
++<?import at.mjst.finbase.desktop.view.CustomTableView?>
+ <?import javafx.scene.control.TableColumn?>
+-<?import javafx.scene.control.TableView?>
+ <?import javafx.scene.layout.Pane?>
+-<Pane minHeight="-Infinity"
+-      minWidth="-Infinity" xmlns="http://javafx.com/javafx/null">
++<Pane xmlns:fx="http://javafx.com/fxml/1" minHeight="-Infinity" minWidth="-Infinity" prefHeight="314.0"
++      prefWidth="401.0" xmlns="http://javafx.com/javafx/8.0.112"
++      fx:controller="at.mjst.finbase.desktop.controller.main.AccountTableController"
++>
+     <children>
+-        <TableView layoutX="41.0" layoutY="28.0" prefHeight="200.0" prefWidth="200.0">
++        <CustomTableView fx:id="tabView" layoutX="41.0" layoutY="28.0" prefHeight="200.0" prefWidth="200.0">
+             <columns>
+-                <TableColumn prefWidth="75.0" text="C1"/>
+-                <TableColumn prefWidth="75.0" text="C2"/>
++                <TableColumn xmlns:fx="http://javafx.com/fxml" fx:id="id" prefWidth="75.0" text="C1">
++                </TableColumn>
++                <TableColumn fx:id="name" prefWidth="75.0" text="C2"/>
+             </columns>
+-        </TableView>
++        </CustomTableView>
+     </children>
+ </Pane>
