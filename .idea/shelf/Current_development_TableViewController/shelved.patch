@@ -1,0 +1,268 @@
+Index: src/main/java/at/mjst/finbase/desktop/controller/main/TableController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/at/mjst/finbase/desktop/controller/main/TableController.java	(revision )
++++ src/main/java/at/mjst/finbase/desktop/controller/main/TableController.java	(revision )
+@@ -0,0 +1,103 @@
++/*
++ * Copyright (c) 2017, Ing. Michael J. Stallinger and/or his affiliates. All rights reserved.
++ * This source code is subject to license terms, see the LICENSE file for details.
++ */
++package at.mjst.finbase.desktop.controller.main;
++
++import at.mjst.finbase.desktop.controller.bind.GenericCellValueFactory;
++import at.mjst.finbase.desktop.model.entity.AuditLog;
++import at.mjst.finbase.desktop.model.entity.Entity;
++import at.mjst.finbase.desktop.model.entity.field.Field;
++import at.mjst.finbase.desktop.model.entity.meta.FieldIdentifier;
++import at.mjst.finbase.desktop.view.CustomTableView;
++import javafx.fxml.FXML;
++import javafx.scene.control.TableCell;
++import javafx.scene.control.TableColumn;
++import javafx.util.Callback;
++
++/**
++ * ToDo: Short class description
++ *
++ * @param <S> The type of the objects contained within the TableView.
++ * @author Ing. Michael J. Stallinger (projects@mjst.at)
++ * @since 2017-02-23
++ */
++public abstract class TableController<S extends Entity>
++{
++    @FXML
++    public CustomTableView<S> tabView;
++    public TableColumn<S, ?> controlColumn;
++
++    public void generateColumns()
++    {
++        AuditLog definitionEntity = new AuditLog(); // todo: how to get this DefinitionEntry from derived class?
++        // => we can get Column-types (if needed) from our EntityReflector....
++        // ToDo: is this already the best aproach!? -> FeldRawTyp von Reflector holen => Feld erzeugen f. uebergabe!
++        for (FieldIdentifier fieldIdentifier : getFieldSelection()) {
++            System.out.println(fieldIdentifier);
++            Field<?> field = definitionEntity.getField(fieldIdentifier.fieldName());
++            // todo: factory or something
++            // todo:  generator by type from entity!
++            TableColumn<S, ?> col = null;
++            if (field.dataType() == Long.class) {
++                TableColumn<S, ?> colL; // alternative: TableColumn<S, Long> ...
++                colL = generateTableColumn2(fieldIdentifier, field.dataType());
++                // cell factory can only be applied for exact type!
++                // colL.setCellFactory(param -> null);
++                col = colL;
++            } else if (field.dataType() == String.class) {
++                TableColumn<S, ?> colS; // alternative: TableColumn<S, String> ...
++                colS = generateTableColumn2(fieldIdentifier, field.dataType());
++                col = colS;
++            }
++            if (col != null) {
++                //
++                //                col.setMinWidth(50);
++                //                col.setText(getFieldDisplayName(fieldName));
++                //                col.setId(fieldName);
++                //            TableColumn<S, String> col = generateTableColumn(fieldName, field.getClass());
++                tabView.getColumns().add(col);
++            }
++        }
++    }
++
++    /**
++     * @return the current selection of fields to be displayed
++     */
++    public abstract FieldIdentifier[] getFieldSelection();
++
++    //    // todo: from generator by field-type
++    //    public <I, T extends Field<I>, E extends Entity> TableColumn<E, I> generateTableColumn(String fieldName,
++    //                                                                                           Class<T> field)
++    //    {
++    //        TableColumn<E, I> col = new TableColumn<>();
++    ////        col.setCellValueFactory(new GenericCellValueFactory<>(fieldName,field));
++    ////        col.setMinWidth(50);
++    ////        col.setText(getFieldDisplayName(fieldName));
++    ////        col.setId(fieldName);
++    //        return col;
++    //    }
++    public <I> TableColumn<S, I> generateTableColumn2(FieldIdentifier fieldId, Class<?> field)
++    {
++        TableColumn<S, I> col = new TableColumn<>();
++        col.setCellValueFactory(new GenericCellValueFactory<>(fieldId, field));
++        col.setCellFactory(new Callback<TableColumn<S, I>, TableCell<S, I>>()
++        {
++            @Override
++            public TableCell<S, I> call(TableColumn<S, I> param)
++            {
++                System.out.println("CellFactory called: " + param.toString());
++                return null;
++            }
++        });
++        col.setMinWidth(50);
++        col.setText(getFieldDisplayName(fieldId.fieldName()));
++        col.setId(fieldId.fieldName());
++        return col;
++    }
++
++    public String getFieldDisplayName(String fieldName)
++    {
++        return "D:" + fieldName;
++    }
++}
+Index: src/main/java/at/mjst/finbase/desktop/controller/main/AuditLogController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/at/mjst/finbase/desktop/controller/main/AuditLogController.java	(revision ef700c0eed1aa55a3d9188b33bd1a77fde602a58)
++++ src/main/java/at/mjst/finbase/desktop/controller/main/AuditLogController.java	(revision )
+@@ -5,27 +5,46 @@
+ package at.mjst.finbase.desktop.controller.main;
+ 
+ import com.google.common.eventbus.Subscribe;
++import com.google.inject.Inject;
++import com.google.inject.Injector;
+ 
+ import java.net.URL;
++import java.sql.Timestamp;
++import java.util.ArrayList;
++import java.util.List;
+ import java.util.ResourceBundle;
+ 
+ import at.mjst.finbase.desktop.controller.events.EventBusListener;
+ import at.mjst.finbase.desktop.controller.events.TabActivationEvent;
+ import at.mjst.finbase.desktop.model.entity.AuditLog;
++import at.mjst.finbase.desktop.model.entity.meta.FieldIdentifier;
++import at.mjst.finbase.desktop.model.entity.meta.ImmutableFieldIdentifier;
++import javafx.collections.FXCollections;
+ import javafx.fxml.FXML;
+ import javafx.fxml.Initializable;
+ import javafx.scene.control.TableView;
+ 
++import static at.mjst.finbase.desktop.model.entity.AuditLog.FIELD_APPLICATION;
++import static at.mjst.finbase.desktop.model.entity.AuditLog.FIELD_ID;
++import static at.mjst.finbase.desktop.model.entity.AuditLog.FIELD_TIMESTAMP_ON;
++import static at.mjst.finbase.desktop.model.entity.AuditLog.FIELD_USER;
++import static at.mjst.finbase.desktop.model.entity.AuditLog.TABLE_AUDITLOG;
++
+ /**
+  * ToDo: Short class description
+  *
+  * @author Ing. Michael J. Stallinger (projects@mjst.at)
+  * @since 2016-07-22
+  */
+-public class AuditLogController implements Initializable, EventBusListener
++public class AuditLogController extends TableController<AuditLog> implements Initializable, EventBusListener
+ {
++    final FieldIdentifier[] FIELDS = {
++            new ImmutableFieldIdentifier(TABLE_AUDITLOG, FIELD_ID), new ImmutableFieldIdentifier(TABLE_AUDITLOG,
++            FIELD_APPLICATION), new ImmutableFieldIdentifier(TABLE_AUDITLOG, FIELD_TIMESTAMP_ON)};
+     @FXML
+     public TableView<AuditLog> tabView;
++    @Inject
++    Injector injector;
+     // DAOs erst kreieren, wenn login sichergestellt werden konnte!
+     //    @Inject
+     //    private AuditLogDAO aulDAO;
+@@ -42,8 +61,27 @@
+     {
+         // ToDo: fill columns from entity!
+         tabView.setEditable(false); // set the table non-editable
+-        //        ObservableList<AuditLog> data = FXCollections.observableArrayList(aulDAO.queryAll());
+-        //        tabView.setItems(data);
++        generateColumns();
++        //        //        ObservableList<AuditLog> data = FXCollections.observableArrayList(aulDAO.queryAll());
++        //        //        tabView.setItems(data);
++        //        for (FieldIdentifier f : FIELDS) {
++        //            TableColumn<AuditLog, ?> generalCol = null;
++        //
++        //            if (f.fieldName().equals(FIELD_ID)) {
++        //                TableColumn<AuditLog, Long> col = new TableColumn<>(f.toString());
++        //                col.setCellValueFactory(new GenericCellValueFactory<>(f, Long.class));
++        //                generalCol = col;
++        //            } else if (f.fieldName().equals(FIELD_APPLICATION)) {
++        //                TableColumn<AuditLog, String> col = new TableColumn<>(f.toString());
++        //                // ToDo: fieldType ermitteln
++        //                // ToDo: CastExceptions frueher abfangen!!!
++        //                col.setCellValueFactory(new GenericCellValueFactory<>(f, String.class));
++        //                generalCol = col;
++        //            }
++        //            if (generalCol != null) {
++        //                tabView.getColumns().add(generalCol);
++        //            }
++        //        }
+     }
+ 
+     @Subscribe
+@@ -54,5 +92,18 @@
+         //        CreditCardProcessor creditCardProcessor = new PayPalCreditCardProcessor();
+         //        injector.injectMembers(creditCardProcessor);
+         System.out.println("AuditLog received TabActivationEvent!");
++        List<AuditLog> list = new ArrayList<>();
++        for (int i = 0; i < 1000; i++) {
++            list.add(new AuditLog((long) i, "Test" + i, new Timestamp(i), "App" + i));
++        }
++        tabView.setItems(FXCollections.observableList(list));
++    }
++
++    @Override
++    public FieldIdentifier[] getFieldSelection()
++    {
++        return new FieldIdentifier[]{
++                new ImmutableFieldIdentifier(TABLE_AUDITLOG, FIELD_ID), new ImmutableFieldIdentifier(TABLE_AUDITLOG,
++                FIELD_USER), new ImmutableFieldIdentifier(TABLE_AUDITLOG, FIELD_TIMESTAMP_ON)};
+     }
+ }
+Index: src/main/java/at/mjst/finbase/desktop/controller/bind/GenericCellValueFactory.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/at/mjst/finbase/desktop/controller/bind/GenericCellValueFactory.java	(revision ef700c0eed1aa55a3d9188b33bd1a77fde602a58)
++++ src/main/java/at/mjst/finbase/desktop/controller/bind/GenericCellValueFactory.java	(revision )
+@@ -24,14 +24,14 @@
+ {
+     @NonNls
+     private static final String ERR_DATA_TYPE = "Field datatype mismatch for '%s'";
+-    private final Class<T> dataType;
++    private final Class<?> dataType;
+     private FieldIdentifier identifier;
+ 
+     /**
+      * @param identifier field identifier assigned to column
+      * @param dataType   expected field data type
+      */
+-    public GenericCellValueFactory(FieldIdentifier identifier, Class<T> dataType)
++    public GenericCellValueFactory(FieldIdentifier identifier, Class<?> dataType)
+     {
+         this.identifier = identifier;
+         this.dataType = dataType; // ToDo: maybe check for data type not necessary?
+Index: src/main/resources/at/mjst/finbase/desktop/view/main/AuditLog.fxml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/resources/at/mjst/finbase/desktop/view/main/AuditLog.fxml	(revision ef700c0eed1aa55a3d9188b33bd1a77fde602a58)
++++ src/main/resources/at/mjst/finbase/desktop/view/main/AuditLog.fxml	(revision )
+@@ -1,17 +1,13 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ 
+-<?import javafx.scene.control.TableColumn?>
+-<?import javafx.scene.control.TableView?>
++<?import at.mjst.finbase.desktop.view.CustomTableView?>
+ <?import javafx.scene.layout.Pane?>
+ <Pane xmlns:fx="http://javafx.com/fxml/1" minHeight="-Infinity" minWidth="-Infinity" prefHeight="391.0"
+       prefWidth="546.0" xmlns="http://javafx.com/javafx/8.0.76-ea"
+       fx:controller="at.mjst.finbase.desktop.controller.main.AuditLogController">
+     <children>
+-        <TableView fx:id="tabView" layoutX="14.0" layoutY="14.0" prefHeight="357.0" prefWidth="353.0">
+-            <columns>
+-                <TableColumn prefWidth="75.0" text="C1" />
+-                <TableColumn prefWidth="75.0" text="C2" />
+-            </columns>
+-        </TableView>
++        <CustomTableView fx:id="tabView" layoutX="14.0" layoutY="14.0" prefHeight="357.0" prefWidth="353.0">
++
++        </CustomTableView>
+     </children>
+ </Pane>
