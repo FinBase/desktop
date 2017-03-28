@@ -1,17 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
+<!--
+  ~ Copyright (c) 2017, Ing. Michael J. Stallinger and/or his affiliates. All rights reserved.
+  ~ This source code is subject to license terms, see the LICENSE file for details.
+  -->
 <?import javafx.scene.layout.Pane?>
 <Pane xmlns:fx="http://javafx.com/fxml/1" minHeight="-Infinity" minWidth="-Infinity" prefHeight="391.0"
-      prefWidth="546.0" xmlns="http://javafx.com/javafx/8.0.76-ea"
-      fx:controller="at.mjst.finbase.desktop.controller.main.AuditLogController">
+      prefWidth="546.0" xmlns="http://javafx.com/javafx/8.0.76-ea">
+
     <children>
-        <TableView fx:id="tabView" layoutX="14.0" layoutY="14.0" prefHeight="357.0" prefWidth="353.0">
-            <columns>
-                <TableColumn prefWidth="75.0" text="C1" />
-                <TableColumn prefWidth="75.0" text="C2" />
-            </columns>
-        </TableView>
+        <fx:include source="AuditLogTableView.fxml"/>
+        <!-- ToDo: put other components, e.g. main-filter, diagrams, ... here -->
     </children>
 </Pane>

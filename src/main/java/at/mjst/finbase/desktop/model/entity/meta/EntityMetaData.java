@@ -37,6 +37,12 @@ public class EntityMetaData
         return fields.values();
     }
 
+    public boolean matchesIdentifier(FieldIdentifier fieldIdentifier)
+    {
+        return (fieldIdentifier.tableName().equals(this.tableName()) && fields.containsKey(
+                fieldIdentifier.fieldName())); // todo: format-settings: && force newline!
+    }
+
     /**
      * @return the tableName
      */

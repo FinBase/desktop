@@ -23,18 +23,15 @@ public class GenericCellValueFactory<S extends Entity, T>
         implements Callback<TableColumn.CellDataFeatures<S, T>, ObservableValue<T>>
 {
     @NonNls
-    private static final String ERR_DATA_TYPE = "Field datatype mismatch for '%s'";
-    private final Class<T> dataType;
-    private FieldIdentifier identifier;
+    private static final String ERR_DATA_TYPE = "Field datatype mismatch for '%s' (%s)";
+    private FieldIdentifier fieldIdentifier;
 
     /**
-     * @param identifier field identifier assigned to column
-     * @param dataType   expected field data type
+     * @param fieldIdentifier field identifier assigned to column
      */
-    public GenericCellValueFactory(FieldIdentifier identifier, Class<T> dataType)
+    public GenericCellValueFactory(FieldIdentifier fieldIdentifier)
     {
-        this.identifier = identifier;
-        this.dataType = dataType; // ToDo: maybe check for data type not necessary?
+        this.fieldIdentifier = fieldIdentifier;
     }
 
     /**
@@ -49,13 +46,14 @@ public class GenericCellValueFactory<S extends Entity, T>
     @SuppressWarnings("unchecked")
     public ObservableValue<T> call(TableColumn.CellDataFeatures<S, T> cellData)
     {
-        Field<?> field = cellData.getValue().getField(identifier.fieldName());
+        Field<?> field = cellData.getValue().getField(fieldIdentifier);
         // getId() of cellData.getTableColumn() will/might be the same, however we reference our own fieldName here!
         // alternative: Field<T> field = entity.getField(cellData.getTableColumn().getId(), type);
-        if (field.dataType() == dataType) {
+        try {
             return (ObservableValue<T>) field.observableValue();
-        } else {
-            throw new RuntimeException(String.format(ERR_DATA_TYPE, identifier.fieldName()));
+        } catch (ClassCastException e) {
+            System.out.println(String.format(ERR_DATA_TYPE, fieldIdentifier, e.getMessage()));
+            return null;
         }
     }
 }
