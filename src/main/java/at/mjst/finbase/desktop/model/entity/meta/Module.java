@@ -18,6 +18,5 @@ public class Module extends AbstractModule
     protected void configure()
     {
         bind(EntityReflector.class).to(SimpleEntityReflector.class);
-        bind(FieldNameParser.class).to(SimpleFieldNameParser.class);
     }
 }

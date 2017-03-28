@@ -4,8 +4,6 @@
  */
 package at.mjst.finbase.desktop.model.entity.meta;
 
-import org.jetbrains.annotations.NonNls;
-
 /**
  * Key-Object for identifying a field within a table.
  * Immutable.
@@ -15,8 +13,9 @@ import org.jetbrains.annotations.NonNls;
  */
 public class ImmutableFieldIdentifier implements FieldIdentifier
 {
-    @NonNls
-    private static final String IDENTIFIER_FORMAT = "%s.%s";
+    private static final String DEFAULT_SEPARATOR = ".";
+    private static final String IDENTIFIER_FORMAT = ("%s" + DEFAULT_SEPARATOR + "%s");
+    private static final String ERR_IDENTIFIER = "%s is not a valid field identifier!";
     // table- and field-name as string
     private String tableName;
     private String fieldName;
@@ -29,8 +28,34 @@ public class ImmutableFieldIdentifier implements FieldIdentifier
      */
     public ImmutableFieldIdentifier(String tableName, String fieldName)
     {
+        setData(tableName, fieldName);
+    }
+
+    /**
+     * Privately (and hopefully only ONCE!) sets date to this immutable instance!
+     *
+     * @param tableName tableName
+     * @param fieldName fieldName
+     */
+    private void setData(String tableName, String fieldName)
+    {
         this.tableName = tableName;
         this.fieldName = fieldName;
+    }
+
+    /**
+     * Parses tableName and fieldName from a given string
+     *
+     * @param tableAndFieldName String in the format 'tableName[separator]fieldName'
+     */
+    public ImmutableFieldIdentifier(String tableAndFieldName)
+    {
+        String[] parts = tableAndFieldName.split(DEFAULT_SEPARATOR);
+        if (parts.length == 2) {
+            setData(parts[0], parts[1]);
+        } else {
+            throw new RuntimeException(String.format(ERR_IDENTIFIER, tableAndFieldName));
+        }
     }
 
     @Override

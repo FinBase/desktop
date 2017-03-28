@@ -18,6 +18,19 @@ import at.mjst.finbase.desktop.model.entity.meta.FieldIdentifier;
 public interface Entity
 {
     /**
+     * Almost every PK in every table is called 'id'
+     */
+    String FIELD_ID = "id";
+    /**
+     * 'flags' is a standardized fieldname here, too
+     */
+    String FIELD_FLAGS = "flags";
+    /**
+     * The database schema, finbase is located in
+     */
+    String SCHEMA_FINBASE = "at_mjst_finbase";
+
+    /**
      * @return the current table name
      */
     String tableName();

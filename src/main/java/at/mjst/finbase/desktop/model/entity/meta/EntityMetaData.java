@@ -36,6 +36,11 @@ public class EntityMetaData
     {
         return fields.values();
     }
+    //    public Set<String> getFieldNames()
+    //    {
+    //        return fields.keySet();
+    //    }
+    //    // ToDo: store dependent EntityMetaData in the future... (or only enable to fetch dependent Entity-classes...)
 
     public boolean matchesIdentifier(FieldIdentifier fieldIdentifier)
     {

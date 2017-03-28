@@ -15,7 +15,7 @@ import org.hibernate.cfg.AvailableSettings;
 import java.util.ArrayList;
 import java.util.Properties;
 
-import at.mjst.finbase.desktop.ResourceLocations;
+import at.mjst.finbase.desktop.Resource;
 import at.mjst.finbase.desktop.dto.Credentials;
 
 /**
@@ -71,7 +71,7 @@ public class JpaSessionProvider implements SessionProvider
     {
         ArrayList<com.google.inject.Module> modules = new ArrayList<>();
         // add the connectionProperties to the JPAModule - we'll 'inject' userName & password here!
-        modules.add(new JpaPersistModule(ResourceLocations.ID_PERSISTENCE).properties(connectionProperties));
+        modules.add(new JpaPersistModule(Resource.ID_PERSISTENCE).properties(connectionProperties));
         modules.add(new at.mjst.finbase.desktop.model.persistence.Module());
         // create childInjector!
         persistenceInjector = injector.createChildInjector(modules);
@@ -125,11 +125,11 @@ public class JpaSessionProvider implements SessionProvider
     {
         return (service != null); // todo: where to test for connection still alive?
     }
-//    @Override
-//    public Injector getPersistenceInjector()
-//    {
-//        return persistenceInjector; // ToDo: maybe remove this getter from interface!
-//    }
+    //    @Override
+    //    public Injector getPersistenceInjector()
+    //    {
+    //        return persistenceInjector; // ToDo: maybe remove this getter from interface!
+    //    }
 
     @Override
     public <T> T getSessionInstance(Class<T> type)

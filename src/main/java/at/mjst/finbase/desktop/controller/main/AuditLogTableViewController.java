@@ -15,6 +15,7 @@ import java.util.ResourceBundle;
 import at.mjst.finbase.desktop.controller.events.EventBusListener;
 import at.mjst.finbase.desktop.controller.events.TabActivationEvent;
 import at.mjst.finbase.desktop.model.entity.AuditLog;
+import at.mjst.finbase.desktop.model.entity.Entity;
 import at.mjst.finbase.desktop.model.entity.meta.FieldIdentifier;
 import at.mjst.finbase.desktop.model.entity.meta.ImmutableFieldIdentifier;
 import at.mjst.finbase.desktop.view.CustomTableView;
@@ -24,7 +25,6 @@ import javafx.fxml.Initializable;
 
 import static at.mjst.finbase.desktop.model.entity.Account.TABLE_ACCOUNT;
 import static at.mjst.finbase.desktop.model.entity.AuditLog.FIELD_APPLICATION;
-import static at.mjst.finbase.desktop.model.entity.AuditLog.FIELD_ID;
 import static at.mjst.finbase.desktop.model.entity.AuditLog.FIELD_TIMESTAMP_ON;
 import static at.mjst.finbase.desktop.model.entity.AuditLog.TABLE_AUDITLOG;
 
@@ -37,10 +37,11 @@ import static at.mjst.finbase.desktop.model.entity.AuditLog.TABLE_AUDITLOG;
 public class AuditLogTableViewController implements Initializable, EventBusListener
 {
     private final FieldIdentifier[] FIELDS = {
-            new ImmutableFieldIdentifier(TABLE_AUDITLOG, FIELD_ID),
+            new ImmutableFieldIdentifier(TABLE_AUDITLOG, Entity.FIELD_ID),
             new ImmutableFieldIdentifier(TABLE_AUDITLOG, FIELD_APPLICATION),
-            new ImmutableFieldIdentifier(TABLE_AUDITLOG, FIELD_TIMESTAMP_ON),
-            new ImmutableFieldIdentifier(TABLE_ACCOUNT, FIELD_ID)};
+            new ImmutableFieldIdentifier(TABLE_AUDITLOG, FIELD_TIMESTAMP_ON), new ImmutableFieldIdentifier(
+            TABLE_ACCOUNT, Entity.FIELD_ID) // will be ignored, hopefully
+    };
     /**
      * This should not be used, it is only implemented,
      * to enable the reference the {@link CustomTableViewController} beyond.

@@ -14,10 +14,11 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import at.mjst.finbase.desktop.ResourceLocations;
 import at.mjst.finbase.desktop.model.entity.field.Field;
 import at.mjst.finbase.desktop.model.entity.field.IntegerField;
 import at.mjst.finbase.desktop.model.entity.field.StringField;
+
+import static at.mjst.finbase.desktop.model.entity.Entity.SCHEMA_FINBASE;
 
 /**
  * ToDo: Short class description
@@ -26,15 +27,13 @@ import at.mjst.finbase.desktop.model.entity.field.StringField;
  * @since 2016-06-19
  */
 @Entity
-@Table(name = Account.TABLE_ACCOUNT, schema = ResourceLocations.SCHEMA_FINBASE)
+@Table(name = Account.TABLE_ACCOUNT, schema = SCHEMA_FINBASE)
 public class Account extends AbstractEntity
 {
     public static final String TABLE_ACCOUNT = "acc_account";
     // Constants should be held optionally - values must exactly match real column-names!
-    public static final String FIELD_ID = "id";
     public static final String FIELD_NAME = "name";
     public static final String FIELD_DESCRIPTION = "description";
-    public static final String FIELD_FLAGS = "flags";
     // These 'Field'-Objects wrap ObjectProperties<>, to access them via column-names!
     private IntegerField id = new IntegerField(FIELD_ID, this);
     private StringField name = new StringField(FIELD_NAME, this);

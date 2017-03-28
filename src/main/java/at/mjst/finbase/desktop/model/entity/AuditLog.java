@@ -17,11 +17,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import at.mjst.finbase.desktop.ResourceLocations;
 import at.mjst.finbase.desktop.model.entity.field.Field;
 import at.mjst.finbase.desktop.model.entity.field.LongField;
 import at.mjst.finbase.desktop.model.entity.field.StringField;
 import at.mjst.finbase.desktop.model.entity.field.TimestampField;
+
+import static at.mjst.finbase.desktop.model.entity.Entity.SCHEMA_FINBASE;
 
 /**
  * AuditLog entity. Represents an entry storing user login/logout audit data.
@@ -32,12 +33,11 @@ import at.mjst.finbase.desktop.model.entity.field.TimestampField;
 @Entity
 @DynamicUpdate() // used to update only changed fields of an attached entry
 //@SelectBeforeUpdate(true) // not necessary as this entry is only maintained by the very same session!
-@Table(name = AuditLog.TABLE_AUDITLOG, schema = ResourceLocations.SCHEMA_FINBASE)
+@Table(name = AuditLog.TABLE_AUDITLOG, schema = SCHEMA_FINBASE)
 public class AuditLog extends AbstractEntity
 {
-    public static final String TABLE_AUDITLOG = "aul_auditlog";
     // Constants should be held optionally - values must exactly match real column-names!
-    public static final String FIELD_ID = "id";
+    public static final String TABLE_AUDITLOG = "aul_auditlog";
     public static final String FIELD_APPLICATION = "application";
     public static final String FIELD_USER = "user";
     public static final String FIELD_TIMESTAMP_ON = "timestamp_on";

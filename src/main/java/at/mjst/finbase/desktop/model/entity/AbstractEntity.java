@@ -111,6 +111,7 @@ public abstract class AbstractEntity implements Entity, FieldRegistry
     public Collection<Field<?>> getFields()
     {
         return Collections.unmodifiableCollection(fieldMap.values());
+        // ToDo: also return registered dependencies ...
     }
 
     /**

@@ -86,7 +86,7 @@ public class FinBase extends Application
         Parent root = loader.load();
         // set title and icon
         primaryStage.setTitle(NlsManager.getNls("finbase.title"));
-        primaryStage.getIcons().add(new Image(getClass().getResourceAsStream(ResourceLocations.R_APP_ICON)));
+        primaryStage.getIcons().add(new Image(getClass().getResourceAsStream(Resource.R_APP_ICON)));
         // set and show the scene
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
@@ -95,7 +95,7 @@ public class FinBase extends Application
     private FXMLLoader buildLoader()
     {
         FXMLLoader loader = getInjector().getInstance(FXMLLoader.class);
-        loader.setLocation(getClass().getResource(ResourceLocations.R_APP_APP));
+        loader.setLocation(getClass().getResource(Resource.R_APP_APP));
         loader.setResources(NlsManager.getBundle());
         // We use a custom factory to initialize the first-level controllers to know each other, so they can interact
         loader.setControllerFactory(getInjector().getInstance(ControllerFactory.class));
