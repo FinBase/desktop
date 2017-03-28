@@ -64,6 +64,8 @@ public class Account extends AbstractEntity
     @Override
     void buildBusinessKey(Collection<Field<?>> businessKey)
     {
+        businessKey.add(name); // name is unique for account!
+        // ToDo: future: ClientId (dataOwner)
     }
 
     /**

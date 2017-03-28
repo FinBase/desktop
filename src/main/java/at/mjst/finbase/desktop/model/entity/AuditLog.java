@@ -78,6 +78,7 @@ public class AuditLog extends AbstractEntity
     @Override
     void buildBusinessKey(Collection<Field<?>> businessKey)
     {
+        // there is no obvious business-key here...
     }
 
     @Id
