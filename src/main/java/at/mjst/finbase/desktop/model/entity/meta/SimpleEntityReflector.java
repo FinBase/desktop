@@ -67,7 +67,13 @@ class SimpleEntityReflector implements EntityReflector
             Class<? extends Entity> entityClass) throws IllegalAccessException, InstantiationException
     {
         Entity entity = entityClass.newInstance();
-        return new EntityMetaData(entity.tableName(), getFieldTypeMap(entity));
+        EntityMetaData metaData = new EntityMetaData(entity.tableName(), getFieldTypeMap(entity));
+        // find implemented relations and link them...
+        for (Class<? extends Entity> relatedEntityClass : entity.getRelatedEntityClasses()) {
+            EntityMetaData relatedMetaData = generateEntityMetaData(relatedEntityClass);
+            metaData.putRelatedMetaData(relatedMetaData);
+        }
+        return metaData;
     }
 
     /**
@@ -75,13 +81,14 @@ class SimpleEntityReflector implements EntityReflector
      * @return an object, that maps the field's name to it's data type
      */
     @NotNull
-    private Map<String, FieldMetaData<?>> getFieldTypeMap(Entity entity)
+    private Map<FieldIdentifier, FieldMetaData<?>> getFieldTypeMap(Entity entity)
     {
-        Map<String, FieldMetaData<?>> fieldTypeMap = new HashMap<>();
-        for (Field<?> field : entity.getFields()) {
-            String fieldName = field.identifier().fieldName();
-            assert (!fieldTypeMap.containsKey(fieldName)) : String.format("Field '%s' already found!", fieldName);
-            fieldTypeMap.put(fieldName, new FieldMetaData<>(fieldName, field.dataType()));
+        Map<FieldIdentifier, FieldMetaData<?>> fieldTypeMap = new HashMap<>();
+        for (Field<?> field : entity.getFields(false)) {
+            FieldIdentifier fieldIdentifier = field.identifier();
+            assert (!fieldTypeMap.containsKey(fieldIdentifier)) : String.format("Field '%s' already found!",
+                    fieldIdentifier.fieldName());
+            fieldTypeMap.put(fieldIdentifier, new FieldMetaData<>(fieldIdentifier, field.dataType()));
         }
         return fieldTypeMap;
     }

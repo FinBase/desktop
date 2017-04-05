@@ -62,7 +62,18 @@ public interface Entity
     Field<?> getField(FieldIdentifier identifier);
 
     /**
+     * @param withRelatedFields sets whether to add fields of related entities, or not
      * @return an unmodifiable Collection of the entities {@link Field}s
      */
+    Collection<Field<?>> getFields(boolean withRelatedFields);
+
+    /**
+     * @return an unmodifiable Collection of ALL entities {@link Field}s (own and related)
+     */
     Collection<Field<?>> getFields();
+
+    /**
+     * @return all registered, related *2O entities supported
+     */
+    Collection<Class<? extends Entity>> getRelatedEntityClasses();
 }

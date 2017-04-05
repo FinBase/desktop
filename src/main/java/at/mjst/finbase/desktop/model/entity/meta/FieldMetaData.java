@@ -4,6 +4,8 @@
  */
 package at.mjst.finbase.desktop.model.entity.meta;
 
+import org.jetbrains.annotations.NonNls;
+
 /**
  * Immutable descriptor for field metadata
  *
@@ -12,16 +14,19 @@ package at.mjst.finbase.desktop.model.entity.meta;
  */
 public class FieldMetaData<T>
 {
-    private String fieldName;
+    @NonNls
+    protected static final String FMT_TO_STRING = "%s (for %s)";
+    private FieldIdentifier fieldIdentifier;
     private Class<T> dataType;
+    // ...
 
     /**
-     * @param fieldName given fieldName
-     * @param dataType  dataType for the current field (eg. String, Integer, ...)
+     * @param fieldIdentifier given identifier for field
+     * @param dataType        dataType for the current field (eg. String, Integer, ...)
      */
-    public FieldMetaData(String fieldName, Class<T> dataType)
+    public FieldMetaData(FieldIdentifier fieldIdentifier, Class<T> dataType)
     {
-        this.fieldName = fieldName;
+        this.fieldIdentifier = fieldIdentifier;
         this.dataType = dataType;
     }
 
@@ -30,7 +35,7 @@ public class FieldMetaData<T>
      */
     public String fieldName()
     {
-        return fieldName;
+        return fieldIdentifier.fieldName();
     }
 
     /**
@@ -39,5 +44,11 @@ public class FieldMetaData<T>
     public Class<T> dataType()
     {
         return dataType;
+    }
+
+    @Override
+    public String toString()
+    {
+        return String.format(FMT_TO_STRING, super.toString(), fieldIdentifier);
     }
 }

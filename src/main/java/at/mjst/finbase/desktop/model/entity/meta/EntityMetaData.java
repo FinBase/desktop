@@ -5,7 +5,8 @@
 package at.mjst.finbase.desktop.model.entity.meta;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 /**
@@ -16,43 +17,62 @@ import java.util.Map;
  */
 public class EntityMetaData
 {
-    private Map<String, FieldMetaData<?>> fields;
-    private String tableName;
+    private Map<FieldIdentifier, FieldMetaData<?>> fields;
+    private String mainTableName;
+    private Map<String, EntityMetaData> relatedMetaDataMap = new HashMap<>();
 
     /**
-     * @param tableName table, that is represented by this metadata
-     * @param fields    field-metadata contained within this table
+     * @param mainTableName main table, that is represented by this metadata
+     * @param fields        field-metadata contained within this table
      */
-    EntityMetaData(String tableName, Map<String, FieldMetaData<?>> fields)
+    EntityMetaData(String mainTableName, Map<FieldIdentifier, FieldMetaData<?>> fields)
     {
-        this.tableName = tableName;
-        this.fields = Collections.unmodifiableMap(fields);
+        this.mainTableName = mainTableName;
+        this.fields = fields;
     }
 
     /**
+     * @param includeRelated adds fields of all related entities
      * @return a map of fieldNames and their metadata
      */
-    public Collection<FieldMetaData<?>> getFields()
+    public Collection<FieldMetaData<?>> getFields(boolean includeRelated)
     {
-        return fields.values();
+        Collection<FieldMetaData<?>> list = new LinkedList<>();
+        list.addAll(fields.values());
+        if (includeRelated) {
+            for (EntityMetaData metaData : relatedMetaDataMap.values()) {
+                list.addAll(metaData.getFields(true));
+            }
+        }
+        return list;
     }
-    //    public Set<String> getFieldNames()
-    //    {
-    //        return fields.keySet();
-    //    }
-    //    // ToDo: store dependent EntityMetaData in the future... (or only enable to fetch dependent Entity-classes...)
 
+    /**
+     * Checks, whether a field-identifier is contained within this entity.
+     *
+     * @param fieldIdentifier the fields identifier asked for
+     * @return true, if the entity supports the given field
+     */
     public boolean matchesIdentifier(FieldIdentifier fieldIdentifier)
     {
-        return (fieldIdentifier.tableName().equals(this.tableName()) && fields.containsKey(
-                fieldIdentifier.fieldName())); // todo: format-settings: && force newline!
+        if (fields.containsKey(fieldIdentifier)) {
+            return true;
+        } else {
+            EntityMetaData relatedMetaData = relatedMetaDataMap.get(fieldIdentifier.tableName());
+            return (relatedMetaData != null) && relatedMetaData.matchesIdentifier(fieldIdentifier);
+        }
+    }
+
+    public void putRelatedMetaData(EntityMetaData relatedMetaData)
+    {
+        relatedMetaDataMap.put(relatedMetaData.mainTableName(), relatedMetaData);
     }
 
     /**
      * @return the tableName
      */
-    public String tableName()
+    public String mainTableName()
     {
-        return tableName;
+        return mainTableName;
     }
 }

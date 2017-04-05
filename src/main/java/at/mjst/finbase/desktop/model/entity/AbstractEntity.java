@@ -7,7 +7,6 @@ package at.mjst.finbase.desktop.model.entity;
 import org.jetbrains.annotations.NonNls;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -15,6 +14,9 @@ import java.util.Map;
 import at.mjst.finbase.desktop.model.entity.field.Field;
 import at.mjst.finbase.desktop.model.entity.field.FieldRegistry;
 import at.mjst.finbase.desktop.model.entity.meta.FieldIdentifier;
+import at.mjst.finbase.desktop.model.entity.meta.RelatedEntityGetter;
+import at.mjst.finbase.desktop.model.entity.meta.RelationInfo;
+import at.mjst.finbase.desktop.util.HashCodeBuilder;
 
 /**
  * This is the superclass of all data-entities.
@@ -30,10 +32,38 @@ public abstract class AbstractEntity implements Entity, FieldRegistry
     private static final String ERR_KEY_FIELD_MISSING = "Field '%s' is not registered!";
     // Map, containing all the entities fields
     private final Map<String, Field<?>> fieldMap = new HashMap<>();
+    // Map, containing a reference to related entities, if registered
+    private final Map<String, RelationInfo> relationMap = new HashMap<>();
     // BusinessKey
     private Collection<Field<?>> businessKey;
     // hashCode
     private int hashCode = 0;
+
+    /**
+     * Registers related entities. Only *ToOne-relations are supported!
+     *
+     * @param tableName    table name of related entity
+     * @param entityClass  the entities class
+     * @param entityGetter getter, implemented to fetch the related entity
+     */
+    void registerToOneRelation(String tableName, Class<? extends Entity> entityClass, RelatedEntityGetter entityGetter)
+    {
+        relationMap.put(tableName, new RelationInfo(entityClass, entityGetter));
+    }
+
+    /**
+     * @param tableName table name, that identifies the related entity
+     * @return a related {@link Entity} by executing the registered getter
+     */
+    private Entity getRelatedEntity(String tableName)
+    {
+        if (relationMap.containsKey(tableName)) {
+            RelationInfo info = relationMap.get(tableName);
+            return info.executeGetter();
+        } else {
+            return null;
+        }
+    }
 
     @Override
     public int hashCode()
@@ -42,11 +72,11 @@ public abstract class AbstractEntity implements Entity, FieldRegistry
             if (getBusinessKey().size() == 0) {
                 hashCode = super.hashCode();
             } else {
-                final int PRIME = 31;
+                HashCodeBuilder builder = new HashCodeBuilder();
                 for (Field<?> field : getBusinessKey()) {
-                    Object o = field.getValue();
-                    hashCode = PRIME * hashCode + (o != null ? o.hashCode() : 0);
+                    builder.append(field.getValue());
                 }
+                hashCode = builder.hashCode();
             }
         }
         return hashCode;
@@ -101,17 +131,46 @@ public abstract class AbstractEntity implements Entity, FieldRegistry
     {
         if (identifier.equalsTableName(tableName())) {
             return fieldMap.get(identifier.fieldName());
-            // return fieldType.cast(getField(..)); -- typed approach
         } else {
-            return null; // ToDo: return registered dependencies ...
+            Entity relatedEntity = getRelatedEntity(identifier.tableName());
+            if (relatedEntity != null) { // test, if it's loaded...
+                return relatedEntity.getField(identifier);
+            } else {
+                return null;
+            }
         }
+    }
+
+    @Override
+    public Collection<Field<?>> getFields(boolean withRelatedFields)
+    {
+        Collection<Field<?>> fields = new LinkedList<>();
+        fields.addAll(fieldMap.values());
+        if (withRelatedFields) {
+            for (RelationInfo relationInfo : relationMap.values()) {
+                Entity relatedEntity = relationInfo.executeGetter();
+                if (relatedEntity != null) { // test, if it's loaded...
+                    fields.addAll(relatedEntity.getFields(true));
+                }
+            }
+        }
+        return fields;
     }
 
     @Override
     public Collection<Field<?>> getFields()
     {
-        return Collections.unmodifiableCollection(fieldMap.values());
-        // ToDo: also return registered dependencies ...
+        return getFields(true);
+    }
+
+    @Override
+    public Collection<Class<? extends Entity>> getRelatedEntityClasses()
+    {
+        Collection<Class<? extends Entity>> collection = new LinkedList<>();
+        for (RelationInfo relationInfo : relationMap.values()) {
+            collection.add(relationInfo.getEntityClass());
+        }
+        return collection;
     }
 
     /**
