@@ -4,30 +4,39 @@
  */
 package at.mjst.finbase.desktop.model.entity;
 
+import org.hibernate.annotations.DynamicUpdate;
+
 import java.util.Collection;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import at.mjst.finbase.desktop.model.entity.field.Field;
 import at.mjst.finbase.desktop.model.entity.field.IntegerField;
 import at.mjst.finbase.desktop.model.entity.field.StringField;
 
+import static at.mjst.finbase.desktop.model.entity.Account.FIELD_NAME;
 import static at.mjst.finbase.desktop.model.entity.Entity.SCHEMA_FINBASE;
 
 /**
  * ToDo: Short class description
+ * ToDo: add
  *
  * @author Ing. Michael J. Stallinger (projects@mjst.at)
  * @since 2016-06-19
  */
 @Entity
-@Table(name = Account.TABLE_ACCOUNT, schema = SCHEMA_FINBASE)
+@DynamicUpdate() // used to update only changed fields of an attached entry
+@Table(name = Account.TABLE_ACCOUNT, schema = SCHEMA_FINBASE, uniqueConstraints = {@UniqueConstraint(columnNames = FIELD_NAME)})
 public class Account extends AbstractEntity
 {
     public static final String TABLE_ACCOUNT = "acc_account";
@@ -39,6 +48,8 @@ public class Account extends AbstractEntity
     private StringField name = new StringField(FIELD_NAME, this);
     private StringField description = new StringField(FIELD_DESCRIPTION, this);
     private IntegerField flags = new IntegerField(FIELD_FLAGS, this);
+    // todo: register...?!
+    private TraAggregated traAggregated;
 
     public Account(String name, String description)
     {
@@ -53,6 +64,7 @@ public class Account extends AbstractEntity
     public Account()
     {
         super();
+        registerToOneRelation(TraAggregated.VIEW_TRA_AGGREGATED, TraAggregated.class, this::getTraAggregated);
     }
 
     @Override
@@ -118,5 +130,28 @@ public class Account extends AbstractEntity
     public void setFlags(Integer flags)
     {
         this.flags.setValue(flags);
+    }
+
+    /**
+     * Relationship with aggregated view over account-transactions. See {@link TraAggregated} for details.
+     * Notes:
+     * - 'FetchType.LAZY' means, that the relation is loaded 'on demand', some JPA/Hibernate-magic happens here...
+     * - The 'optional' switch tells the implementation, that there definitely WILL be a corresponding dataset there.
+     * So, it can replace the (lazily loaded) Entity with a proxy-object for now, and load it later, if accessed.
+     *
+     * Therefor, the view MUST represent distinct data for EVERY account-id!!
+     *
+     * @return an instance of {@link TraAggregated}-row
+     */
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = FIELD_ID, referencedColumnName = FIELD_ID)
+    public TraAggregated getTraAggregated()
+    {
+        return traAggregated;
+    }
+
+    private void setTraAggregated(TraAggregated traAggregated)
+    {
+        this.traAggregated = traAggregated;
     }
 }
