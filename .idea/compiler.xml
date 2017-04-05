@@ -8,8 +8,6 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="1.8">
-      <module name="FinBaseApp_main" target="1.8" />
-      <module name="FinBaseApp_test" target="1.8" />
       <module name="FinBaseDesktop_main" target="1.8" />
       <module name="FinBaseDesktop_test" target="1.8" />
     </bytecodeTargetLevel>
