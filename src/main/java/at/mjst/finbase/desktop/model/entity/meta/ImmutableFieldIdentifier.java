@@ -4,6 +4,8 @@
  */
 package at.mjst.finbase.desktop.model.entity.meta;
 
+import at.mjst.finbase.desktop.util.HashCodeBuilder;
+
 /**
  * Key-Object for identifying a field within a table.
  * Immutable.
@@ -19,6 +21,7 @@ public class ImmutableFieldIdentifier implements FieldIdentifier
     // table- and field-name as string
     private String tableName;
     private String fieldName;
+    private int hashCode = 0;
 
     /**
      * Creates the identifier by name. The full identifier will be tableName.fieldName
@@ -56,6 +59,22 @@ public class ImmutableFieldIdentifier implements FieldIdentifier
         } else {
             throw new RuntimeException(String.format(ERR_IDENTIFIER, tableAndFieldName));
         }
+    }
+
+    @Override
+    public int hashCode()
+    {
+        if (hashCode == 0) {
+            hashCode = new HashCodeBuilder().append(tableName, fieldName).hashCode();
+        }
+        return hashCode;
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        return (super.equals(obj) || ((obj instanceof FieldIdentifier) && ((ImmutableFieldIdentifier) obj).equals(
+                tableName, fieldName)));
     }
 
     @Override
