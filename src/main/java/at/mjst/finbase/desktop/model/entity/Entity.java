@@ -7,7 +7,7 @@ package at.mjst.finbase.desktop.model.entity;
 import java.util.Collection;
 
 import at.mjst.finbase.desktop.model.entity.field.Field;
-import at.mjst.finbase.desktop.model.entity.meta.FieldIdentifier;
+import at.mjst.finbase.desktop.model.entity.field.FieldIdentifier;
 
 /**
  * ToDo: Short class description
@@ -71,9 +71,4 @@ public interface Entity
      * @return an unmodifiable Collection of ALL entities {@link Field}s (own and related)
      */
     Collection<Field<?>> getFields();
-
-    /**
-     * @return all registered, related *2O entities supported
-     */
-    Collection<Class<? extends Entity>> getRelatedEntityClasses();
 }

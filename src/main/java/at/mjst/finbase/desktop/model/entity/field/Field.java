@@ -4,7 +4,6 @@
  */
 package at.mjst.finbase.desktop.model.entity.field;
 
-import at.mjst.finbase.desktop.model.entity.meta.FieldIdentifier;
 import javafx.beans.value.ObservableValue;
 
 /**

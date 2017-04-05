@@ -64,7 +64,7 @@ public class Account extends AbstractEntity
     public Account()
     {
         super();
-        registerToOneRelation(TraAggregated.VIEW_TRA_AGGREGATED, TraAggregated.class, this::getTraAggregated);
+        registerToOneRelation(TraAggregated.VIEW_TRA_AGGREGATED, this::getTraAggregated);
     }
 
     @Override

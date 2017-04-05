@@ -4,8 +4,6 @@
  */
 package at.mjst.finbase.desktop.controller.main;
 
-import com.google.inject.Inject;
-
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
@@ -15,9 +13,7 @@ import java.util.ResourceBundle;
 import at.mjst.finbase.desktop.controller.bind.GenericCellValueFactory;
 import at.mjst.finbase.desktop.controller.events.EventBusListener;
 import at.mjst.finbase.desktop.model.entity.Entity;
-import at.mjst.finbase.desktop.model.entity.meta.EntityMetaData;
-import at.mjst.finbase.desktop.model.entity.meta.EntityReflector;
-import at.mjst.finbase.desktop.model.entity.meta.FieldIdentifier;
+import at.mjst.finbase.desktop.model.entity.field.FieldIdentifier;
 import at.mjst.finbase.desktop.view.ConfigurableButtonCell;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -34,8 +30,6 @@ import javafx.scene.control.TableView;
 public class CustomTableViewController<S extends Entity> implements Initializable, EventBusListener
 {
     @NonNls
-    private static final String ERR_UNSUPPORTED_FIELD = "Entity '%s' does not support field '%s'!";
-    @NonNls
     private static final String COLUMN_GENERATED = "Column generated: '%s'";
     /**
      * References the tableView component from fxml. If  {@link at.mjst.finbase.desktop.view.CustomTableView} is used,
@@ -50,10 +44,6 @@ public class CustomTableViewController<S extends Entity> implements Initializabl
     @FXML
     public TableColumn<S, Object> controlColumn;
     private Class<S> mainEntityClass;
-    //
-    private EntityMetaData metaData;
-    @Inject
-    private EntityReflector entityReflector;
     private FieldIdentifier[] fieldSelection;
 
     /**
@@ -79,34 +69,6 @@ public class CustomTableViewController<S extends Entity> implements Initializabl
     }
 
     /**
-     * Generates all columns for the tableView
-     */
-    private void generateColumns()
-    {
-        //        generateControlColumn();
-        for (FieldIdentifier fieldIdentifier : getFieldSelection()) {
-            if (metaData.matchesIdentifier(fieldIdentifier)) {
-                TableColumn<S, ?> col = generateTableColumn(fieldIdentifier);
-                if (col != null) {
-                    customTableView.getColumns().add(col);
-                }
-                System.out.println(String.format(COLUMN_GENERATED, fieldIdentifier));
-            } else {
-                System.out.println(
-                        String.format(ERR_UNSUPPORTED_FIELD, getMainEntityClass().getName(), fieldIdentifier));
-            }
-        }
-    }
-
-    /**
-     * @return class of the {@link Entity} to be displayed
-     */
-    private Class<S> getMainEntityClass()
-    {
-        return mainEntityClass;
-    }
-
-    /**
      * After successful set, the entities metadata is fetched.
      *
      * @param mainEntityClass the {@link Entity}, that will be displayed within this tableView.
@@ -114,10 +76,19 @@ public class CustomTableViewController<S extends Entity> implements Initializabl
     void setMainEntityClass(Class<S> mainEntityClass)
     {
         this.mainEntityClass = mainEntityClass;
-        try {
-            metaData = entityReflector.getEntityMetaData(getMainEntityClass()); // fetch metaData for Entity!
-        } catch (InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
+    }
+
+    /**
+     * Generates all columns for the tableView
+     */
+    private void generateColumns()
+    {
+        for (FieldIdentifier fieldIdentifier : getFieldSelection()) {
+            TableColumn<S, ?> col = generateTableColumn(fieldIdentifier);
+            if (col != null) {
+                customTableView.getColumns().add(col);
+            }
+            System.out.println(String.format(COLUMN_GENERATED, fieldIdentifier));
         }
     }
 

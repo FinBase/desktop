@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NonNls;
 
 import at.mjst.finbase.desktop.model.entity.Entity;
 import at.mjst.finbase.desktop.model.entity.field.Field;
-import at.mjst.finbase.desktop.model.entity.meta.FieldIdentifier;
+import at.mjst.finbase.desktop.model.entity.field.FieldIdentifier;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TableColumn;
 import javafx.util.Callback;
@@ -24,6 +24,8 @@ public class GenericCellValueFactory<S extends Entity, T>
 {
     @NonNls
     private static final String ERR_DATA_TYPE = "Field datatype mismatch for '%s' (%s)";
+    @NonNls
+    private static final String ERR_FIELD_NOT_FOUND = "Field '%s' not found in <%s>";
     private FieldIdentifier fieldIdentifier;
 
     /**
@@ -53,6 +55,9 @@ public class GenericCellValueFactory<S extends Entity, T>
             return (ObservableValue<T>) field.observableValue();
         } catch (ClassCastException e) {
             System.out.println(String.format(ERR_DATA_TYPE, fieldIdentifier, e.getMessage()));
+            return null;
+        } catch (NullPointerException e) {
+            System.out.println(String.format(ERR_FIELD_NOT_FOUND, fieldIdentifier, cellData.getValue().getClass()));
             return null;
         }
     }

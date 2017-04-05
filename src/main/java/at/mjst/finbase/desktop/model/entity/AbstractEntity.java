@@ -12,10 +12,8 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import at.mjst.finbase.desktop.model.entity.field.Field;
+import at.mjst.finbase.desktop.model.entity.field.FieldIdentifier;
 import at.mjst.finbase.desktop.model.entity.field.FieldRegistry;
-import at.mjst.finbase.desktop.model.entity.meta.FieldIdentifier;
-import at.mjst.finbase.desktop.model.entity.meta.RelatedEntityGetter;
-import at.mjst.finbase.desktop.model.entity.meta.RelationInfo;
 import at.mjst.finbase.desktop.util.HashCodeBuilder;
 
 /**
@@ -33,7 +31,7 @@ public abstract class AbstractEntity implements Entity, FieldRegistry
     // Map, containing all the entities fields
     private final Map<String, Field<?>> fieldMap = new HashMap<>();
     // Map, containing a reference to related entities, if registered
-    private final Map<String, RelationInfo> relationMap = new HashMap<>();
+    private final Map<String, RelatedEntityGetter> relationMap = new HashMap<>();
     // BusinessKey
     private Collection<Field<?>> businessKey;
     // hashCode
@@ -43,12 +41,11 @@ public abstract class AbstractEntity implements Entity, FieldRegistry
      * Registers related entities. Only *ToOne-relations are supported!
      *
      * @param tableName    table name of related entity
-     * @param entityClass  the entities class
      * @param entityGetter getter, implemented to fetch the related entity
      */
-    void registerToOneRelation(String tableName, Class<? extends Entity> entityClass, RelatedEntityGetter entityGetter)
+    void registerToOneRelation(String tableName, RelatedEntityGetter entityGetter)
     {
-        relationMap.put(tableName, new RelationInfo(entityClass, entityGetter));
+        relationMap.put(tableName, entityGetter);
     }
 
     /**
@@ -58,8 +55,8 @@ public abstract class AbstractEntity implements Entity, FieldRegistry
     private Entity getRelatedEntity(String tableName)
     {
         if (relationMap.containsKey(tableName)) {
-            RelationInfo info = relationMap.get(tableName);
-            return info.executeGetter();
+            RelatedEntityGetter getter = relationMap.get(tableName);
+            return getter.getRelatedEntity();
         } else {
             return null;
         }
@@ -147,8 +144,8 @@ public abstract class AbstractEntity implements Entity, FieldRegistry
         Collection<Field<?>> fields = new LinkedList<>();
         fields.addAll(fieldMap.values());
         if (withRelatedFields) {
-            for (RelationInfo relationInfo : relationMap.values()) {
-                Entity relatedEntity = relationInfo.executeGetter();
+            for (RelatedEntityGetter getter : relationMap.values()) {
+                Entity relatedEntity = getter.getRelatedEntity();
                 if (relatedEntity != null) { // test, if it's loaded...
                     fields.addAll(relatedEntity.getFields(true));
                 }
@@ -161,16 +158,6 @@ public abstract class AbstractEntity implements Entity, FieldRegistry
     public Collection<Field<?>> getFields()
     {
         return getFields(true);
-    }
-
-    @Override
-    public Collection<Class<? extends Entity>> getRelatedEntityClasses()
-    {
-        Collection<Class<? extends Entity>> collection = new LinkedList<>();
-        for (RelationInfo relationInfo : relationMap.values()) {
-            collection.add(relationInfo.getEntityClass());
-        }
-        return collection;
     }
 
     /**
@@ -222,5 +209,21 @@ public abstract class AbstractEntity implements Entity, FieldRegistry
     private void resetHashCode()
     {
         hashCode = 0;
+    }
+
+    /**
+     * Interface to register and execute *ToOne-Relation getters
+     *
+     * @author Ing. Michael J. Stallinger (projects@mjst.at)
+     * @since 2017-04-04
+     */
+    interface RelatedEntityGetter
+    {
+        /**
+         * This method executes the implemented getter-function to ...
+         *
+         * @return ... the related {@link Entity}
+         */
+        Entity getRelatedEntity();
     }
 }
