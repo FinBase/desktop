@@ -22,6 +22,7 @@ out/
 # Generated files #
 bin/
 gen/
+/src/main/generated/
 
 # Signing files #
 .signing/
