@@ -5,23 +5,25 @@
 package at.mjst.finbase.desktop.controller.main;
 
 import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
 import at.mjst.finbase.desktop.controller.bind.GenericCellValueFactory;
 import at.mjst.finbase.desktop.controller.events.EventBusListener;
+import at.mjst.finbase.desktop.dto.columnselection.ColumnDefinition;
+import at.mjst.finbase.desktop.dto.columnselection.ColumnSelection;
 import at.mjst.finbase.desktop.model.entity.Entity;
 import at.mjst.finbase.desktop.model.entity.field.FieldIdentifier;
 import at.mjst.finbase.desktop.view.ConfigurableButtonCell;
+import at.mjst.finbase.desktop.view.CustomTableColumn;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 
 /**
- * ToDo: Short class description
+ * This is the default implementation for a {@link ColumnSelection} based {@link TableView}-controller
  *
  * @param <S> The type of the objects contained within the TableView.
  * @author Ing. Michael J. Stallinger (projects@mjst.at)
@@ -43,8 +45,10 @@ public class CustomTableViewController<S extends Entity> implements Initializabl
      */
     @FXML
     public TableColumn<S, Object> controlColumn;
-    private Class<S> mainEntityClass;
-    private FieldIdentifier[] fieldSelection;
+    /**
+     * the {@link ColumnSelection} to be used
+     */
+    private ColumnSelection columnSelection;
 
     /**
      * Called to initialize a controller after its root element has been completely processed.
@@ -69,13 +73,22 @@ public class CustomTableViewController<S extends Entity> implements Initializabl
     }
 
     /**
-     * After successful set, the entities metadata is fetched.
-     *
-     * @param mainEntityClass the {@link Entity}, that will be displayed within this tableView.
+     * @return the loaded field-selection
      */
-    void setMainEntityClass(Class<S> mainEntityClass)
+    private ColumnSelection getColumnSelection()
     {
-        this.mainEntityClass = mainEntityClass;
+        return columnSelection;
+    }
+
+    /**
+     * Sets the desired column-selection provider.
+     *
+     * @param columnSelection see {@link ColumnSelection}
+     */
+    void setColumnSelection(ColumnSelection columnSelection)
+    {
+        this.columnSelection = columnSelection;
+        generateColumns();
     }
 
     /**
@@ -83,78 +96,32 @@ public class CustomTableViewController<S extends Entity> implements Initializabl
      */
     private void generateColumns()
     {
-        for (FieldIdentifier fieldIdentifier : getFieldSelection()) {
-            TableColumn<S, ?> col = generateTableColumn(fieldIdentifier);
+        // ToDo: load delayed to login-state, if fieldSelection is loaded from db!
+        getColumnSelection().load();
+        for (ColumnDefinition columnDefinition : getColumnSelection()) {
+            TableColumn<S, ?> col = generateTableColumn(columnDefinition);
             if (col != null) {
                 customTableView.getColumns().add(col);
             }
-            System.out.println(String.format(COLUMN_GENERATED, fieldIdentifier));
+            System.out.println(String.format(COLUMN_GENERATED, columnDefinition));
         }
-    }
-
-    /**
-     * Possibility to override the construction of a {@link TableColumn}
-     *
-     * @param <I>             the {@link TableColumn}'s value-type
-     * @param fieldIdentifier the fields/columns identifier
-     * @return a new instance of {@link TableColumn}
-     */
-    @NotNull
-    private <I> TableColumn<S, I> getNewTableColumn(FieldIdentifier fieldIdentifier)
-    {
-        TableColumn<S, I> col = new TableColumn<>(); // ToDo: optional factory, if other colType is needed...
-        col.setId(fieldIdentifier.toString());
-        return col;
-    }
-
-    /**
-     * Configures the column's display properties
-     * ToDo: think of a column configuration!
-     *
-     * @param fieldIdentifier the fields/columns identifier
-     * @param col             the {@link TableColumn} to configure
-     * @param <I>             the fields/columns data type
-     */
-    private <I> void setColumnDisplayProperties(FieldIdentifier fieldIdentifier, TableColumn<S, I> col)
-    {
-        col.setMinWidth(50);
-        col.setText("D:" + fieldIdentifier.fieldName());
+        // ToDo: save configuration on logout or on custom save-event
     }
 
     /**
      * Generates and configures one column, identified by {@link FieldIdentifier}
      *
-     * @param fieldIdentifier the fields/columns identifier
-     * @param <I>             the column's data type
+     * @param <I>              the column's data type
+     * @param columnDefinition the fields/columns identifier
      * @return a new instance of {@link TableColumn}
      */
-    private <I> TableColumn<S, I> generateTableColumn(FieldIdentifier fieldIdentifier)
+    private <I> TableColumn<S, I> generateTableColumn(ColumnDefinition columnDefinition)
     {
-        TableColumn<S, I> col = getNewTableColumn(fieldIdentifier);
+        TableColumn<S, I> col = new CustomTableColumn<>(columnDefinition);
         if (col.getCellValueFactory() == null) {
-            col.setCellValueFactory(new GenericCellValueFactory<>(fieldIdentifier));// todo: guice?!
+            col.setCellValueFactory(new GenericCellValueFactory<>(columnDefinition.identifier()));// todo: guice?!
         }
-        setColumnDisplayProperties(fieldIdentifier, col);
-        // ToDo: col.setCellFactory(), if needed
+        // ToDo: col.setCellFactory() for formatting, if needed
         return col;
-    }
-
-    /**
-     * Sets the desired field-selection.
-     *
-     * @param fieldSelection array of {@link FieldIdentifier}s
-     */
-    void setFieldSelection(FieldIdentifier[] fieldSelection)
-    {
-        this.fieldSelection = fieldSelection;
-        generateColumns();
-    }
-
-    /**
-     * @return the loaded field-selection
-     */
-    private FieldIdentifier[] getFieldSelection()
-    {
-        return fieldSelection;
     }
 }

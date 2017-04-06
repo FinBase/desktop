@@ -12,12 +12,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import javax.inject.Inject;
+
 import at.mjst.finbase.desktop.controller.events.EventBusListener;
 import at.mjst.finbase.desktop.controller.events.TabActivationEvent;
+import at.mjst.finbase.desktop.dto.columnselection.ColumnSelection;
 import at.mjst.finbase.desktop.model.entity.AuditLog;
 import at.mjst.finbase.desktop.model.entity.Entity;
 import at.mjst.finbase.desktop.model.entity.field.FieldIdentifier;
 import at.mjst.finbase.desktop.model.entity.field.ImmutableFieldIdentifier;
+import at.mjst.finbase.desktop.model.service.columnselection.ArrayBasedGenerator;
 import at.mjst.finbase.desktop.view.CustomTableView;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -38,9 +42,9 @@ public class AuditLogTableViewController implements Initializable, EventBusListe
 {
     private final FieldIdentifier[] FIELDS = {
             new ImmutableFieldIdentifier(TABLE_AUDITLOG, Entity.FIELD_ID),
-            new ImmutableFieldIdentifier(TABLE_AUDITLOG, FIELD_APPLICATION),
-            new ImmutableFieldIdentifier(TABLE_AUDITLOG, FIELD_TIMESTAMP_ON), new ImmutableFieldIdentifier(
-            TABLE_ACCOUNT, Entity.FIELD_ID) // will be ignored, hopefully
+            new ImmutableFieldIdentifier(TABLE_AUDITLOG, FIELD_APPLICATION), new ImmutableFieldIdentifier(
+            TABLE_AUDITLOG, FIELD_TIMESTAMP_ON), new ImmutableFieldIdentifier(TABLE_ACCOUNT, Entity.FIELD_ID)
+            // will be ignored, hopefully
     };
     /**
      * This should not be used, it is only implemented,
@@ -54,16 +58,19 @@ public class AuditLogTableViewController implements Initializable, EventBusListe
     @FXML
     private CustomTableViewController<AuditLog> customTableViewController;
     // ToDo: Inject Service-Classes immediately (they represent the layer, that ensures DAO-creation after login)!
+    @Inject
+    private ColumnSelection columnSelection;
+    @Inject
+    private ArrayBasedGenerator columnSelectionLoader;
 
     @Override
     public void initialize(URL location, ResourceBundle resources)
     {
         System.out.println(String.format("initialize: %s", this.getClass().getName()));
-        customTableViewController.setMainEntityClass(AuditLog.class);
-        // ToDo: FieldSelection-Loader?! -> maybe delayed to login-state, if fieldSelection is loaded from db!
-        customTableViewController.setFieldSelection(FIELDS);
+        columnSelectionLoader.setArray(FIELDS);
+        columnSelection.setLoader(columnSelectionLoader);
+        customTableViewController.setColumnSelection(columnSelection);
         customTableViewController.setReadOnly();
-        // ToDo: maybe ask for some tableView-properties via dataObject?
     }
 
     @Subscribe
