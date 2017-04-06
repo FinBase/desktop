@@ -9,7 +9,9 @@ import org.jetbrains.annotations.NonNls;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import at.mjst.finbase.desktop.controller.bind.GenericCellValueFactory;
+import javax.inject.Inject;
+
+import at.mjst.finbase.desktop.controller.bind.CellValueFactoryProvider;
 import at.mjst.finbase.desktop.controller.events.EventBusListener;
 import at.mjst.finbase.desktop.dto.columnselection.ColumnDefinition;
 import at.mjst.finbase.desktop.dto.columnselection.ColumnSelection;
@@ -45,6 +47,8 @@ public class CustomTableViewController<S extends Entity> implements Initializabl
      */
     @FXML
     public TableColumn<S, Object> controlColumn;
+    @Inject
+    private CellValueFactoryProvider cellValueFactoryProvider;
     /**
      * the {@link ColumnSelection} to be used
      */
@@ -118,9 +122,8 @@ public class CustomTableViewController<S extends Entity> implements Initializabl
     private <I> TableColumn<S, I> generateTableColumn(ColumnDefinition columnDefinition)
     {
         TableColumn<S, I> col = new CustomTableColumn<>(columnDefinition);
-        if (col.getCellValueFactory() == null) {
-            col.setCellValueFactory(new GenericCellValueFactory<>(columnDefinition.identifier()));// todo: guice?!
-        }
+        cellValueFactoryProvider.setIdentifier(columnDefinition.identifier());
+        col.setCellValueFactory(cellValueFactoryProvider.get());
         // ToDo: col.setCellFactory() for formatting, if needed
         return col;
     }
