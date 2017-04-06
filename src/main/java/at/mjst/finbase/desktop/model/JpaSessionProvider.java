@@ -6,13 +6,15 @@ package at.mjst.finbase.desktop.model;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
+import com.google.inject.Module;
 import com.google.inject.persist.PersistService;
 import com.google.inject.persist.UnitOfWork;
 import com.google.inject.persist.jpa.JpaPersistModule;
 
 import org.hibernate.cfg.AvailableSettings;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Properties;
 
 import at.mjst.finbase.desktop.Resource;
@@ -69,7 +71,7 @@ public class JpaSessionProvider implements SessionProvider
 
     private void buildChildInjector()
     {
-        ArrayList<com.google.inject.Module> modules = new ArrayList<>();
+        List<Module> modules = new LinkedList<>();
         // add the connectionProperties to the JPAModule - we'll 'inject' userName & password here!
         modules.add(new JpaPersistModule(Resource.ID_PERSISTENCE).properties(connectionProperties));
         modules.add(new at.mjst.finbase.desktop.model.persistence.Module());

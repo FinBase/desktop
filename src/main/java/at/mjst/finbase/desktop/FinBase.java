@@ -10,8 +10,8 @@ import com.google.inject.Module;
 
 import org.jetbrains.annotations.NonNls;
 
-import java.util.AbstractList;
-import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 import at.mjst.finbase.desktop.controller.ControllerFactory;
 import at.mjst.finbase.desktop.model.service.LoginService;
@@ -135,7 +135,7 @@ public class FinBase extends Application
         } else {
             stage = PRODUCTION;
         }
-        AbstractList<Module> modules = new ArrayList<>();
+        List<Module> modules = new LinkedList<>();
         initGuiceModules(modules);
         injector = Guice.createInjector(stage, modules);
     }
@@ -147,7 +147,7 @@ public class FinBase extends Application
         return this.getParameters().getNamed().get(PARAM_DEVELOP).equals(TRUE);
     }
 
-    private void initGuiceModules(AbstractList<Module> modules)
+    private void initGuiceModules(List<Module> modules)
     {
         modules.add(new at.mjst.finbase.desktop.controller.Module());
         modules.add(new at.mjst.finbase.desktop.dto.Module());
