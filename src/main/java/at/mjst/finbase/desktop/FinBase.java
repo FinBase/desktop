@@ -151,6 +151,7 @@ public class FinBase extends Application
     {
         modules.add(new at.mjst.finbase.desktop.controller.Module());
         modules.add(new at.mjst.finbase.desktop.dto.Module());
+        modules.add(new at.mjst.finbase.desktop.eventsystem._Module());
         modules.add(new at.mjst.finbase.desktop.model.Module());
     }
 }

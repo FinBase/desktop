@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, Ing. Michael J. Stallinger and/or his affiliates. All rights reserved.
+ * Copyright (c) 2017, Ing. Michael J. Stallinger and/or his affiliates. All rights reserved.
  * This source code is subject to license terms, see the LICENSE file for details.
  */
 package at.mjst.finbase.desktop.controller;
@@ -7,9 +7,8 @@ package at.mjst.finbase.desktop.controller;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import com.google.inject.name.Named;
 
-import at.mjst.finbase.desktop.controller.events.EventBusListener;
+import at.mjst.finbase.desktop.eventsystem.UIBus;
 import javafx.util.Callback;
 
 /**
@@ -22,7 +21,7 @@ import javafx.util.Callback;
 public class ControllerFactory implements Callback<Class<?>, Object>
 {
     @Inject
-    @Named("ControllerBus")
+    @UIBus
     private EventBus eventBus;
     @Inject
     private Injector injector;
@@ -41,10 +40,8 @@ public class ControllerFactory implements Callback<Class<?>, Object>
         try {
             // use the injector to create the controller-instance, so it has control over the complete object-graph!
             Object obj = injector.getInstance(param);
-            // set the eventBus, if it is supported
-            if (obj instanceof EventBusListener) {
-                eventBus.register(obj);
-            }
+            // set the eventBus to every controller class
+            eventBus.register(obj);
             return obj;
         } catch (Exception e) {
             throw new RuntimeException(e); // fatal, just bail...

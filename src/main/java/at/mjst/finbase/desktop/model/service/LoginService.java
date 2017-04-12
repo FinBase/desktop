@@ -1,17 +1,17 @@
 /*
- * Copyright (c) 2016, Ing. Michael J. Stallinger and/or his affiliates. All rights reserved.
+ * Copyright (c) 2017, Ing. Michael J. Stallinger and/or his affiliates. All rights reserved.
  * This source code is subject to license terms, see the LICENSE file for details.
  */
 package at.mjst.finbase.desktop.model.service;
 
 import com.google.common.base.Throwables;
+import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 
-import java.sql.SQLException;
-
 import at.mjst.finbase.desktop.dto.Credentials;
+import at.mjst.finbase.desktop.eventsystem.ModelBus;
+import at.mjst.finbase.desktop.eventsystem.events.LoginEvent;
 import at.mjst.finbase.desktop.model.SessionProvider;
-import javafx.scene.control.Alert;
 
 /**
  * ToDo: Short class description
@@ -21,12 +21,25 @@ import javafx.scene.control.Alert;
  */
 public class LoginService
 {
+    /**
+     * This UUID identifies this class uniquely. Used for multiple purposes, e.g. the event-system.
+     */
+    private static final ModelId SERVICE_ID = ModelId.LOGIN;
     @Inject
     private SessionProvider sessionProvider;
     @Inject
     private AuditLogService auditLogService;
+    @Inject
+    @ModelBus
+    private EventBus eventBus;
 
-    public boolean doLogin(Credentials credentials)
+    /**
+     * Initializes the {@link SessionProvider} and tries to establish a db-connection using the given connection
+     * information and {@link Credentials}.
+     *
+     * @param credentials login credentials
+     */
+    public void doLogin(Credentials credentials)
     {
         Credentials.validate(credentials);
         try {
@@ -34,20 +47,11 @@ public class LoginService
             sessionProvider.initConnection(credentials);
             auditLogService.recordLogin();
             System.out.println("Login: success");
-            return true;
+            eventBus.post(new LoginEvent.LoginSuccess(SERVICE_ID));
         } catch (Throwable e) {
-            @SuppressWarnings("ThrowableResultOfMethodCallIgnored") Throwable cause = Throwables.getRootCause(e);
-            if (cause instanceof SQLException) {
-                // @see: http://code.makery.ch/blog/javafx-dialogs-official/
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("FinBaseTitle");
-                alert.setHeaderText("Login failed!");
-                alert.setContentText(cause.getMessage());
-                alert.showAndWait();
-                return false;
-            } else {
-                throw e;
-            }
+            // ToDo: log me!
+            Throwable cause = Throwables.getRootCause(e);
+            eventBus.post(new LoginEvent.LoginFailedEvent(SERVICE_ID, cause.getMessage()));
         }
     }
 
@@ -61,6 +65,7 @@ public class LoginService
         if (sessionProvider.initialized()) {
             auditLogService.recordLogout();
             sessionProvider.closeConnection();
+            eventBus.post(new LoginEvent.LogoffSuccess(SERVICE_ID));
             System.out.println("Logout: success");
         } else {
             System.out.println("Logout: not logged in");

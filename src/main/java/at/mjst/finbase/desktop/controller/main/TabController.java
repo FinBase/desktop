@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, Ing. Michael J. Stallinger and/or his affiliates. All rights reserved.
+ * Copyright (c) 2017, Ing. Michael J. Stallinger and/or his affiliates. All rights reserved.
  * This source code is subject to license terms, see the LICENSE file for details.
  */
 package at.mjst.finbase.desktop.controller.main;
@@ -7,18 +7,22 @@ package at.mjst.finbase.desktop.controller.main;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
-import com.google.inject.Injector;
-import com.google.inject.name.Named;
+
+import org.jetbrains.annotations.Nullable;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import at.mjst.finbase.desktop.controller.events.EventBusListener;
-import at.mjst.finbase.desktop.controller.events.LoginEvent;
-import at.mjst.finbase.desktop.controller.events.TabActivationEvent;
+import at.mjst.finbase.desktop.controller.ControllerId;
+import at.mjst.finbase.desktop.controller.ControllerIdProvider;
+import at.mjst.finbase.desktop.eventsystem.UIBus;
+import at.mjst.finbase.desktop.eventsystem.events.ControlActivationEvent;
+import at.mjst.finbase.desktop.eventsystem.events.LoginEvent;
+import at.mjst.finbase.desktop.eventsystem.events.TabSwitchEvent;
+import at.mjst.finbase.desktop.view.IdentifiedTab;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.event.Event;
+import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -29,18 +33,18 @@ import javafx.scene.control.TabPane;
  * @author Ing. Michael J. Stallinger (projects@mjst.at)
  * @since 2016-07-12
  */
-public class TabController implements Initializable, EventBusListener
+public class TabController implements ControllerIdProvider, Initializable
 {
-    public TabPane tabPane;
-    public Tab auditTab;
+    @FXML
+    private TabPane tabPane;
     @Inject
-    Injector injector;
+    @UIBus
+    private EventBus eventBus;
 
-    @Subscribe
-    public void handleLoginEvent(LoginEvent event)
+    @Override
+    public ControllerId getControllerId()
     {
-        System.out.println("LoginEvent in TabController");
-        tabPane.setDisable(false);
+        return ControllerId.TAB_CONTROLLER;
     }
 
     /**
@@ -55,40 +59,60 @@ public class TabController implements Initializable, EventBusListener
     public void initialize(URL location, ResourceBundle resources)
     {
         tabPane.setDisable(true);
-        tabPane.disabledProperty().addListener((observable, oldValue, newValue) -> {
-            // alternative zu siehe oben (EventBus)
-            System.out.println("TabPane state changed!");
-        });
-        tabPane.getSelectionModel().selectedItemProperty().addListener(
-                injector.getInstance(ActiveTabChangeListener.class));
+        // whenever the pane gets enabled/disabled, this event will be sent...
+        tabPane.disabledProperty().addListener(new DisabledChangeListener());
+        // Listener for switching from one tab to another...
+        tabPane.getSelectionModel().selectedItemProperty().addListener(new TabChangeListener());
     }
 
-    public void osc(Event event)
+    @Subscribe
+    public void onLogin(LoginEvent event)
     {
-        System.out.println("OSC");
+        System.out.println("Event in TabController " + event);
+        tabPane.setDisable(!(event instanceof LoginEvent.LoginSuccess));
     }
-}
 
-class ActiveTabChangeListener implements ChangeListener<Tab>
-{
-    @Inject
-    @Named("ControllerBus")
-    private EventBus eventBus;
+    @Nullable
+    private TabId getTabId(Tab tab)
+    {
+        if (tab instanceof IdentifiedTab) {
+            return ((IdentifiedTab) tab).getTabId();
+        } else {
+            return null;
+        }
+    }
 
     /**
-     * This method needs to be provided by an implementation of
-     * {@code ChangeListener}. It is called if the value of an
-     * {@link ObservableValue} changes.
-     * <p>
-     * In general is is considered bad practice to modify the observed value in
-     * this method.
-     *
-     * @param observable The {@code ObservableValue} which value changed
-     * @param oldValue   The old value
+     * Notifies all listeners about enabled/disabled-state change by sending the {@link ControlActivationEvent} and
+     * the {@link TabSwitchEvent} for the first tab selected via the {@link UIBus}
      */
-    @Override
-    public void changed(ObservableValue<? extends Tab> observable, Tab oldValue, Tab newValue)
+    class DisabledChangeListener implements ChangeListener<Boolean>
     {
-        eventBus.post(new TabActivationEvent(newValue));
+        @Override
+        public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue)
+        {
+            System.out.println("TabPane disabled state changed! " + oldValue + "->" + newValue);
+            eventBus.post(
+                    new ControlActivationEvent(getControllerId(), !newValue)); // note: NOT disabled == enabled here...
+            if (!newValue) {
+                TabId tabId = getTabId(tabPane.getSelectionModel().getSelectedItem());
+                eventBus.post(new TabSwitchEvent(getControllerId(), null, tabId));
+            }
+        }
+    }
+
+    /**
+     * Notifies all listeners about tab switching by sending a {@link TabSwitchEvent} via {@link UIBus}
+     */
+    class TabChangeListener implements ChangeListener<Tab>
+    {
+        @Override
+        public void changed(ObservableValue<? extends Tab> observable, Tab oldValue, Tab newValue)
+        {
+            TabId oldTabId = getTabId(oldValue);
+            TabId newTabId = getTabId(newValue);
+            eventBus.post(new TabSwitchEvent(getControllerId(), oldTabId, newTabId));
+        }
     }
 }
+

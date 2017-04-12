@@ -4,14 +4,9 @@
  */
 package at.mjst.finbase.desktop.controller.top;
 
-import com.google.common.eventbus.Subscribe;
-
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import at.mjst.finbase.desktop.controller.events.EventBusListener;
-import at.mjst.finbase.desktop.controller.events.LoginEvent;
-import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 
 /**
@@ -20,10 +15,10 @@ import javafx.fxml.Initializable;
  * @author Ing. Michael J. Stallinger (projects@mjst.at)
  * @since 2016-07-10
  */
-public class TopController implements Initializable, EventBusListener
+public class TopController implements Initializable
 {
     //    @FXML
-//    LoginController loginPaneController; // fx:id+Controller - we need @FXML-annotation here, to allow automatic injection!
+    //    LoginController loginPaneController; // fx:id+UIBus - we need @FXML-annotation here, to allow automatic injection!
 
     /**
      * Called to initialize a controller after its root element has been completely processed.
@@ -35,28 +30,7 @@ public class TopController implements Initializable, EventBusListener
     @Override
     public void initialize(URL location, ResourceBundle resources)
     {
-//        if(loginPaneController!=null){}
-//        System.out.println(tp != null);
+        //        if(loginPaneController!=null){}
+        //        System.out.println(tp != null);
     }
-
-    @Subscribe
-    public void handleLoginEvent(LoginEvent event)
-    {
-        System.out.println("LoginEvent in TopController");
-    }
-
-    public void execTest(ActionEvent actionEvent)
-    {
-//        System.out.println(loginPanex != null);
-        // ToDo: assign listener to getValue notified to enable the tabs! Register onWhat?!
-    }
-//    @Override
-//    public void onLoginSuccessful()
-//    {
-//    }
-//
-//    @Override
-//    public void onLoginFailed()
-//    {
-//    }
 }

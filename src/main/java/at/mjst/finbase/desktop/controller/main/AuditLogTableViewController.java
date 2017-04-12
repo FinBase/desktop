@@ -14,9 +14,8 @@ import java.util.ResourceBundle;
 
 import javax.inject.Inject;
 
-import at.mjst.finbase.desktop.controller.events.EventBusListener;
-import at.mjst.finbase.desktop.controller.events.TabActivationEvent;
 import at.mjst.finbase.desktop.dto.columnselection.ColumnSelection;
+import at.mjst.finbase.desktop.eventsystem.events.TabSwitchEvent;
 import at.mjst.finbase.desktop.model.entity.AuditLog;
 import at.mjst.finbase.desktop.model.entity.Entity;
 import at.mjst.finbase.desktop.model.entity.field.FieldIdentifier;
@@ -27,7 +26,6 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 
-import static at.mjst.finbase.desktop.model.entity.Account.TABLE_ACCOUNT;
 import static at.mjst.finbase.desktop.model.entity.AuditLog.FIELD_APPLICATION;
 import static at.mjst.finbase.desktop.model.entity.AuditLog.FIELD_TIMESTAMP_ON;
 import static at.mjst.finbase.desktop.model.entity.AuditLog.TABLE_AUDITLOG;
@@ -38,12 +36,12 @@ import static at.mjst.finbase.desktop.model.entity.AuditLog.TABLE_AUDITLOG;
  * @author Ing. Michael J. Stallinger (projects@mjst.at)
  * @since 2016-07-22
  */
-public class AuditLogTableViewController implements Initializable, EventBusListener
+public class AuditLogTableViewController implements Initializable
 {
     private final FieldIdentifier[] FIELDS = {
-            new ImmutableFieldIdentifier(TABLE_AUDITLOG, Entity.FIELD_ID),
-            new ImmutableFieldIdentifier(TABLE_AUDITLOG, FIELD_APPLICATION), new ImmutableFieldIdentifier(
-            TABLE_AUDITLOG, FIELD_TIMESTAMP_ON), new ImmutableFieldIdentifier(TABLE_ACCOUNT, Entity.FIELD_ID)
+            new ImmutableFieldIdentifier(TABLE_AUDITLOG, Entity.FIELD_ID), new ImmutableFieldIdentifier(TABLE_AUDITLOG,
+            FIELD_APPLICATION), new ImmutableFieldIdentifier(TABLE_AUDITLOG, FIELD_TIMESTAMP_ON)//,
+            //            new ImmutableFieldIdentifier(TABLE_ACCOUNT, Entity.FIELD_ID)
             // will be ignored, hopefully
     };
     /**
@@ -51,33 +49,33 @@ public class AuditLogTableViewController implements Initializable, EventBusListe
      * to enable the reference the {@link CustomTableViewController} beyond.
      */
     @FXML
-    public CustomTableView<AuditLog> customTableView;
-    /**
-     * Reference to the subordinate controller for the tableView
-     */
+    private CustomTableView<AuditLog> customTableView;
+    // Reference to the subordinate controller for the tableView
     @FXML
     private CustomTableViewController<AuditLog> customTableViewController;
     // ToDo: Inject Service-Classes immediately (they represent the layer, that ensures DAO-creation after login)!
     @Inject
     private ColumnSelection columnSelection;
     @Inject
-    private ArrayBasedGenerator columnSelectionLoader;
+    private ArrayBasedGenerator columnSelectionGenerator;
 
     @Override
     public void initialize(URL location, ResourceBundle resources)
     {
         System.out.println(String.format("initialize: %s", this.getClass().getName()));
-        columnSelectionLoader.setArray(FIELDS);
-        columnSelection.setLoader(columnSelectionLoader);
+        columnSelectionGenerator.setArray(FIELDS);
+        columnSelection.setLoader(columnSelectionGenerator);
         customTableViewController.setColumnSelection(columnSelection);
         customTableViewController.setReadOnly();
     }
 
     @Subscribe
-    public void handleLoginEvent(TabActivationEvent event)
+    public void onTabSwitch(TabSwitchEvent event)
     {
-        System.out.println("BaseTableViewController received TabActivationEvent!");
-        loadData();
+        if (event.getNewTabId() == TabId.AUDIT_LOG) {
+            System.out.println("AuditLogTabViewActivation received!");
+            loadData();
+        }
     }
 
     protected void loadData()

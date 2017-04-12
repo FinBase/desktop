@@ -1,26 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Tab?>
+
+<?import at.mjst.finbase.desktop.controller.main.TabId?>
+<?import at.mjst.finbase.desktop.view.IdentifiedTab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.layout.Pane?>
+<!--
+  ~ Copyright (c) 2017, Ing. Michael J. Stallinger and/or his affiliates. All rights reserved.
+  ~ This source code is subject to license terms, see the LICENSE file for details.
+  -->
 <TabPane xmlns:fx="http://javafx.com/fxml/1" fx:id="tabPane" minHeight="-Infinity" minWidth="-Infinity"
          tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8.0.76-ea"
          fx:controller="at.mjst.finbase.desktop.controller.main.TabController">
-    <tabs>
-        <Tab text="Accounts">
-            <content>
-                <fx:include source="Account.fxml" />
-            </content>
-        </Tab>
-        <Tab text="Transactions">
-            <content>
-                <Pane />
-            </content>
-        </Tab>
-        <Tab fx:id="auditTab" onSelectionChanged="#osc" text="Audit">
-            <content>
-                <fx:include source="AuditLog.fxml" />
-            </content>
-        </Tab>
-    </tabs>
+    <IdentifiedTab text="Accounts">
+        <tabId>
+            <TabId fx:constant="ACCOUNT"/>
+        </tabId>
+        <fx:include source="Account.fxml"/>
+    </IdentifiedTab>
+    <IdentifiedTab text="Transactions">
+        <tabId>
+            <TabId fx:constant="TRANSACTION"/>
+        </tabId>
+        <Pane/>
+    </IdentifiedTab>
+    <IdentifiedTab text="Audit">
+        <tabId>
+            <TabId fx:constant="AUDIT_LOG"/>
+        </tabId>
+        <fx:include source="AuditLog.fxml"/>
+    </IdentifiedTab>
 </TabPane>

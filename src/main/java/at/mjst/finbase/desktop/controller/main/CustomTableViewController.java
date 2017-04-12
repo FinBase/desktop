@@ -12,7 +12,6 @@ import java.util.ResourceBundle;
 import javax.inject.Inject;
 
 import at.mjst.finbase.desktop.controller.bind.CellValueFactoryProvider;
-import at.mjst.finbase.desktop.controller.events.EventBusListener;
 import at.mjst.finbase.desktop.dto.columnselection.ColumnDefinition;
 import at.mjst.finbase.desktop.dto.columnselection.ColumnSelection;
 import at.mjst.finbase.desktop.model.entity.Entity;
@@ -31,7 +30,7 @@ import javafx.scene.control.TableView;
  * @author Ing. Michael J. Stallinger (projects@mjst.at)
  * @since 2017-03-22
  */
-public class CustomTableViewController<S extends Entity> implements Initializable, EventBusListener
+public class CustomTableViewController<S extends Entity> implements Initializable
 {
     @NonNls
     private static final String COLUMN_GENERATED = "Column generated: '%s'";
@@ -40,13 +39,13 @@ public class CustomTableViewController<S extends Entity> implements Initializabl
      * mousewheel-scrolling behavior will be a bit more familiar.
      */
     @FXML
-    public TableView<S> customTableView;
+    private TableView<S> customTableView;
     /**
      * This is the control-column, every instance of CustomTableView comes with it
      * ToDo: make ButtonCell configurable or enable a factory to be set!
      */
     @FXML
-    public TableColumn<S, Object> controlColumn;
+    private TableColumn<S, Object> controlColumn;
     @Inject
     private CellValueFactoryProvider cellValueFactoryProvider;
     /**
