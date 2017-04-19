@@ -39,7 +39,7 @@ public class BaseField<T> implements Field<T>
      */
     BaseField(String fieldName, FieldRegistry registry, Class<T> dataType)
     {
-        this(new ImmutableFieldIdentifier(registry.tableName(), fieldName), dataType, new SimpleObjectProperty<>());
+        this(new FieldIdentifier(registry.tableName(), fieldName), dataType, new SimpleObjectProperty<>());
         registry.registerField(this);
     }
 

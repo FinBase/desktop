@@ -17,7 +17,6 @@ import at.mjst.finbase.desktop.eventsystem.events.TabSwitchEvent;
 import at.mjst.finbase.desktop.model.entity.AuditLog;
 import at.mjst.finbase.desktop.model.entity.Entity;
 import at.mjst.finbase.desktop.model.entity.field.FieldIdentifier;
-import at.mjst.finbase.desktop.model.entity.field.ImmutableFieldIdentifier;
 import at.mjst.finbase.desktop.model.service.AuditLogService;
 import at.mjst.finbase.desktop.model.service.columnselection.ArrayBasedGenerator;
 import at.mjst.finbase.desktop.view.CustomTableView;
@@ -39,9 +38,9 @@ import static at.mjst.finbase.desktop.model.entity.AuditLog.TABLE_AUDITLOG;
 public class AuditLogTableViewController implements Initializable
 {
     private final FieldIdentifier[] FIELDS = {
-            new ImmutableFieldIdentifier(TABLE_AUDITLOG, Entity.FIELD_ID), new ImmutableFieldIdentifier(TABLE_AUDITLOG,
-            FIELD_APPLICATION), new ImmutableFieldIdentifier(TABLE_AUDITLOG, FIELD_TIMESTAMP_ON)//,
-            //            new ImmutableFieldIdentifier(TABLE_ACCOUNT, Entity.FIELD_ID)
+            new FieldIdentifier(TABLE_AUDITLOG, Entity.FIELD_ID), new FieldIdentifier(TABLE_AUDITLOG,
+            FIELD_APPLICATION), new FieldIdentifier(TABLE_AUDITLOG, FIELD_TIMESTAMP_ON)//,
+            //            new FieldIdentifier(TABLE_ACCOUNT, Entity.FIELD_ID)
             // will be ignored, hopefully
     };
     @Inject
