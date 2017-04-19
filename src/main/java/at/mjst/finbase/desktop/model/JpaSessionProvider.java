@@ -8,7 +8,6 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.persist.PersistService;
-import com.google.inject.persist.UnitOfWork;
 import com.google.inject.persist.jpa.JpaPersistModule;
 
 import org.hibernate.cfg.AvailableSettings;
@@ -36,7 +35,6 @@ public class JpaSessionProvider implements SessionProvider
     private Injector persistenceInjector;
     // further object instances...
     private PersistService service;
-    private UnitOfWork unitOfWork;
 
     public JpaSessionProvider()
     {
@@ -54,7 +52,6 @@ public class JpaSessionProvider implements SessionProvider
             assignCredentialsToJpaProperties(credentials);
             buildChildInjector();
             buildAndStartPersistServices();
-            buildAndStartUnitOfWork();
         } catch (Exception e) {
             clearInstances();
             throw e;
@@ -85,12 +82,6 @@ public class JpaSessionProvider implements SessionProvider
         service.start();
     }
 
-    private void buildAndStartUnitOfWork()
-    {
-        unitOfWork = getSessionInstance(UnitOfWork.class);
-        unitOfWork.begin(); // todo: really start every time? start later?
-    }
-
     private void clearInstances()
     {
         service = null;
@@ -102,7 +93,6 @@ public class JpaSessionProvider implements SessionProvider
     {
         try {
             if (initialized()) {
-                endUnitOfWork();
                 stopPersistService();
             } else {
                 throw new RuntimeException("Connection has not been initialized!");
@@ -110,11 +100,6 @@ public class JpaSessionProvider implements SessionProvider
         } finally {
             clearInstances();
         }
-    }
-
-    private void endUnitOfWork()
-    {
-        unitOfWork.end();
     }
 
     private void stopPersistService()
@@ -127,11 +112,6 @@ public class JpaSessionProvider implements SessionProvider
     {
         return (service != null); // todo: where to test for connection still alive?
     }
-    //    @Override
-    //    public Injector getPersistenceInjector()
-    //    {
-    //        return persistenceInjector; // ToDo: maybe remove this getter from interface!
-    //    }
 
     @Override
     public <T> T getSessionInstance(Class<T> type)
