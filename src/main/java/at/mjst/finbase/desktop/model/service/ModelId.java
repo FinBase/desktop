@@ -19,7 +19,8 @@ public enum ModelId implements EventEnum
     /**
      * Id for the {@link at.mjst.finbase.desktop.model.service.LoginService}
      */
-    LOGIN(UUID.fromString("fbe9bc41-bcb0-42dc-a803-3fbe424a518e"));
+    LOGIN(UUID.fromString("fbe9bc41-bcb0-42dc-a803-3fbe424a518e")),
+    AUDITLOG(UUID.fromString("3c3f607f-9276-4ceb-b6aa-da93f974e66c"));
     // member for the UUID assigned to the enum
     private final UUID uuid;
 

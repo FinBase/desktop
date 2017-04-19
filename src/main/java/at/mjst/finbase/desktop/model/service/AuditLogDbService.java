@@ -4,11 +4,15 @@
  */
 package at.mjst.finbase.desktop.model.service;
 
+import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.List;
 
+import at.mjst.finbase.desktop.eventsystem.ModelBus;
+import at.mjst.finbase.desktop.eventsystem.events.AuditLogDataEvent;
 import at.mjst.finbase.desktop.model.SessionProvider;
 import at.mjst.finbase.desktop.model.entity.AuditLog;
 import at.mjst.finbase.desktop.model.persistence.AuditLogContainer;
@@ -25,6 +29,9 @@ class AuditLogDbService implements AuditLogService
 {
     @Inject
     private SessionProvider sessionProvider;
+    @Inject
+    @ModelBus
+    private EventBus eventBus;
 
     public void recordLogin()
     {
@@ -58,6 +65,19 @@ class AuditLogDbService implements AuditLogService
             getAuditLogDAO().insertOrUpdate(log);
         } else {
             throw new RuntimeException("Session AuditLog not found!");
+        }
+    }
+
+    public boolean executeLoad()
+    {
+        AuditLogDAO dao = getAuditLogDAO();
+        List<AuditLog> list = dao.queryAll();
+        if (list != null) {
+            System.out.println("done!");
+            eventBus.post(new AuditLogDataEvent(this, list));
+            return true;
+        } else {
+            return false;
         }
     }
 }

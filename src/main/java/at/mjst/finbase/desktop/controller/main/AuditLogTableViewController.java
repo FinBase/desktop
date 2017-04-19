@@ -7,22 +7,22 @@ package at.mjst.finbase.desktop.controller.main;
 import com.google.common.eventbus.Subscribe;
 
 import java.net.URL;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.ResourceBundle;
 
 import javax.inject.Inject;
 
 import at.mjst.finbase.desktop.dto.columnselection.ColumnSelection;
+import at.mjst.finbase.desktop.eventsystem.events.AuditLogDataEvent;
 import at.mjst.finbase.desktop.eventsystem.events.TabSwitchEvent;
 import at.mjst.finbase.desktop.model.entity.AuditLog;
 import at.mjst.finbase.desktop.model.entity.Entity;
 import at.mjst.finbase.desktop.model.entity.field.FieldIdentifier;
 import at.mjst.finbase.desktop.model.entity.field.ImmutableFieldIdentifier;
+import at.mjst.finbase.desktop.model.service.AuditLogService;
 import at.mjst.finbase.desktop.model.service.columnselection.ArrayBasedGenerator;
 import at.mjst.finbase.desktop.view.CustomTableView;
 import javafx.collections.FXCollections;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 
@@ -44,6 +44,8 @@ public class AuditLogTableViewController implements Initializable
             //            new ImmutableFieldIdentifier(TABLE_ACCOUNT, Entity.FIELD_ID)
             // will be ignored, hopefully
     };
+    @Inject
+    private AuditLogService service;
     /**
      * This should not be used, it is only implemented,
      * to enable the reference the {@link CustomTableViewController} beyond.
@@ -79,16 +81,30 @@ public class AuditLogTableViewController implements Initializable
     }
 
     protected void loadData()
-    {        // ToDo: decouple db-access via *Service-Classes
-        //        Injector injector = Guice.createInjector(...);
-        //        CreditCardProcessor creditCardProcessor = new PayPalCreditCardProcessor();
-        //        injector.injectMembers(creditCardProcessor);
-        List<AuditLog> list = new ArrayList<>();
-        for (int i = 0; i < 1000; i++) {
-            list.add(new AuditLog((long) i, "Test" + i, new Timestamp(i), "App" + i));
+    {
+        // ToDo: do not always load on tab-getFocus ;)
+        System.out.println("Lading DATA!!");
+        try {
+            new Thread(new Task<Boolean>()
+            {
+                @Override
+                protected Boolean call() throws Exception
+                {
+                    return service.executeLoad();
+                }
+            }).start();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        //        //        ObservableList<AuditLog> data = FXCollections.observableArrayList(aulDAO.queryAll());
-        //        //        tabView.setItems(data);
-        customTableView.setItems(FXCollections.observableList(list)); // todo: execute via controller!!!
+    }
+
+    @Subscribe
+    public void onDataLoaded(AuditLogDataEvent event)
+    {
+        System.out.println("EVENT RECEIVED!");
+        if (event.getSender() == service) {
+            System.out.println("it's for me :)");
+            customTableView.setItems(FXCollections.observableList(event.getList()));
+        }
     }
 }

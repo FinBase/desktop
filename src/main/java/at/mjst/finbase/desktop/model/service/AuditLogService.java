@@ -15,4 +15,6 @@ public interface AuditLogService
     void recordLogin();
 
     void recordLogout();
+
+    boolean executeLoad();
 }
