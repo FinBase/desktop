@@ -41,13 +41,13 @@ public class TraAggregated extends AbstractEntity
     protected static final String FIELD_VALUE_DATE_TO = "value_date_to";
     protected static final String FIELD_TRANSACTION_COUNT = "transaction_count";
     // 'Field'-Objects
-    private IntegerField accId = new IntegerField(FIELD_ID, this);
-    private BigDecimalField balance = new BigDecimalField(FIELD_BALANCE, this);
-    private BigDecimalField balance_pos = new BigDecimalField(FIELD_BALANCE_POS, this);
-    private BigDecimalField balance_neg = new BigDecimalField(FIELD_BALANCE_NEG, this);
-    private DateField valueDateFrom = new DateField(FIELD_VALUE_DATE_FROM, this);
-    private DateField valueDateTo = new DateField(FIELD_VALUE_DATE_TO, this);
-    private LongField transaction_count = new LongField(FIELD_TRANSACTION_COUNT, this);
+    private final IntegerField accId = new IntegerField(FIELD_ID, this);
+    private final BigDecimalField balance = new BigDecimalField(FIELD_BALANCE, this);
+    private final BigDecimalField balance_pos = new BigDecimalField(FIELD_BALANCE_POS, this);
+    private final BigDecimalField balance_neg = new BigDecimalField(FIELD_BALANCE_NEG, this);
+    private final DateField valueDateFrom = new DateField(FIELD_VALUE_DATE_FROM, this);
+    private final DateField valueDateTo = new DateField(FIELD_VALUE_DATE_TO, this);
+    private final LongField transaction_count = new LongField(FIELD_TRANSACTION_COUNT, this);
 
     @Basic
     @Column(name = FIELD_BALANCE_POS, precision = 4, updatable = false)

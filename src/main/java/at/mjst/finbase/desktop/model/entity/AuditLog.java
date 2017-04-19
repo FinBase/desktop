@@ -43,11 +43,11 @@ public class AuditLog extends AbstractEntity
     public static final String FIELD_TIMESTAMP_ON = "timestamp_on";
     public static final String FIELD_TIMESTAMP_OFF = "timestamp_off";
     // These 'Field'-Objects wrap ObjectProperties<>, to access them via column-names!
-    private LongField id = new LongField(FIELD_ID, this);
-    private StringField user = new StringField(FIELD_USER, this);
-    private TimestampField timestampOn = new TimestampField(FIELD_TIMESTAMP_ON, this);
-    private TimestampField timestampOff = new TimestampField(FIELD_TIMESTAMP_OFF, this);
-    private StringField application = new StringField(FIELD_APPLICATION, this);
+    private final LongField id = new LongField(FIELD_ID, this);
+    private final StringField user = new StringField(FIELD_USER, this);
+    private final TimestampField timestampOn = new TimestampField(FIELD_TIMESTAMP_ON, this);
+    private final TimestampField timestampOff = new TimestampField(FIELD_TIMESTAMP_OFF, this);
+    private final StringField application = new StringField(FIELD_APPLICATION, this);
 
     /**
      * For testing purposes only

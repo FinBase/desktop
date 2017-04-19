@@ -44,10 +44,10 @@ public class Account extends AbstractEntity
     public static final String FIELD_NAME = "name";
     public static final String FIELD_DESCRIPTION = "description";
     // These 'Field'-Objects wrap ObjectProperties<>, to access them via column-names!
-    private IntegerField id = new IntegerField(FIELD_ID, this);
-    private StringField name = new StringField(FIELD_NAME, this);
-    private StringField description = new StringField(FIELD_DESCRIPTION, this);
-    private IntegerField flags = new IntegerField(FIELD_FLAGS, this);
+    private final IntegerField id = new IntegerField(FIELD_ID, this);
+    private final StringField name = new StringField(FIELD_NAME, this);
+    private final StringField description = new StringField(FIELD_DESCRIPTION, this);
+    private final IntegerField flags = new IntegerField(FIELD_FLAGS, this);
     // todo: register...?!
     private TraAggregated traAggregated;
 

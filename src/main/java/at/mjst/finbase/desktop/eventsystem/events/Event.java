@@ -18,7 +18,7 @@ public class Event<EnumType extends EventEnum>
 {
     @NonNls
     private static final String STR_SENDER_ID = "%s (senderId=%s, UUID=%s)";
-    private EnumType senderId;
+    private final EnumType senderId;
 
     /**
      * @param senderId the id of the event's sender

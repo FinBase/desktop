@@ -22,15 +22,15 @@ public class BaseField<T> implements Field<T>
     /**
      * The property to be wrapped
      */
-    private ObjectProperty<T> property;
+    private final ObjectProperty<T> property;
     /**
      * The fields data type
      */
-    private Class<T> dataType;
+    private final Class<T> dataType;
     /**
      * This fields identifier
      */
-    private FieldIdentifier identifier;
+    private final FieldIdentifier identifier;
 
     /**
      * @param fieldName the fields name
