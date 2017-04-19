@@ -18,16 +18,9 @@ import javafx.util.Callback;
  */
 public class GenericCellValueFactoryProvider implements CellValueFactoryProvider
 {
-    private FieldIdentifier identifier;
-
     @Override
-    public void setIdentifier(FieldIdentifier identifier)
-    {
-        this.identifier = identifier;
-    }
-
-    @Override
-    public <S extends Entity, T> Callback<TableColumn.CellDataFeatures<S, T>, ObservableValue<T>> get()
+    public <S extends Entity, T> Callback<TableColumn.CellDataFeatures<S, T>, ObservableValue<T>> get(
+            FieldIdentifier identifier)
     {
         if (identifier == null) {
             throw new RuntimeException("Missing FieldIdentifier!");

@@ -121,8 +121,7 @@ public class CustomTableViewController<S extends Entity> implements Initializabl
     private <I> TableColumn<S, I> generateTableColumn(ColumnDefinition columnDefinition)
     {
         TableColumn<S, I> col = new CustomTableColumn<>(columnDefinition);
-        cellValueFactoryProvider.setIdentifier(columnDefinition.identifier());
-        col.setCellValueFactory(cellValueFactoryProvider.get());
+        col.setCellValueFactory(cellValueFactoryProvider.get(columnDefinition.identifier()));
         // ToDo: col.setCellFactory() for formatting, if needed
         return col;
     }

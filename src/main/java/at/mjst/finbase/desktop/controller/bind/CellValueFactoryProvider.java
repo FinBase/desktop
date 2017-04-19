@@ -21,14 +21,11 @@ import javafx.util.Callback;
 public interface CellValueFactoryProvider
 {
     /**
-     * @param identifier the {@link FieldIdentifier} to be used for creating the factory
-     */
-    void setIdentifier(FieldIdentifier identifier);
-
-    /**
      * Creates a new CellValueFactory
      *
+     * @param identifier the {@link FieldIdentifier} to be used for creating the factory
      * @return new {@link Callback}
      */
-    <S extends Entity, T> Callback<TableColumn.CellDataFeatures<S, T>, ObservableValue<T>> get();
+    <S extends Entity, T> Callback<TableColumn.CellDataFeatures<S, T>, ObservableValue<T>> get(
+            FieldIdentifier identifier);
 }
