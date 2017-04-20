@@ -4,9 +4,9 @@
  */
 package at.mjst.finbase.desktop.view;
 
+import at.mjst.finbase.desktop.common.field.FieldIdentifier;
 import at.mjst.finbase.desktop.dto.columnselection.ColumnDefinition;
 import at.mjst.finbase.desktop.dto.columnselection.ColumnProperties;
-import at.mjst.finbase.desktop.model.entity.field.FieldIdentifier;
 import javafx.scene.control.TableColumn;
 
 /**

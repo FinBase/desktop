@@ -4,7 +4,7 @@
  */
 package at.mjst.finbase.desktop.dto.columnselection;
 
-import at.mjst.finbase.desktop.model.entity.field.FieldIdentifier;
+import at.mjst.finbase.desktop.common.field.FieldIdentifier;
 
 /**
  * Represents a container for column properties, identified by {@link FieldIdentifier}. For

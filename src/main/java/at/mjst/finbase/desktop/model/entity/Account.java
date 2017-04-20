@@ -20,9 +20,9 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
-import at.mjst.finbase.desktop.model.entity.field.Field;
-import at.mjst.finbase.desktop.model.entity.field.IntegerField;
-import at.mjst.finbase.desktop.model.entity.field.StringField;
+import at.mjst.finbase.desktop.common.field.Field;
+import at.mjst.finbase.desktop.common.field.IntegerField;
+import at.mjst.finbase.desktop.common.field.StringField;
 
 import static at.mjst.finbase.desktop.model.entity.Account.FIELD_NAME;
 import static at.mjst.finbase.desktop.model.entity.Entity.SCHEMA_FINBASE;

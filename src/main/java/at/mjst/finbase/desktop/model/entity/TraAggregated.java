@@ -14,11 +14,11 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import at.mjst.finbase.desktop.model.entity.field.BigDecimalField;
-import at.mjst.finbase.desktop.model.entity.field.DateField;
-import at.mjst.finbase.desktop.model.entity.field.Field;
-import at.mjst.finbase.desktop.model.entity.field.IntegerField;
-import at.mjst.finbase.desktop.model.entity.field.LongField;
+import at.mjst.finbase.desktop.common.field.BigDecimalField;
+import at.mjst.finbase.desktop.common.field.DateField;
+import at.mjst.finbase.desktop.common.field.Field;
+import at.mjst.finbase.desktop.common.field.IntegerField;
+import at.mjst.finbase.desktop.common.field.LongField;
 
 import static at.mjst.finbase.desktop.model.entity.Entity.SCHEMA_FINBASE;
 

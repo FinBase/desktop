@@ -8,9 +8,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
+import at.mjst.finbase.desktop.common.field.FieldIdentifier;
 import at.mjst.finbase.desktop.dto.columnselection.ColumnDefinition;
 import at.mjst.finbase.desktop.dto.columnselection.ColumnSelection;
-import at.mjst.finbase.desktop.model.entity.field.FieldIdentifier;
 
 /**
  * Implementation of {@link ArrayBasedGenerator}

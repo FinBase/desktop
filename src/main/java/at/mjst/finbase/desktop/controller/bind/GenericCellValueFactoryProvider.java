@@ -4,8 +4,8 @@
  */
 package at.mjst.finbase.desktop.controller.bind;
 
+import at.mjst.finbase.desktop.common.field.FieldIdentifier;
 import at.mjst.finbase.desktop.model.entity.Entity;
-import at.mjst.finbase.desktop.model.entity.field.FieldIdentifier;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TableColumn;
 import javafx.util.Callback;

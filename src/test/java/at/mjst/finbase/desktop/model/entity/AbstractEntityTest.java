@@ -9,9 +9,9 @@ import org.junit.Test;
 
 import java.util.Collection;
 
-import at.mjst.finbase.desktop.model.entity.field.Field;
-import at.mjst.finbase.desktop.model.entity.field.IntegerField;
-import at.mjst.finbase.desktop.model.entity.field.StringField;
+import at.mjst.finbase.desktop.common.field.Field;
+import at.mjst.finbase.desktop.common.field.IntegerField;
+import at.mjst.finbase.desktop.common.field.StringField;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

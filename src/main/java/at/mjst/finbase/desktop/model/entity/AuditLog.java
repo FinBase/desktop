@@ -17,10 +17,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import at.mjst.finbase.desktop.model.entity.field.Field;
-import at.mjst.finbase.desktop.model.entity.field.LongField;
-import at.mjst.finbase.desktop.model.entity.field.StringField;
-import at.mjst.finbase.desktop.model.entity.field.TimestampField;
+import at.mjst.finbase.desktop.common.field.Field;
+import at.mjst.finbase.desktop.common.field.LongField;
+import at.mjst.finbase.desktop.common.field.StringField;
+import at.mjst.finbase.desktop.common.field.TimestampField;
 
 import static at.mjst.finbase.desktop.model.entity.Entity.SCHEMA_FINBASE;
 

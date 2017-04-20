@@ -11,9 +11,9 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-import at.mjst.finbase.desktop.model.entity.field.Field;
-import at.mjst.finbase.desktop.model.entity.field.FieldIdentifier;
-import at.mjst.finbase.desktop.model.entity.field.FieldRegistry;
+import at.mjst.finbase.desktop.common.field.Field;
+import at.mjst.finbase.desktop.common.field.FieldIdentifier;
+import at.mjst.finbase.desktop.common.field.FieldRegistry;
 import at.mjst.finbase.desktop.util.HashCodeBuilder;
 
 /**

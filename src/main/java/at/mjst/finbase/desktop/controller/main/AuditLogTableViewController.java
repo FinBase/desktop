@@ -11,12 +11,12 @@ import java.util.ResourceBundle;
 
 import javax.inject.Inject;
 
+import at.mjst.finbase.desktop.common.field.FieldIdentifier;
 import at.mjst.finbase.desktop.dto.columnselection.ColumnSelection;
 import at.mjst.finbase.desktop.eventsystem.events.AuditLogDataEvent;
 import at.mjst.finbase.desktop.eventsystem.events.TabSwitchEvent;
 import at.mjst.finbase.desktop.model.entity.AuditLog;
 import at.mjst.finbase.desktop.model.entity.Entity;
-import at.mjst.finbase.desktop.model.entity.field.FieldIdentifier;
 import at.mjst.finbase.desktop.model.service.AuditLogService;
 import at.mjst.finbase.desktop.model.service.columnselection.ArrayBasedGenerator;
 import at.mjst.finbase.desktop.view.CustomTableView;
