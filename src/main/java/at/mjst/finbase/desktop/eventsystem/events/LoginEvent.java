@@ -4,47 +4,72 @@
  */
 package at.mjst.finbase.desktop.eventsystem.events;
 
-import at.mjst.finbase.desktop.model.service.ModelId;
-
 /**
  * EventBus Event fired, if the login-button is pressed
  *
  * @author Ing. Michael J. Stallinger (projects@mjst.at)
  * @since 2016-07-12
  */
-public abstract class LoginEvent extends Event<ModelId>
+public abstract class LoginEvent extends Event
 {
-    private LoginEvent(ModelId senderId)
+    /**
+     * Basic constructor for login-events
+     *
+     * @param sender the event's sender
+     */
+    private LoginEvent(Object sender)
     {
-        super(senderId);
+        super(sender);
     }
 
+    /**
+     * Sent, if the login service successfully logged us in
+     */
     public static class LoginSuccess extends LoginEvent
     {
-        public LoginSuccess(ModelId senderId)
+        /**
+         * @param sender the event's sender
+         */
+        public LoginSuccess(Object sender)
         {
-            super(senderId);
+            super(sender);
         }
     }
 
+    /**
+     * Sent, if logout was successful
+     */
     public static class LogoffSuccess extends LoginEvent
     {
-        public LogoffSuccess(ModelId senderId)
+        /**
+         * @param sender the event's sender
+         */
+        public LogoffSuccess(Object sender)
         {
-            super(senderId);
+            super(sender);
         }
     }
 
+    /**
+     * Sends error information in case of login failure
+     */
     public static class LoginFailedEvent extends LoginEvent
     {
         private String errorText;
 
-        public LoginFailedEvent(ModelId senderId, String errorText)
+        /**
+         * @param sender    the event's sender
+         * @param errorText error information in textual form
+         */
+        public LoginFailedEvent(Object sender, String errorText)
         {
-            super(senderId);
+            super(sender);
             this.errorText = errorText;
         }
 
+        /**
+         * @return error information in textual form
+         */
         public String getErrorText()
         {
             return errorText;

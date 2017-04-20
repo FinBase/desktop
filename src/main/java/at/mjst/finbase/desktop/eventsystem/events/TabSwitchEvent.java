@@ -4,7 +4,6 @@
  */
 package at.mjst.finbase.desktop.eventsystem.events;
 
-import at.mjst.finbase.desktop.controller.ControllerId;
 import at.mjst.finbase.desktop.controller.main.TabId;
 
 /**
@@ -13,19 +12,19 @@ import at.mjst.finbase.desktop.controller.main.TabId;
  * @author Ing. Michael J. Stallinger (projects@mjst.at)
  * @since 2016-08-03
  */
-public class TabSwitchEvent extends Event<ControllerId>
+public class TabSwitchEvent extends Event
 {
     private final TabId oldTabId;
     private final TabId newTabId;
 
     /**
-     * @param senderId the id of the event's sender
+     * @param sender   the event's sender
      * @param oldTabId tab switched from
      * @param newTabId tab switched to
      */
-    public TabSwitchEvent(ControllerId senderId, TabId oldTabId, TabId newTabId)
+    public TabSwitchEvent(Object sender, TabId oldTabId, TabId newTabId)
     {
-        super(senderId);
+        super(sender);
         this.oldTabId = oldTabId;
         this.newTabId = newTabId;
     }

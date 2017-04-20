@@ -14,33 +14,33 @@ import org.jetbrains.annotations.NonNls;
  * @author Ing. Michael J. Stallinger (projects@mjst.at)
  * @since 2017-04-10
  */
-public class Event<EnumType extends EventEnum>
+public class Event
 {
     @NonNls
-    private static final String STR_SENDER_ID = "%s (senderId=%s, UUID=%s)";
-    private final EnumType senderId;
+    private static final String STR_SENDER = "%s (sender=%s)";
+    private final Object sender;
 
     /**
-     * @param senderId the id of the event's sender
+     * @param sender the event's sender
      */
-    public Event(EnumType senderId)
+    public Event(Object sender)
     {
-        this.senderId = senderId;
+        this.sender = sender;
     }
 
     /**
-     * @return the event's senderId, if set
+     * @return the event's sender, if set
      */
-    public EnumType getSenderId()
+    public Object getSender()
     {
-        return senderId;
+        return sender;
     }
 
     @Override
     public String toString()
     {
-        if (senderId != null) {
-            return String.format(STR_SENDER_ID, super.toString(), senderId, senderId.getUuid());
+        if (sender != null) {
+            return String.format(STR_SENDER, super.toString(), sender.toString());
         } else {
             return super.toString();
         }

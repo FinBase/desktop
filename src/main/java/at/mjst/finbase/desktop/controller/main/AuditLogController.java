@@ -6,8 +6,6 @@ package at.mjst.finbase.desktop.controller.main;
 
 import com.google.common.eventbus.Subscribe;
 
-import at.mjst.finbase.desktop.controller.ControllerId;
-import at.mjst.finbase.desktop.controller.ControllerIdProvider;
 import at.mjst.finbase.desktop.eventsystem.events.TabSwitchEvent;
 
 /**
@@ -16,19 +14,13 @@ import at.mjst.finbase.desktop.eventsystem.events.TabSwitchEvent;
  * @author Ing. Michael J. Stallinger (projects@mjst.at)
  * @since 2017-04-12
  */
-public class AuditLogController implements ControllerIdProvider
+public class AuditLogController
 {
-    @Override
-    public ControllerId getControllerId()
-    {
-        return ControllerId.AUDIT_LOG;
-    }
-
     @Subscribe
     public void onTabSwitch(TabSwitchEvent event)
     {
         if (event.getNewTabId() == TabId.AUDIT_LOG) {
-            System.out.println("AuditLogActivation received!");
+            System.out.println("AuditLogActivation received! TabId=" + TabId.AUDIT_LOG.getUuid());
         }
         if (event.getOldTabId() == TabId.AUDIT_LOG) {
             System.out.println("AuditLogTab lost focus!");

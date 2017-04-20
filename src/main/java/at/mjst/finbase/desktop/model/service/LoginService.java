@@ -21,10 +21,6 @@ import at.mjst.finbase.desktop.model.SessionProvider;
  */
 public class LoginService
 {
-    /**
-     * This UUID identifies this class uniquely. Used for multiple purposes, e.g. the event-system.
-     */
-    private static final ModelId SERVICE_ID = ModelId.LOGIN;
     @Inject
     private SessionProvider sessionProvider;
     @Inject
@@ -47,11 +43,11 @@ public class LoginService
             sessionProvider.initConnection(credentials);
             auditLogService.recordLogin();
             System.out.println("Login: success");
-            eventBus.post(new LoginEvent.LoginSuccess(SERVICE_ID));
+            eventBus.post(new LoginEvent.LoginSuccess(this));
         } catch (Throwable e) {
             // ToDo: log me!
             Throwable cause = Throwables.getRootCause(e);
-            eventBus.post(new LoginEvent.LoginFailedEvent(SERVICE_ID, cause.getMessage()));
+            eventBus.post(new LoginEvent.LoginFailedEvent(this, cause.getMessage()));
         }
     }
 
@@ -65,7 +61,7 @@ public class LoginService
         if (sessionProvider.initialized()) {
             auditLogService.recordLogout();
             sessionProvider.closeConnection();
-            eventBus.post(new LoginEvent.LogoffSuccess(SERVICE_ID));
+            eventBus.post(new LoginEvent.LogoffSuccess(this));
             System.out.println("Logout: success");
         } else {
             System.out.println("Logout: not logged in");

@@ -4,25 +4,23 @@
  */
 package at.mjst.finbase.desktop.eventsystem.events;
 
-import at.mjst.finbase.desktop.controller.ControllerId;
-
 /**
  * ToDo: Short class description
  *
  * @author Ing. Michael J. Stallinger (projects@mjst.at)
  * @since 2017-04-12
  */
-public class ControlActivationEvent extends Event<ControllerId>
+public class ControlActivationEvent extends Event
 {
     private final boolean enabled;
 
     /**
-     * @param senderId the id of the event's sender
-     * @param enabled  specifies, if the control is enabled or disabled
+     * @param sender  the event's sender
+     * @param enabled specifies, if the control is enabled or disabled
      */
-    public ControlActivationEvent(ControllerId senderId, boolean enabled)
+    public ControlActivationEvent(Object sender, boolean enabled)
     {
-        super(senderId);
+        super(sender);
         this.enabled = enabled;
     }
 

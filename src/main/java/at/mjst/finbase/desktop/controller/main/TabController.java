@@ -13,8 +13,6 @@ import org.jetbrains.annotations.Nullable;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import at.mjst.finbase.desktop.controller.ControllerId;
-import at.mjst.finbase.desktop.controller.ControllerIdProvider;
 import at.mjst.finbase.desktop.eventsystem.UIBus;
 import at.mjst.finbase.desktop.eventsystem.events.ControlActivationEvent;
 import at.mjst.finbase.desktop.eventsystem.events.LoginEvent;
@@ -33,19 +31,13 @@ import javafx.scene.control.TabPane;
  * @author Ing. Michael J. Stallinger (projects@mjst.at)
  * @since 2016-07-12
  */
-public class TabController implements ControllerIdProvider, Initializable
+public class TabController implements Initializable
 {
     @FXML
     private TabPane tabPane;
     @Inject
     @UIBus
     private EventBus eventBus;
-
-    @Override
-    public ControllerId getControllerId()
-    {
-        return ControllerId.TAB_CONTROLLER;
-    }
 
     /**
      * Called to initialize a controller after its root element has been
@@ -92,11 +84,11 @@ public class TabController implements ControllerIdProvider, Initializable
         public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue)
         {
             System.out.println("TabPane disabled state changed! " + oldValue + "->" + newValue);
-            eventBus.post(
-                    new ControlActivationEvent(getControllerId(), !newValue)); // note: NOT disabled == enabled here...
+            eventBus.post(new ControlActivationEvent(this, !newValue)); // note: NOT disabled == enabled
+            // here...
             if (!newValue) {
                 TabId tabId = getTabId(tabPane.getSelectionModel().getSelectedItem());
-                eventBus.post(new TabSwitchEvent(getControllerId(), null, tabId));
+                eventBus.post(new TabSwitchEvent(this, null, tabId));
             }
         }
     }
@@ -111,7 +103,7 @@ public class TabController implements ControllerIdProvider, Initializable
         {
             TabId oldTabId = getTabId(oldValue);
             TabId newTabId = getTabId(newValue);
-            eventBus.post(new TabSwitchEvent(getControllerId(), oldTabId, newTabId));
+            eventBus.post(new TabSwitchEvent(this, oldTabId, newTabId));
         }
     }
 }
