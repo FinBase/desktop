@@ -7,8 +7,7 @@ package at.mjst.finbase.desktop.model.service;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 
-import java.sql.Timestamp;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import at.mjst.finbase.desktop.eventsystem.ModelBus;
@@ -37,7 +36,7 @@ class AuditLogDbService implements AuditLogService
     {
         AuditLog log = createNewAuditLog();
         log.setApplication(NlsManager.getNls("finbase.title"));
-        log.setTimestampOn(new Timestamp(new Date().getTime()));
+        log.setTimestampOn(LocalDateTime.now());
         UserService userService = sessionProvider.getSessionInstance(UserService.class);
         log.setUser(userService.getCurrentUser());
         getAuditLogDAO().insertOrUpdate(log);
@@ -61,7 +60,7 @@ class AuditLogDbService implements AuditLogService
         AuditLogContainer container = sessionProvider.getSessionInstance(AuditLogContainer.class);
         AuditLog log = container.getAuditLog();
         if (log != null) {
-            log.setTimestampOff(new Timestamp(new Date().getTime()));
+            log.setTimestampOff(LocalDateTime.now());
             getAuditLogDAO().insertOrUpdate(log);
         } else {
             throw new RuntimeException("Session AuditLog not found!");

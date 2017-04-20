@@ -5,7 +5,7 @@
 package at.mjst.finbase.desktop.model.entity;
 
 import java.math.BigDecimal;
-import java.sql.Date;
+import java.time.LocalDate;
 import java.util.Collection;
 
 import javax.persistence.Basic;
@@ -15,9 +15,9 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import at.mjst.finbase.desktop.common.field.BigDecimalField;
-import at.mjst.finbase.desktop.common.field.DateField;
 import at.mjst.finbase.desktop.common.field.Field;
 import at.mjst.finbase.desktop.common.field.IntegerField;
+import at.mjst.finbase.desktop.common.field.LocalDateField;
 import at.mjst.finbase.desktop.common.field.LongField;
 
 import static at.mjst.finbase.desktop.model.entity.Entity.SCHEMA_FINBASE;
@@ -29,6 +29,7 @@ import static at.mjst.finbase.desktop.model.entity.Entity.SCHEMA_FINBASE;
  * @since 2017-03-29
  */
 @Entity
+//@Immutable // mark entity as readonly (hibernate)
 @Table(name = TraAggregated.VIEW_TRA_AGGREGATED, schema = SCHEMA_FINBASE)
 public class TraAggregated extends AbstractEntity
 {
@@ -45,8 +46,8 @@ public class TraAggregated extends AbstractEntity
     private final BigDecimalField balance = new BigDecimalField(FIELD_BALANCE, this);
     private final BigDecimalField balance_pos = new BigDecimalField(FIELD_BALANCE_POS, this);
     private final BigDecimalField balance_neg = new BigDecimalField(FIELD_BALANCE_NEG, this);
-    private final DateField valueDateFrom = new DateField(FIELD_VALUE_DATE_FROM, this);
-    private final DateField valueDateTo = new DateField(FIELD_VALUE_DATE_TO, this);
+    private final LocalDateField valueDateFrom = new LocalDateField(FIELD_VALUE_DATE_FROM, this);
+    private final LocalDateField valueDateTo = new LocalDateField(FIELD_VALUE_DATE_TO, this);
     private final LongField transaction_count = new LongField(FIELD_TRANSACTION_COUNT, this);
 
     @Basic
@@ -111,24 +112,24 @@ public class TraAggregated extends AbstractEntity
 
     @Basic
     @Column(name = FIELD_VALUE_DATE_FROM, updatable = false)
-    public Date getValueDateFrom()
+    public LocalDate getValueDateFrom()
     {
         return valueDateFrom.getValue();
     }
 
-    private void setValueDateFrom(Date valueDateFrom)
+    private void setValueDateFrom(LocalDate valueDateFrom)
     {
         this.valueDateFrom.setValue(valueDateFrom);
     }
 
     @Basic
     @Column(name = FIELD_VALUE_DATE_TO, updatable = false)
-    public Date getValueDateTo()
+    public LocalDate getValueDateTo()
     {
         return valueDateTo.getValue();
     }
 
-    private void setValueDateTo(Date valueDateTo)
+    private void setValueDateTo(LocalDate valueDateTo)
     {
         this.valueDateTo.setValue(valueDateTo);
     }

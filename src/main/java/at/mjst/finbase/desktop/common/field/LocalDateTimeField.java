@@ -4,15 +4,15 @@
  */
 package at.mjst.finbase.desktop.common.field;
 
-import java.sql.Date;
+import java.time.LocalDateTime;
 
 /**
- * Concrete implementation of {@link BaseField}, wrapping a {@link Date}.
+ * Concrete implementation of {@link BaseField}, wrapping a {@link LocalDateTime}.
  *
  * @author Ing. Michael J. Stallinger (projects@mjst.at)
  * @since 2017-01-18
  */
-public class DateField extends BaseField<Date>
+public class LocalDateTimeField extends BaseField<LocalDateTime>
 {
     /**
      * Creates an instance of this class.
@@ -20,8 +20,8 @@ public class DateField extends BaseField<Date>
      * @param fieldName the fields fieldName
      * @param registry  an optional map to add this field to
      */
-    public DateField(String fieldName, FieldRegistry registry)
+    public LocalDateTimeField(String fieldName, FieldRegistry registry)
     {
-        super(fieldName, registry, Date.class);
+        super(fieldName, registry, LocalDateTime.class);
     }
 }

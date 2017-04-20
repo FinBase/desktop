@@ -6,7 +6,7 @@ package at.mjst.finbase.desktop.model.entity;
 
 import org.hibernate.annotations.DynamicUpdate;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Collection;
 
 import javax.persistence.Basic;
@@ -18,9 +18,9 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import at.mjst.finbase.desktop.common.field.Field;
+import at.mjst.finbase.desktop.common.field.LocalDateTimeField;
 import at.mjst.finbase.desktop.common.field.LongField;
 import at.mjst.finbase.desktop.common.field.StringField;
-import at.mjst.finbase.desktop.common.field.TimestampField;
 
 import static at.mjst.finbase.desktop.model.entity.Entity.SCHEMA_FINBASE;
 
@@ -45,14 +45,14 @@ public class AuditLog extends AbstractEntity
     // These 'Field'-Objects wrap ObjectProperties<>, to access them via column-names!
     private final LongField id = new LongField(FIELD_ID, this);
     private final StringField user = new StringField(FIELD_USER, this);
-    private final TimestampField timestampOn = new TimestampField(FIELD_TIMESTAMP_ON, this);
-    private final TimestampField timestampOff = new TimestampField(FIELD_TIMESTAMP_OFF, this);
+    private final LocalDateTimeField timestampOn = new LocalDateTimeField(FIELD_TIMESTAMP_ON, this);
+    private final LocalDateTimeField timestampOff = new LocalDateTimeField(FIELD_TIMESTAMP_OFF, this);
     private final StringField application = new StringField(FIELD_APPLICATION, this);
 
     /**
      * For testing purposes only
      */
-    public AuditLog(Long id, String test1, Timestamp timestamp, String appl1)
+    public AuditLog(Long id, String test1, LocalDateTime timestamp, String appl1)
     {
         this();
         setId(id);
@@ -108,24 +108,24 @@ public class AuditLog extends AbstractEntity
 
     @Basic
     @Column(name = FIELD_TIMESTAMP_ON, nullable = false)
-    public Timestamp getTimestampOn()
+    public LocalDateTime getTimestampOn()
     {
         return timestampOn.getValue();
     }
 
-    public void setTimestampOn(Timestamp timestamp)
+    public void setTimestampOn(LocalDateTime timestamp)
     {
         this.timestampOn.setValue(timestamp);
     }
 
     @Basic
     @Column(name = FIELD_TIMESTAMP_OFF)
-    public Timestamp getTimestampOff()
+    public LocalDateTime getTimestampOff()
     {
         return timestampOff.getValue();
     }
 
-    public void setTimestampOff(Timestamp timestamp)
+    public void setTimestampOff(LocalDateTime timestamp)
     {
         this.timestampOff.setValue(timestamp);
     }
