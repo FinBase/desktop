@@ -2,17 +2,16 @@
  * Copyright (c) 2017, Ing. Michael J. Stallinger and/or his affiliates. All rights reserved.
  * This source code is subject to license terms, see the LICENSE file for details.
  */
-package at.mjst.finbase.desktop.eventsystem;
+package at.mjst.finbase.desktop.model.service.columnselection;
 
-import com.google.common.eventbus.EventBus;
 import com.google.inject.AbstractModule;
 import com.google.inject.Binder;
 
 /**
- * Guice dependency injection module configuration.
+ * ToDo: Short class description
  *
  * @author Ing. Michael J. Stallinger (projects@mjst.at)
- * @since 2016-07-14
+ * @since 2017-01-11
  */
 public class _Module extends AbstractModule
 {
@@ -22,7 +21,7 @@ public class _Module extends AbstractModule
     @Override
     protected void configure()
     {
-        bind(EventBus.class).annotatedWith(UIBus.class).toProvider(EventBusProvider.UI.class).asEagerSingleton();
-        bind(EventBus.class).annotatedWith(ModelBus.class).toProvider(EventBusProvider.Model.class).asEagerSingleton();
+        bind(ArrayBasedGenerator.class).to(ArrayBasedGeneratorImpl.class);
+        bind(EntityBasedGenerator.class).to(EntityBasedGeneratorImpl.class);
     }
 }

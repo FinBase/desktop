@@ -149,9 +149,9 @@ public class FinBase extends Application
 
     private void initGuiceModules(List<Module> modules)
     {
-        modules.add(new at.mjst.finbase.desktop.controller.Module());
-        modules.add(new at.mjst.finbase.desktop.dto.Module());
+        modules.add(new at.mjst.finbase.desktop.controller._Module());
+        modules.add(new at.mjst.finbase.desktop.dto._Module());
         modules.add(new at.mjst.finbase.desktop.eventsystem._Module());
-        modules.add(new at.mjst.finbase.desktop.model.Module());
+        modules.add(new at.mjst.finbase.desktop.model._Module());
     }
 }

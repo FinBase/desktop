@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NonNls;
  * @author Ing. Michael J. Stallinger (projects@mjst.at)
  * @since 2017-04-09
  */
-public abstract class _EventBusProvider implements Provider<EventBus>
+public abstract class EventBusProvider implements Provider<EventBus>
 {
     @Override
     abstract public EventBus get();
@@ -24,7 +24,7 @@ public abstract class _EventBusProvider implements Provider<EventBus>
     /**
      * Generates the provider for a controller-side bus
      */
-    static class UI extends _EventBusProvider
+    static class UI extends EventBusProvider
     {
         @NonNls
         private static final String NAME_CONTROLLER_BUS = "UIBus";
@@ -39,7 +39,7 @@ public abstract class _EventBusProvider implements Provider<EventBus>
     /**
      * Generates the provider for a model-side bus
      */
-    static class Model extends _EventBusProvider
+    static class Model extends EventBusProvider
     {
         @NonNls
         private static final String NAME_MODEL_BUS = "Model";

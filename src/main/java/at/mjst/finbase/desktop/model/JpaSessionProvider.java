@@ -71,7 +71,7 @@ public class JpaSessionProvider implements SessionProvider
         List<Module> modules = new LinkedList<>();
         // add the connectionProperties to the JPAModule - we'll 'inject' userName & password here!
         modules.add(new JpaPersistModule(Resource.ID_PERSISTENCE).properties(connectionProperties));
-        modules.add(new at.mjst.finbase.desktop.model.persistence.Module());
+        modules.add(new at.mjst.finbase.desktop.model.persistence._Module());
         // create childInjector!
         persistenceInjector = injector.createChildInjector(modules);
     }

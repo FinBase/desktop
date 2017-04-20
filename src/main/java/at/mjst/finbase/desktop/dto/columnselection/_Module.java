@@ -13,7 +13,7 @@ import com.google.inject.Binder;
  * @author Ing. Michael J. Stallinger (projects@mjst.at)
  * @since 2017-01-11
  */
-public class Module extends AbstractModule
+public class _Module extends AbstractModule
 {
     /**
      * Configures a {@link Binder} via the exposed methods.
