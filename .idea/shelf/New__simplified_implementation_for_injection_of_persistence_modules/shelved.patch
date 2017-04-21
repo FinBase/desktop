@@ -1,0 +1,340 @@
+Index: src/main/java/at/mjst/finbase/desktop/model/JpaSessionProvider.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>/*\n * Copyright (c) 2017, Ing. Michael J. Stallinger and/or his affiliates. All rights reserved.\n * This source code is subject to license terms, see the LICENSE file for details.\n */\npackage at.mjst.finbase.desktop.model;\n\nimport com.google.inject.Inject;\nimport com.google.inject.Injector;\nimport com.google.inject.Module;\nimport com.google.inject.persist.PersistService;\nimport com.google.inject.persist.jpa.JpaPersistModule;\n\nimport org.hibernate.cfg.AvailableSettings;\n\nimport java.util.LinkedList;\nimport java.util.List;\nimport java.util.Properties;\n\nimport at.mjst.finbase.desktop.Resource;\nimport at.mjst.finbase.desktop.dto.Credentials;\n\n/**\n * ToDo: Short class description\n * ToDo: threadsafe, as it is used as singleton!\n *\n * @author Ing. Michael J. Stallinger (projects@mjst.at)\n * @since 2016-07-31\n */\npublic class JpaSessionProvider implements SessionProvider\n{\n    @Inject\n    private Properties connectionProperties;\n    @Inject\n    private Injector injector; // Main injector!\n    private Injector persistenceInjector;\n    // further object instances...\n    private PersistService service;\n\n    public JpaSessionProvider()\n    {\n        System.out.println(getClass().getName() + \" created\");\n    }\n\n    @Override\n    public void initConnection(Credentials credentials)\n    {\n        if (initialized()) {\n            throw new RuntimeException(\"Connection already initialized\");\n            // .. this will also be thrown, if service.start() is called a second time!\n        }\n        try {\n            assignCredentialsToJpaProperties(credentials);\n            buildChildInjector();\n            buildAndStartPersistServices();\n        } catch (Exception e) {\n            clearInstances();\n            throw e;\n        }\n    }\n\n    private void assignCredentialsToJpaProperties(Credentials credentials)\n    {\n        connectionProperties.put(AvailableSettings.JPA_JDBC_USER, credentials.getUserName());\n        connectionProperties.put(AvailableSettings.JPA_JDBC_PASSWORD, credentials.getPassword());\n        // connectionProperties.put(AvailableSettings.INTERCEPTOR, interceptor);\n        // connectionProperties.put(AvailableSettings.SESSION_SCOPED_INTERCEPTOR, interceptor);\n    }\n\n    private void buildChildInjector()\n    {\n        List<Module> modules = new LinkedList<>();\n        // add the connectionProperties to the JPAModule - we'll 'inject' userName & password here!\n        modules.add(new JpaPersistModule(Resource.ID_PERSISTENCE).properties(connectionProperties));\n        modules.add(new at.mjst.finbase.desktop.model.persistence._Module());\n        // create childInjector!\n        persistenceInjector = injector.createChildInjector(modules);\n    }\n\n    private void buildAndStartPersistServices()\n    {\n        service = getSessionInstance(PersistService.class);\n        service.start();\n    }\n\n    private void clearInstances()\n    {\n        service = null;\n        persistenceInjector = null; // throw away childInjector and (maybe) its object graph\n    }\n\n    @Override\n    public void closeConnection()\n    {\n        try {\n            if (initialized()) {\n                stopPersistService();\n            } else {\n                throw new RuntimeException(\"Connection has not been initialized!\");\n            }\n        } finally {\n            clearInstances();\n        }\n    }\n\n    private void stopPersistService()\n    {\n        service.stop(); // we can never start this one again!\n    }\n\n    @Override\n    public boolean initialized()\n    {\n        return (service != null); // todo: where to test for connection still alive?\n    }\n\n    @Override\n    public <T> T getSessionInstance(Class<T> type)\n    {\n        return persistenceInjector.getInstance(type);\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/at/mjst/finbase/desktop/model/JpaSessionProvider.java	(revision 112dfc4555b216a1f7e4fd51e7291e46719f4098)
++++ src/main/java/at/mjst/finbase/desktop/model/JpaSessionProvider.java	(revision )
+@@ -6,17 +6,12 @@
+ 
+ import com.google.inject.Inject;
+ import com.google.inject.Injector;
+-import com.google.inject.Module;
+ import com.google.inject.persist.PersistService;
+-import com.google.inject.persist.jpa.JpaPersistModule;
+ 
+ import org.hibernate.cfg.AvailableSettings;
+ 
+-import java.util.LinkedList;
+-import java.util.List;
+ import java.util.Properties;
+ 
+-import at.mjst.finbase.desktop.Resource;
+ import at.mjst.finbase.desktop.dto.Credentials;
+ 
+ /**
+@@ -28,14 +23,19 @@
+  */
+ public class JpaSessionProvider implements SessionProvider
+ {
+-    @Inject
+     private Properties connectionProperties;
+     @Inject
+-    private Injector injector; // Main injector!
+-    private Injector persistenceInjector;
++    private Injector injector;
++    //    private Injector persistenceInjector;
+     // further object instances...
++    //@Inject
+     private PersistService service;
+ 
++    public JpaSessionProvider(Properties connectionProperties)
++    {
++        this.connectionProperties = connectionProperties;
++    }
++
+     public JpaSessionProvider()
+     {
+         System.out.println(getClass().getName() + " created");
+@@ -50,7 +50,7 @@
+         }
+         try {
+             assignCredentialsToJpaProperties(credentials);
+-            buildChildInjector();
++            //            buildChildInjector();
+             buildAndStartPersistServices();
+         } catch (Exception e) {
+             clearInstances();
+@@ -66,26 +66,25 @@
+         // connectionProperties.put(AvailableSettings.SESSION_SCOPED_INTERCEPTOR, interceptor);
+     }
+ 
+-    private void buildChildInjector()
+-    {
+-        List<Module> modules = new LinkedList<>();
+-        // add the connectionProperties to the JPAModule - we'll 'inject' userName & password here!
+-        modules.add(new JpaPersistModule(Resource.ID_PERSISTENCE).properties(connectionProperties));
+-        modules.add(new at.mjst.finbase.desktop.model.persistence._Module());
+-        // create childInjector!
+-        persistenceInjector = injector.createChildInjector(modules);
+-    }
+-
+     private void buildAndStartPersistServices()
+     {
+-        service = getSessionInstance(PersistService.class);
++        service = injector.getInstance(PersistService.class);
+         service.start();
+     }
++    //    private void buildChildInjector()
++    //    {
++    //        List<Module> modules = new LinkedList<>();
++    //        // add the connectionProperties to the JPAModule - we'll 'inject' userName & password here!
++    //        modules.add(new JpaPersistModule(Resource.ID_PERSISTENCE).properties(connectionProperties));
++    //        //        modules.add(new at.mjst.finbase.desktop.model.persistence._Module());
++    //        // create childInjector!
++    //        persistenceInjector = injector.createChildInjector(modules);
++    //    }
+ 
+     private void clearInstances()
+     {
+         service = null;
+-        persistenceInjector = null; // throw away childInjector and (maybe) its object graph
++        //persistenceInjector = null; // throw away childInjector and (maybe) its object graph
+     }
+ 
+     @Override
+@@ -113,9 +112,13 @@
+         return (service != null); // todo: where to test for connection still alive?
+     }
+ 
+-    @Override
+-    public <T> T getSessionInstance(Class<T> type)
++    public void setConnectionProperties(Properties connectionProperties)
+     {
+-        return persistenceInjector.getInstance(type);
++        this.connectionProperties = connectionProperties;
+     }
++    //    @Override
++    //    public <T> T getSessionInstance(Class<T> type)
++    //    {
++    //        return persistenceInjector.getInstance(type);
++    //    }
+ }
+Index: src/main/java/at/mjst/finbase/desktop/model/SessionProvider.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>/*\n * Copyright (c) 2016, Ing. Michael J. Stallinger and/or his affiliates. All rights reserved.\n * This source code is subject to license terms, see the LICENSE file for details.\n */\npackage at.mjst.finbase.desktop.model;\n\nimport at.mjst.finbase.desktop.dto.Credentials;\n\n/**\n * ToDo: Short class description\n *\n * @author Ing. Michael J. Stallinger (projects@mjst.at)\n * @since 2016-07-31\n */\npublic interface SessionProvider\n{\n    void initConnection(Credentials credentials);\n\n    void closeConnection();\n\n    boolean initialized();\n\n    <T> T getSessionInstance(Class<T> type);\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/at/mjst/finbase/desktop/model/SessionProvider.java	(revision 112dfc4555b216a1f7e4fd51e7291e46719f4098)
++++ src/main/java/at/mjst/finbase/desktop/model/SessionProvider.java	(revision )
+@@ -4,6 +4,8 @@
+  */
+ package at.mjst.finbase.desktop.model;
+ 
++import java.util.Properties;
++
+ import at.mjst.finbase.desktop.dto.Credentials;
+ 
+ /**
+@@ -20,5 +22,6 @@
+ 
+     boolean initialized();
+ 
+-    <T> T getSessionInstance(Class<T> type);
++    void setConnectionProperties(Properties connectionProperties);
++    //    <T> T getSessionInstance(Class<T> type);
+ }
+Index: src/main/java/at/mjst/finbase/desktop/FinBase.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>/*\n * Copyright (c) 2017, Ing. Michael J. Stallinger and/or his affiliates. All rights reserved.\n * This source code is subject to license terms, see the LICENSE file for details.\n */\npackage at.mjst.finbase.desktop;\n\nimport com.google.inject.Guice;\nimport com.google.inject.Injector;\nimport com.google.inject.Module;\n\nimport org.jetbrains.annotations.NonNls;\n\nimport java.util.LinkedList;\nimport java.util.List;\n\nimport at.mjst.finbase.desktop.controller.ControllerFactory;\nimport at.mjst.finbase.desktop.model.service.LoginService;\nimport at.mjst.finbase.desktop.util.NlsManager;\nimport javafx.application.Application;\nimport javafx.fxml.FXMLLoader;\nimport javafx.scene.Parent;\nimport javafx.scene.Scene;\nimport javafx.scene.image.Image;\nimport javafx.stage.Stage;\n\nimport static com.google.inject.Stage.DEVELOPMENT;\nimport static com.google.inject.Stage.PRODUCTION;\n\n/**\n * FinBase main application class.\n *\n * @author Ing. Michael J. Stallinger (projects@mjst.at)\n * @since 2016-05-28\n */\npublic class FinBase extends Application\n{\n    @NonNls\n    private static final String PARAM_DEVELOP = \"development\";\n    @NonNls\n    private static final String TRUE = \"true\";\n    private Injector injector;\n\n    /**\n     * Main entry point.\n     *\n     * @param args Development-switch can be passed\n     */\n    public static void main(String[] args)\n    {\n        launch(args);\n    }\n\n    /**\n     * The application initialization method. This method is called immediately after the Application class is loaded\n     * and constructed. An application may override this method to perform initialization prior to the actual starting\n     * of the application.\n     *\n     * <p> The implementation of this method provided by the Application class does nothing. </p>\n     *\n     * <p> NOTE: This method is not called on the JavaFX Application Thread. An application must not construct a Scene\n     * or a Stage in this method. An application may construct other JavaFX objects in this method. </p>\n     */\n    @Override\n    public void init() throws Exception\n    {\n        super.init();\n        initInjector();\n    }\n\n    /**\n     * The main entry point for all JavaFX applications. The start method is called after the init method has returned,\n     * and after the system is ready for the application to begin running. <p> <p> NOTE: This method is called on the\n     * JavaFX Application Thread. </p>\n     *\n     * @param primaryStage the primary stage for this application, onto which the application scene can be set. The\n     *                     primary stage will be embedded in the browser if the application was launched as an applet.\n     *                     Applications may create other stages, if needed, but they will not be primary stages and will\n     *                     not be embedded in the browser.\n     */\n    @Override\n    public void start(Stage primaryStage) throws Exception\n    {\n        // here goes the fxml-Loader\n        FXMLLoader loader = buildLoader();\n        // load the fxml node-graph, it is defined as 'root'\n        Parent root = loader.load();\n        // set title and icon\n        primaryStage.setTitle(NlsManager.getNls(\"finbase.title\"));\n        primaryStage.getIcons().add(new Image(getClass().getResourceAsStream(Resource.R_APP_ICON)));\n        // set and show the scene\n        primaryStage.setScene(new Scene(root));\n        primaryStage.show();\n    }\n\n    private FXMLLoader buildLoader()\n    {\n        FXMLLoader loader = getInjector().getInstance(FXMLLoader.class);\n        loader.setLocation(getClass().getResource(Resource.R_APP_APP));\n        loader.setResources(NlsManager.getBundle());\n        // We use a custom factory to initialize the first-level controllers to know each other, so they can interact\n        loader.setControllerFactory(getInjector().getInstance(ControllerFactory.class));\n        return loader;\n    }\n\n    private Injector getInjector()\n    {\n        if (injector != null) {\n            return injector;\n        } else {\n            throw new RuntimeException(\"Injector not properly initialized!\");\n        }\n    }\n\n    /**\n     * This method is called when the application should stop, and provides a convenient place to prepare for\n     * application exit and destroy resources.\n     *\n     * <p> The implementation of this method provided by the Application class does nothing. </p>\n     *\n     * <p> NOTE: This method is called on the JavaFX Application Thread. </p>\n     */\n    @Override\n    public void stop() throws Exception\n    {\n        // Force the sessionProvider to stop it's service\n        LoginService loginService = getInjector().getInstance(LoginService.class);\n        loginService.doLogout();\n    }\n\n    private void initInjector()\n    {\n        com.google.inject.Stage stage;\n        if (developmentMode()) {\n            stage = DEVELOPMENT;\n        } else {\n            stage = PRODUCTION;\n        }\n        List<Module> modules = new LinkedList<>();\n        initGuiceModules(modules);\n        injector = Guice.createInjector(stage, modules);\n    }\n\n    private boolean developmentMode()\n    {\n        // ToDo: extract to config-class and store the args...\n        // ToDo: FixMe! Does not work without args!\n        return this.getParameters().getNamed().get(PARAM_DEVELOP).equals(TRUE);\n    }\n\n    private void initGuiceModules(List<Module> modules)\n    {\n        modules.add(new at.mjst.finbase.desktop.controller._Module());\n        modules.add(new at.mjst.finbase.desktop.dto._Module());\n        modules.add(new at.mjst.finbase.desktop.eventsystem._Module());\n        modules.add(new at.mjst.finbase.desktop.model._Module());\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/at/mjst/finbase/desktop/FinBase.java	(revision 112dfc4555b216a1f7e4fd51e7291e46719f4098)
++++ src/main/java/at/mjst/finbase/desktop/FinBase.java	(revision )
+@@ -150,6 +150,7 @@
+     private void initGuiceModules(List<Module> modules)
+     {
+         modules.add(new at.mjst.finbase.desktop.controller._Module());
++        modules.add(new at.mjst.finbase.desktop.model.persistence._Module());
+         modules.add(new at.mjst.finbase.desktop.dto._Module());
+         modules.add(new at.mjst.finbase.desktop.eventsystem._Module());
+         modules.add(new at.mjst.finbase.desktop.model._Module());
+Index: src/main/java/at/mjst/finbase/desktop/model/service/AuditLogDbService.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>/*\n * Copyright (c) 2017, Ing. Michael J. Stallinger and/or his affiliates. All rights reserved.\n * This source code is subject to license terms, see the LICENSE file for details.\n */\npackage at.mjst.finbase.desktop.model.service;\n\nimport com.google.common.eventbus.EventBus;\nimport com.google.inject.Inject;\n\nimport java.time.LocalDateTime;\nimport java.util.List;\n\nimport at.mjst.finbase.desktop.eventsystem.ModelBus;\nimport at.mjst.finbase.desktop.eventsystem.events.AuditLogDataEvent;\nimport at.mjst.finbase.desktop.model.SessionProvider;\nimport at.mjst.finbase.desktop.model.entity.AuditLog;\nimport at.mjst.finbase.desktop.model.persistence.AuditLogContainer;\nimport at.mjst.finbase.desktop.model.persistence.dao.AuditLogDAO;\nimport at.mjst.finbase.desktop.util.NlsManager;\n\n/**\n * ToDo: Short class description\n *\n * @author Ing. Michael J. Stallinger (projects@mjst.at)\n * @since 2017-01-12\n */\nclass AuditLogDbService implements AuditLogService\n{\n    @Inject\n    private SessionProvider sessionProvider;\n    @Inject\n    @ModelBus\n    private EventBus eventBus;\n\n    public void recordLogin()\n    {\n        AuditLog log = createNewAuditLog();\n        log.setApplication(NlsManager.getNls(\"finbase.title\"));\n        log.setTimestampOn(LocalDateTime.now());\n        UserService userService = sessionProvider.getSessionInstance(UserService.class);\n        log.setUser(userService.getCurrentUser());\n        getAuditLogDAO().insertOrUpdate(log);\n    }\n\n    private AuditLog createNewAuditLog()\n    {\n        AuditLog log = sessionProvider.getSessionInstance(AuditLog.class); // normal creation via main-injector?\n        AuditLogContainer container = sessionProvider.getSessionInstance(AuditLogContainer.class);\n        container.setAuditLog(log);\n        return log;\n    }\n\n    private AuditLogDAO getAuditLogDAO()\n    {\n        return sessionProvider.getSessionInstance(AuditLogDAO.class);\n    }\n\n    public void recordLogout()\n    {\n        AuditLogContainer container = sessionProvider.getSessionInstance(AuditLogContainer.class);\n        AuditLog log = container.getAuditLog();\n        if (log != null) {\n            log.setTimestampOff(LocalDateTime.now());\n            getAuditLogDAO().insertOrUpdate(log);\n        } else {\n            throw new RuntimeException(\"Session AuditLog not found!\");\n        }\n    }\n\n    public boolean executeLoad()\n    {\n        AuditLogDAO dao = getAuditLogDAO();\n        List<AuditLog> list = dao.queryAll();\n        if (list != null) {\n            System.out.println(\"done!\");\n            eventBus.post(new AuditLogDataEvent(this, list));\n            return true;\n        } else {\n            return false;\n        }\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/at/mjst/finbase/desktop/model/service/AuditLogDbService.java	(revision 112dfc4555b216a1f7e4fd51e7291e46719f4098)
++++ src/main/java/at/mjst/finbase/desktop/model/service/AuditLogDbService.java	(revision )
+@@ -12,7 +12,6 @@
+ 
+ import at.mjst.finbase.desktop.eventsystem.ModelBus;
+ import at.mjst.finbase.desktop.eventsystem.events.AuditLogDataEvent;
+-import at.mjst.finbase.desktop.model.SessionProvider;
+ import at.mjst.finbase.desktop.model.entity.AuditLog;
+ import at.mjst.finbase.desktop.model.persistence.AuditLogContainer;
+ import at.mjst.finbase.desktop.model.persistence.dao.AuditLogDAO;
+@@ -27,7 +26,11 @@
+ class AuditLogDbService implements AuditLogService
+ {
+     @Inject
+-    private SessionProvider sessionProvider;
++    private AuditLogContainer auditLogContainer;
++    @Inject
++    private UserService userService;
++    @Inject
++    private AuditLogDAO auditLogDAO;
+     @Inject
+     @ModelBus
+     private EventBus eventBus;
+@@ -37,31 +40,29 @@
+         AuditLog log = createNewAuditLog();
+         log.setApplication(NlsManager.getNls("finbase.title"));
+         log.setTimestampOn(LocalDateTime.now());
+-        UserService userService = sessionProvider.getSessionInstance(UserService.class);
++        //         = sessionProvider.getSessionInstance(UserService.class);
+         log.setUser(userService.getCurrentUser());
+-        getAuditLogDAO().insertOrUpdate(log);
++        auditLogDAO.insertOrUpdate(log);
+     }
+ 
+     private AuditLog createNewAuditLog()
+     {
+-        AuditLog log = sessionProvider.getSessionInstance(AuditLog.class); // normal creation via main-injector?
+-        AuditLogContainer container = sessionProvider.getSessionInstance(AuditLogContainer.class);
+-        container.setAuditLog(log);
++        AuditLog log = new AuditLog();
++        auditLogContainer.setAuditLog(log);
+         return log;
+     }
+-
+-    private AuditLogDAO getAuditLogDAO()
+-    {
+-        return sessionProvider.getSessionInstance(AuditLogDAO.class);
+-    }
++    //    private AuditLogDAO getAuditLogDAO()
++    //    {
++    //        return sessionProvider.getSessionInstance(AuditLogDAO.class);
++    //    }
+ 
+     public void recordLogout()
+     {
+-        AuditLogContainer container = sessionProvider.getSessionInstance(AuditLogContainer.class);
+-        AuditLog log = container.getAuditLog();
++        //        AuditLogContainer container = sessionProvider.getSessionInstance(AuditLogContainer.class);
++        AuditLog log = auditLogContainer.getAuditLog(); // todo: only works, if id is passed!
+         if (log != null) {
+             log.setTimestampOff(LocalDateTime.now());
+-            getAuditLogDAO().insertOrUpdate(log);
++            auditLogDAO.insertOrUpdate(log);
+         } else {
+             throw new RuntimeException("Session AuditLog not found!");
+         }
+@@ -69,8 +70,8 @@
+ 
+     public boolean executeLoad()
+     {
+-        AuditLogDAO dao = getAuditLogDAO();
+-        List<AuditLog> list = dao.queryAll();
++        //        AuditLogDAO dao = getAuditLogDAO();
++        List<AuditLog> list = auditLogDAO.queryAll();
+         if (list != null) {
+             System.out.println("done!");
+             eventBus.post(new AuditLogDataEvent(this, list));
+Index: src/main/java/at/mjst/finbase/desktop/model/_Module.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>/*\n * Copyright (c) 2017, Ing. Michael J. Stallinger and/or his affiliates. All rights reserved.\n * This source code is subject to license terms, see the LICENSE file for details.\n */\npackage at.mjst.finbase.desktop.model;\n\nimport com.google.inject.AbstractModule;\nimport com.google.inject.Binder;\n\n/**\n * Guice dependency injection module configuration.\n *\n * @author Ing. Michael J. Stallinger (projects@mjst.at)\n * @since 2016-07-15\n */\npublic class _Module extends AbstractModule\n{\n    /**\n     * Configures a {@link Binder} via the exposed methods.\n     */\n    @Override\n    protected void configure()\n    {\n        install(new at.mjst.finbase.desktop.model.entity._Module());\n        install(new at.mjst.finbase.desktop.model.service._Module());\n        // create the SessionProvider as singleton and as early as possible to detect errors as soon as possible\n        bind(SessionProvider.class).to(JpaSessionProvider.class).asEagerSingleton();\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/at/mjst/finbase/desktop/model/_Module.java	(revision 112dfc4555b216a1f7e4fd51e7291e46719f4098)
++++ src/main/java/at/mjst/finbase/desktop/model/_Module.java	(revision )
+@@ -6,6 +6,14 @@
+ 
+ import com.google.inject.AbstractModule;
+ import com.google.inject.Binder;
++import com.google.inject.Injector;
++import com.google.inject.Provides;
++import com.google.inject.Singleton;
++import com.google.inject.persist.jpa.JpaPersistModule;
++
++import java.util.Properties;
++
++import at.mjst.finbase.desktop.Resource;
+ 
+ /**
+  * Guice dependency injection module configuration.
+@@ -15,6 +23,8 @@
+  */
+ public class _Module extends AbstractModule
+ {
++    private final Properties connectionProperties = new Properties();
++
+     /**
+      * Configures a {@link Binder} via the exposed methods.
+      */
+@@ -23,7 +33,26 @@
+     {
+         install(new at.mjst.finbase.desktop.model.entity._Module());
+         install(new at.mjst.finbase.desktop.model.service._Module());
++        // jpaPersist-module
++        install(new JpaPersistModule(Resource.ID_PERSISTENCE).properties(connectionProperties));
++        // restore...
+         // create the SessionProvider as singleton and as early as possible to detect errors as soon as possible
+-        bind(SessionProvider.class).to(JpaSessionProvider.class).asEagerSingleton();
++        //        bind(SessionProvider.class).to(JpaSessionProvider.class).asEagerSingleton();
++    }
++    // @Provides @AnnotationForConectionProps....
++
++    /**
++     * Creates the SessionProvider as singleton
++     *
++     * @param injector injector to create the instance
++     * @return a new singleton instance of {@link JpaSessionProvider}
++     */
++    @Provides
++    @Singleton
++    SessionProvider getSessionProvider(Injector injector)
++    {
++        SessionProvider provider = injector.getInstance(JpaSessionProvider.class);
++        provider.setConnectionProperties(connectionProperties); // todo: 'provide' connection-properties inside class?
++        return provider;
+     }
+ }
+Index: src/main/java/at/mjst/finbase/desktop/model/service/UserDbService.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>/*\n * Copyright (c) 2016, Ing. Michael J. Stallinger and/or his affiliates. All rights reserved.\n * This source code is subject to license terms, see the LICENSE file for details.\n */\npackage at.mjst.finbase.desktop.model.service;\n\nimport com.google.inject.Inject;\n\nimport at.mjst.finbase.desktop.model.SessionProvider;\nimport at.mjst.finbase.desktop.model.persistence.dao.CurrentUserDAO;\n\n/**\n * ToDo: Short class description\n *\n * @author Ing. Michael J. Stallinger (projects@mjst.at)\n * @since 2016-07-26\n */\nclass UserDbService implements UserService\n{\n    @Inject\n    private SessionProvider sessionProvider;\n\n    public String getCurrentUser()\n    {\n        CurrentUserDAO dao = sessionProvider.getSessionInstance(CurrentUserDAO.class);\n        return dao.getCurrentUser();\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/at/mjst/finbase/desktop/model/service/UserDbService.java	(revision 112dfc4555b216a1f7e4fd51e7291e46719f4098)
++++ src/main/java/at/mjst/finbase/desktop/model/service/UserDbService.java	(revision )
+@@ -4,11 +4,6 @@
+  */
+ package at.mjst.finbase.desktop.model.service;
+ 
+-import com.google.inject.Inject;
+-
+-import at.mjst.finbase.desktop.model.SessionProvider;
+-import at.mjst.finbase.desktop.model.persistence.dao.CurrentUserDAO;
+-
+ /**
+  * ToDo: Short class description
+  *
+@@ -17,12 +12,12 @@
+  */
+ class UserDbService implements UserService
+ {
+-    @Inject
+-    private SessionProvider sessionProvider;
++    //    @Inject
++    //    private SessionProvider sessionProvider;
+ 
+     public String getCurrentUser()
+     {
+-        CurrentUserDAO dao = sessionProvider.getSessionInstance(CurrentUserDAO.class);
+-        return dao.getCurrentUser();
++        //CurrentUserDAO dao = sessionProvider.getSessionInstance(CurrentUserDAO.class);
++        return "aaa";//dao.getCurrentUser();
+     }
+ }
