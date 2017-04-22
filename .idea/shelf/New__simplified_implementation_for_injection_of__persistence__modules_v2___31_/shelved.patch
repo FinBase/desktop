@@ -1,0 +1,551 @@
+Index: src/main/java/at/mjst/finbase/desktop/model/SessionProvider.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>/*\n * Copyright (c) 2016, Ing. Michael J. Stallinger and/or his affiliates. All rights reserved.\n * This source code is subject to license terms, see the LICENSE file for details.\n */\npackage at.mjst.finbase.desktop.model;\n\nimport at.mjst.finbase.desktop.dto.Credentials;\n\n/**\n * ToDo: Short class description\n *\n * @author Ing. Michael J. Stallinger (projects@mjst.at)\n * @since 2016-07-31\n */\npublic interface SessionProvider\n{\n    void initConnection(Credentials credentials);\n\n    void closeConnection();\n\n    boolean initialized();\n\n    <T> T getSessionInstance(Class<T> type);\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/at/mjst/finbase/desktop/model/SessionProvider.java	(revision da71c0bd1e8e51688fbad14289749bd281ca4a72)
++++ src/main/java/at/mjst/finbase/desktop/model/SessionProvider.java	(revision )
+@@ -19,6 +19,4 @@
+     void closeConnection();
+ 
+     boolean initialized();
+-
+-    <T> T getSessionInstance(Class<T> type);
+ }
+Index: src/main/java/at/mjst/finbase/desktop/controller/ControllerFactory.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>/*\n * Copyright (c) 2017, Ing. Michael J. Stallinger and/or his affiliates. All rights reserved.\n * This source code is subject to license terms, see the LICENSE file for details.\n */\npackage at.mjst.finbase.desktop.controller;\n\nimport com.google.common.eventbus.EventBus;\nimport com.google.inject.Inject;\nimport com.google.inject.Injector;\n\nimport at.mjst.finbase.desktop.eventsystem.UIBus;\nimport javafx.util.Callback;\n\n/**\n * Factory used to create and configure the fxml-controllers and enable\n * their {@link com.google.common.eventbus.EventBus}-functionality if they implement the appropriate interface.\n *\n * @author Ing. Michael J. Stallinger (projects@mjst.at)\n * @since 2016-07-12\n */\npublic class ControllerFactory implements Callback<Class<?>, Object>\n{\n    @Inject\n    @UIBus\n    private EventBus eventBus;\n    @Inject\n    private Injector injector;\n\n    /**\n     * The <code>call</code> method is called when required, and is given a\n     * single argument of type P, with a requirement that an object of type R\n     * is returned.\n     *\n     * @param param The single argument upon which the returned value should be determined.\n     * @return An object of type R that may be determined based on the provided parameter value.\n     */\n    @Override\n    public Object call(Class<?> param)\n    {\n        try {\n            // use the injector to create the controller-instance, so it has control over the complete object-graph!\n            Object obj = injector.getInstance(param);\n            // set the eventBus to every controller class\n            eventBus.register(obj);\n            return obj;\n        } catch (Exception e) {\n            throw new RuntimeException(e); // fatal, just bail...\n        }\n    }\n}\n\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/at/mjst/finbase/desktop/controller/ControllerFactory.java	(revision da71c0bd1e8e51688fbad14289749bd281ca4a72)
++++ src/main/java/at/mjst/finbase/desktop/controller/ControllerFactory.java	(revision )
+@@ -25,6 +25,17 @@
+     private EventBus eventBus;
+     @Inject
+     private Injector injector;
++    // build its own Controller-Injector!!!
++    //    private void buildChildInjector()
++    //    {
++    //        List<Module> modules = new LinkedList<>();
++    //        // add the connectionProperties to the JPAModule - we'll 'inject' userName & password here!
++    //        modules.add(new JpaPersistModule(Resource.ID_PERSISTENCE).properties(connectionProperties));
++    //        //        modules.add(new at.mjst.finbase.desktop.model.persistence._Module());
++    //        // create childInjector!
++    //        persistenceInjector = injector.createChildInjector(modules);
++    //    }
++
+ 
+     /**
+      * The <code>call</code> method is called when required, and is given a
+@@ -38,6 +49,7 @@
+     public Object call(Class<?> param)
+     {
+         try {
++            System.out.println("Injecting..." + param.toString());
+             // use the injector to create the controller-instance, so it has control over the complete object-graph!
+             Object obj = injector.getInstance(param);
+             // set the eventBus to every controller class
+Index: src/main/java/at/mjst/finbase/desktop/model/_Module.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>/*\n * Copyright (c) 2017, Ing. Michael J. Stallinger and/or his affiliates. All rights reserved.\n * This source code is subject to license terms, see the LICENSE file for details.\n */\npackage at.mjst.finbase.desktop.model;\n\nimport com.google.inject.AbstractModule;\nimport com.google.inject.Binder;\n\n/**\n * Guice dependency injection module configuration.\n *\n * @author Ing. Michael J. Stallinger (projects@mjst.at)\n * @since 2016-07-15\n */\npublic class _Module extends AbstractModule\n{\n    /**\n     * Configures a {@link Binder} via the exposed methods.\n     */\n    @Override\n    protected void configure()\n    {\n        install(new at.mjst.finbase.desktop.model.entity._Module());\n        install(new at.mjst.finbase.desktop.model.service._Module());\n        // create the SessionProvider as singleton and as early as possible to detect errors as soon as possible\n        bind(SessionProvider.class).to(JpaSessionProvider.class).asEagerSingleton();\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/at/mjst/finbase/desktop/model/_Module.java	(revision da71c0bd1e8e51688fbad14289749bd281ca4a72)
++++ src/main/java/at/mjst/finbase/desktop/model/_Module.java	(revision )
+@@ -6,6 +6,12 @@
+ 
+ import com.google.inject.AbstractModule;
+ import com.google.inject.Binder;
++import com.google.inject.Provides;
++import com.google.inject.persist.jpa.JpaPersistModule;
++
++import java.util.Properties;
++
++import at.mjst.finbase.desktop.Resource;
+ 
+ /**
+  * Guice dependency injection module configuration.
+@@ -15,15 +21,40 @@
+  */
+ public class _Module extends AbstractModule
+ {
++    private final Properties connectionProperties = new Properties();
++
+     /**
+      * Configures a {@link Binder} via the exposed methods.
+      */
+     @Override
+     protected void configure()
+     {
+-        install(new at.mjst.finbase.desktop.model.entity._Module());
+         install(new at.mjst.finbase.desktop.model.service._Module());
++        install(new at.mjst.finbase.desktop.model.persistence._Module());
++        // Pass pointer to connectionProperties to jpaPersist-module
++        install(new JpaPersistModule(Resource.ID_PERSISTENCE).properties(connectionProperties));
+         // create the SessionProvider as singleton and as early as possible to detect errors as soon as possible
+         bind(SessionProvider.class).to(JpaSessionProvider.class).asEagerSingleton();
+     }
++
++    @Provides
++    @ConnectionProperties
++    Properties getConnectionProperties()
++    {
++        return connectionProperties;
++    }
++    //    /**
++    //     * Creates the SessionProvider as singleton
++    //     *
++    //     * @param injector injector to create the instance
++    //     * @return a new singleton instance of {@link JpaSessionProvider}
++    //     */
++    //    @Provides
++    //    @Singleton
++    //    SessionProvider getSessionProvider(Injector injector)
++    //    {
++    //        SessionProvider provider = injector.getInstance(JpaSessionProvider.class);
++    //        provider.setConnectionProperties(connectionProperties); // todo: 'provide' connection-properties inside class?
++    //        return provider;
++    //    }
+ }
+Index: src/main/java/at/mjst/finbase/desktop/model/service/AuditLogDbService.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>/*\n * Copyright (c) 2017, Ing. Michael J. Stallinger and/or his affiliates. All rights reserved.\n * This source code is subject to license terms, see the LICENSE file for details.\n */\npackage at.mjst.finbase.desktop.model.service;\n\nimport com.google.common.eventbus.EventBus;\nimport com.google.inject.Inject;\n\nimport java.time.LocalDateTime;\nimport java.util.List;\n\nimport at.mjst.finbase.desktop.eventsystem.ModelBus;\nimport at.mjst.finbase.desktop.eventsystem.events.AuditLogDataEvent;\nimport at.mjst.finbase.desktop.model.SessionProvider;\nimport at.mjst.finbase.desktop.model.entity.AuditLog;\nimport at.mjst.finbase.desktop.model.persistence.AuditLogContainer;\nimport at.mjst.finbase.desktop.model.persistence.dao.AuditLogDAO;\nimport at.mjst.finbase.desktop.util.NlsManager;\n\n/**\n * ToDo: Short class description\n *\n * @author Ing. Michael J. Stallinger (projects@mjst.at)\n * @since 2017-01-12\n */\nclass AuditLogDbService implements AuditLogService\n{\n    @Inject\n    private SessionProvider sessionProvider;\n    @Inject\n    @ModelBus\n    private EventBus eventBus;\n\n    public void recordLogin()\n    {\n        AuditLog log = createNewAuditLog();\n        log.setApplication(NlsManager.getNls(\"finbase.title\"));\n        log.setTimestampOn(LocalDateTime.now());\n        UserService userService = sessionProvider.getSessionInstance(UserService.class);\n        log.setUser(userService.getCurrentUser());\n        getAuditLogDAO().insertOrUpdate(log);\n    }\n\n    private AuditLog createNewAuditLog()\n    {\n        AuditLog log = sessionProvider.getSessionInstance(AuditLog.class); // normal creation via main-injector?\n        AuditLogContainer container = sessionProvider.getSessionInstance(AuditLogContainer.class);\n        container.setAuditLog(log);\n        return log;\n    }\n\n    private AuditLogDAO getAuditLogDAO()\n    {\n        return sessionProvider.getSessionInstance(AuditLogDAO.class);\n    }\n\n    public void recordLogout()\n    {\n        AuditLogContainer container = sessionProvider.getSessionInstance(AuditLogContainer.class);\n        AuditLog log = container.getAuditLog();\n        if (log != null) {\n            log.setTimestampOff(LocalDateTime.now());\n            getAuditLogDAO().insertOrUpdate(log);\n        } else {\n            throw new RuntimeException(\"Session AuditLog not found!\");\n        }\n    }\n\n    public boolean executeLoad()\n    {\n        AuditLogDAO dao = getAuditLogDAO();\n        List<AuditLog> list = dao.queryAll();\n        if (list != null) {\n            System.out.println(\"done!\");\n            eventBus.post(new AuditLogDataEvent(this, list));\n            return true;\n        } else {\n            return false;\n        }\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/at/mjst/finbase/desktop/model/service/AuditLogDbService.java	(revision da71c0bd1e8e51688fbad14289749bd281ca4a72)
++++ src/main/java/at/mjst/finbase/desktop/model/service/AuditLogDbService.java	(revision )
+@@ -12,9 +12,7 @@
+ 
+ import at.mjst.finbase.desktop.eventsystem.ModelBus;
+ import at.mjst.finbase.desktop.eventsystem.events.AuditLogDataEvent;
+-import at.mjst.finbase.desktop.model.SessionProvider;
+ import at.mjst.finbase.desktop.model.entity.AuditLog;
+-import at.mjst.finbase.desktop.model.persistence.AuditLogContainer;
+ import at.mjst.finbase.desktop.model.persistence.dao.AuditLogDAO;
+ import at.mjst.finbase.desktop.util.NlsManager;
+ 
+@@ -27,7 +25,11 @@
+ class AuditLogDbService implements AuditLogService
+ {
+     @Inject
+-    private SessionProvider sessionProvider;
++    private AuditLogContainer auditLogContainer;
++    @Inject
++    private UserService userService;
++    @Inject
++    private AuditLogDAO auditLogDAO;
+     @Inject
+     @ModelBus
+     private EventBus eventBus;
+@@ -37,31 +39,28 @@
+         AuditLog log = createNewAuditLog();
+         log.setApplication(NlsManager.getNls("finbase.title"));
+         log.setTimestampOn(LocalDateTime.now());
+-        UserService userService = sessionProvider.getSessionInstance(UserService.class);
++        //         = sessionProvider.getSessionInstance(UserService.class);
+         log.setUser(userService.getCurrentUser());
+-        getAuditLogDAO().insertOrUpdate(log);
++        auditLogDAO.insertOrUpdate(log);
+     }
+ 
+     private AuditLog createNewAuditLog()
+     {
+-        AuditLog log = sessionProvider.getSessionInstance(AuditLog.class); // normal creation via main-injector?
+-        AuditLogContainer container = sessionProvider.getSessionInstance(AuditLogContainer.class);
+-        container.setAuditLog(log);
++        AuditLog log = new AuditLog();
++        auditLogContainer.setAuditLog(log);
+         return log;
+     }
+-
+-    private AuditLogDAO getAuditLogDAO()
+-    {
+-        return sessionProvider.getSessionInstance(AuditLogDAO.class);
+-    }
++    //    private AuditLogDAO getAuditLogDAO()
++    //    {
++    //        return sessionProvider.getSessionInstance(AuditLogDAO.class);
++    //    }
+ 
+     public void recordLogout()
+     {
+-        AuditLogContainer container = sessionProvider.getSessionInstance(AuditLogContainer.class);
+-        AuditLog log = container.getAuditLog();
++        //        AuditLogContainer container = sessionProvider.getSessionInstance(AuditLogContainer.class);
++        AuditLog log = auditLogContainer.getAuditLog(); // todo: only works, if id is passed!
+         if (log != null) {
+-            log.setTimestampOff(LocalDateTime.now());
+-            getAuditLogDAO().insertOrUpdate(log);
++            auditLogDAO.merge(log, LocalDateTime.now());
+         } else {
+             throw new RuntimeException("Session AuditLog not found!");
+         }
+@@ -69,8 +68,8 @@
+ 
+     public boolean executeLoad()
+     {
+-        AuditLogDAO dao = getAuditLogDAO();
+-        List<AuditLog> list = dao.queryAll();
++        //        AuditLogDAO dao = getAuditLogDAO();
++        List<AuditLog> list = auditLogDAO.queryAll();
+         if (list != null) {
+             System.out.println("done!");
+             eventBus.post(new AuditLogDataEvent(this, list));
+Index: src/main/java/at/mjst/finbase/desktop/model/persistence/AuditLogContainer.java
+===================================================================
+--- src/main/java/at/mjst/finbase/desktop/model/persistence/AuditLogContainer.java	(revision da71c0bd1e8e51688fbad14289749bd281ca4a72)
++++ src/main/java/at/mjst/finbase/desktop/model/service/AuditLogContainer.java	(revision )
+@@ -2,7 +2,7 @@
+  * Copyright (c) 2017, Ing. Michael J. Stallinger and/or his affiliates. All rights reserved.
+  * This source code is subject to license terms, see the LICENSE file for details.
+  */
+-package at.mjst.finbase.desktop.model.persistence;
++package at.mjst.finbase.desktop.model.service;
+ 
+ import at.mjst.finbase.desktop.model.entity.AuditLog;
+ 
+Index: src/main/java/at/mjst/finbase/desktop/model/service/UserDbService.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>/*\n * Copyright (c) 2016, Ing. Michael J. Stallinger and/or his affiliates. All rights reserved.\n * This source code is subject to license terms, see the LICENSE file for details.\n */\npackage at.mjst.finbase.desktop.model.service;\n\nimport com.google.inject.Inject;\n\nimport at.mjst.finbase.desktop.model.SessionProvider;\nimport at.mjst.finbase.desktop.model.persistence.dao.CurrentUserDAO;\n\n/**\n * ToDo: Short class description\n *\n * @author Ing. Michael J. Stallinger (projects@mjst.at)\n * @since 2016-07-26\n */\nclass UserDbService implements UserService\n{\n    @Inject\n    private SessionProvider sessionProvider;\n\n    public String getCurrentUser()\n    {\n        CurrentUserDAO dao = sessionProvider.getSessionInstance(CurrentUserDAO.class);\n        return dao.getCurrentUser();\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/at/mjst/finbase/desktop/model/service/UserDbService.java	(revision da71c0bd1e8e51688fbad14289749bd281ca4a72)
++++ src/main/java/at/mjst/finbase/desktop/model/service/UserDbService.java	(revision )
+@@ -6,7 +6,6 @@
+ 
+ import com.google.inject.Inject;
+ 
+-import at.mjst.finbase.desktop.model.SessionProvider;
+ import at.mjst.finbase.desktop.model.persistence.dao.CurrentUserDAO;
+ 
+ /**
+@@ -18,11 +17,10 @@
+ class UserDbService implements UserService
+ {
+     @Inject
+-    private SessionProvider sessionProvider;
++    private CurrentUserDAO currentUserDAO;
+ 
+     public String getCurrentUser()
+     {
+-        CurrentUserDAO dao = sessionProvider.getSessionInstance(CurrentUserDAO.class);
+-        return dao.getCurrentUser();
++        return currentUserDAO.getCurrentUser();
+     }
+ }
+Index: src/main/java/at/mjst/finbase/desktop/model/service/_Module.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>/*\n * Copyright (c) 2017, Ing. Michael J. Stallinger and/or his affiliates. All rights reserved.\n * This source code is subject to license terms, see the LICENSE file for details.\n */\npackage at.mjst.finbase.desktop.model.service;\n\nimport com.google.inject.AbstractModule;\nimport com.google.inject.Binder;\n\n/**\n * ToDo: Short class description\n *\n * @author Ing. Michael J. Stallinger (projects@mjst.at)\n * @since 2017-01-11\n */\npublic class _Module extends AbstractModule\n{\n    /**\n     * Configures a {@link Binder} via the exposed methods.\n     */\n    @Override\n    protected void configure()\n    {\n        install(new at.mjst.finbase.desktop.model.service.columnselection._Module());\n        bind(AuditLogService.class).to(AuditLogDbService.class);\n        bind(UserService.class).to(UserDbService.class);\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/at/mjst/finbase/desktop/model/service/_Module.java	(revision da71c0bd1e8e51688fbad14289749bd281ca4a72)
++++ src/main/java/at/mjst/finbase/desktop/model/service/_Module.java	(revision )
+@@ -6,6 +6,7 @@
+ 
+ import com.google.inject.AbstractModule;
+ import com.google.inject.Binder;
++import com.google.inject.Singleton;
+ 
+ /**
+  * ToDo: Short class description
+@@ -24,5 +25,7 @@
+         install(new at.mjst.finbase.desktop.model.service.columnselection._Module());
+         bind(AuditLogService.class).to(AuditLogDbService.class);
+         bind(UserService.class).to(UserDbService.class);
++        // Bind the AuditLogContainer as singleton within this child-injectors lifetime
++        bind(AuditLogContainer.class).in(Singleton.class);
+     }
+ }
+Index: src/main/java/at/mjst/finbase/desktop/model/persistence/dao/CurrentUserDAONativeSQL.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>/*\n * Copyright (c) 2017, Ing. Michael J. Stallinger and/or his affiliates. All rights reserved.\n * This source code is subject to license terms, see the LICENSE file for details.\n */\npackage at.mjst.finbase.desktop.model.persistence.dao;\n\nimport com.google.inject.Inject;\nimport com.google.inject.persist.Transactional;\n\nimport javax.persistence.EntityManager;\n\n/**\n * ToDo: Short class description\n *\n * @author Ing. Michael J. Stallinger (projects@mjst.at)\n * @since 2017-01-13\n */\npublic class CurrentUserDAONativeSQL implements CurrentUserDAO\n{\n    @Inject\n    private EntityManager em;\n\n    @Override\n    @Transactional\n    public String getCurrentUser()\n    {\n        // WARNING! Native SQL - also executed on other db-systems!!\n        return (String) em.createNativeQuery(\"select USER()\").getSingleResult();\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/at/mjst/finbase/desktop/model/persistence/dao/CurrentUserDAONativeSQL.java	(revision da71c0bd1e8e51688fbad14289749bd281ca4a72)
++++ src/main/java/at/mjst/finbase/desktop/model/persistence/dao/CurrentUserDAONativeSQL.java	(revision )
+@@ -5,6 +5,7 @@
+ package at.mjst.finbase.desktop.model.persistence.dao;
+ 
+ import com.google.inject.Inject;
++import com.google.inject.Provider;
+ import com.google.inject.persist.Transactional;
+ 
+ import javax.persistence.EntityManager;
+@@ -18,13 +19,13 @@
+ public class CurrentUserDAONativeSQL implements CurrentUserDAO
+ {
+     @Inject
+-    private EntityManager em;
++    private Provider<EntityManager> emp;
+ 
+     @Override
+     @Transactional
+     public String getCurrentUser()
+     {
+         // WARNING! Native SQL - also executed on other db-systems!!
+-        return (String) em.createNativeQuery("select USER()").getSingleResult();
++        return (String) emp.get().createNativeQuery("select USER()").getSingleResult();
+     }
+ }
+Index: src/main/java/at/mjst/finbase/desktop/model/JpaSessionProvider.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>/*\n * Copyright (c) 2017, Ing. Michael J. Stallinger and/or his affiliates. All rights reserved.\n * This source code is subject to license terms, see the LICENSE file for details.\n */\npackage at.mjst.finbase.desktop.model;\n\nimport com.google.inject.Inject;\nimport com.google.inject.Injector;\nimport com.google.inject.Module;\nimport com.google.inject.persist.PersistService;\nimport com.google.inject.persist.jpa.JpaPersistModule;\n\nimport org.hibernate.cfg.AvailableSettings;\n\nimport java.util.LinkedList;\nimport java.util.List;\nimport java.util.Properties;\n\nimport at.mjst.finbase.desktop.Resource;\nimport at.mjst.finbase.desktop.dto.Credentials;\n\n/**\n * ToDo: Short class description\n * ToDo: threadsafe, as it is used as singleton!\n *\n * @author Ing. Michael J. Stallinger (projects@mjst.at)\n * @since 2016-07-31\n */\npublic class JpaSessionProvider implements SessionProvider\n{\n    @Inject\n    private Properties connectionProperties;\n    @Inject\n    private Injector injector; // Main injector!\n    private Injector persistenceInjector;\n    // further object instances...\n    private PersistService service;\n\n    public JpaSessionProvider()\n    {\n        System.out.println(getClass().getName() + \" created\");\n    }\n\n    @Override\n    public void initConnection(Credentials credentials)\n    {\n        if (initialized()) {\n            throw new RuntimeException(\"Connection already initialized\");\n            // .. this will also be thrown, if service.start() is called a second time!\n        }\n        try {\n            assignCredentialsToJpaProperties(credentials);\n            buildChildInjector();\n            buildAndStartPersistServices();\n        } catch (Exception e) {\n            clearInstances();\n            throw e;\n        }\n    }\n\n    private void assignCredentialsToJpaProperties(Credentials credentials)\n    {\n        connectionProperties.put(AvailableSettings.JPA_JDBC_USER, credentials.getUserName());\n        connectionProperties.put(AvailableSettings.JPA_JDBC_PASSWORD, credentials.getPassword());\n        // connectionProperties.put(AvailableSettings.INTERCEPTOR, interceptor);\n        // connectionProperties.put(AvailableSettings.SESSION_SCOPED_INTERCEPTOR, interceptor);\n    }\n\n    private void buildChildInjector()\n    {\n        List<Module> modules = new LinkedList<>();\n        // add the connectionProperties to the JPAModule - we'll 'inject' userName & password here!\n        modules.add(new JpaPersistModule(Resource.ID_PERSISTENCE).properties(connectionProperties));\n        modules.add(new at.mjst.finbase.desktop.model.persistence._Module());\n        // create childInjector!\n        persistenceInjector = injector.createChildInjector(modules);\n    }\n\n    private void buildAndStartPersistServices()\n    {\n        service = getSessionInstance(PersistService.class);\n        service.start();\n    }\n\n    private void clearInstances()\n    {\n        service = null;\n        persistenceInjector = null; // throw away childInjector and (maybe) its object graph\n    }\n\n    @Override\n    public void closeConnection()\n    {\n        try {\n            if (initialized()) {\n                stopPersistService();\n            } else {\n                throw new RuntimeException(\"Connection has not been initialized!\");\n            }\n        } finally {\n            clearInstances();\n        }\n    }\n\n    private void stopPersistService()\n    {\n        service.stop(); // we can never start this one again!\n    }\n\n    @Override\n    public boolean initialized()\n    {\n        return (service != null); // todo: where to test for connection still alive?\n    }\n\n    @Override\n    public <T> T getSessionInstance(Class<T> type)\n    {\n        return persistenceInjector.getInstance(type);\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/at/mjst/finbase/desktop/model/JpaSessionProvider.java	(revision da71c0bd1e8e51688fbad14289749bd281ca4a72)
++++ src/main/java/at/mjst/finbase/desktop/model/JpaSessionProvider.java	(revision )
+@@ -6,17 +6,12 @@
+ 
+ import com.google.inject.Inject;
+ import com.google.inject.Injector;
+-import com.google.inject.Module;
+ import com.google.inject.persist.PersistService;
+-import com.google.inject.persist.jpa.JpaPersistModule;
+ 
+ import org.hibernate.cfg.AvailableSettings;
+ 
+-import java.util.LinkedList;
+-import java.util.List;
+ import java.util.Properties;
+ 
+-import at.mjst.finbase.desktop.Resource;
+ import at.mjst.finbase.desktop.dto.Credentials;
+ 
+ /**
+@@ -28,17 +23,18 @@
+  */
+ public class JpaSessionProvider implements SessionProvider
+ {
++    private final Properties connectionProperties;
+     @Inject
+-    private Properties connectionProperties;
+-    @Inject
+-    private Injector injector; // Main injector!
+-    private Injector persistenceInjector;
+-    // further object instances...
++    private Injector injector;
++    // Persist service is created on demand
+     private PersistService service;
+ 
+-    public JpaSessionProvider()
++    @Inject
++    public JpaSessionProvider(@ConnectionProperties Properties connectionProperties)
+     {
+-        System.out.println(getClass().getName() + " created");
++        super();
++        this.connectionProperties = connectionProperties;
++        System.out.println(getClass().getName() + " created with " + connectionProperties);
+     }
+ 
+     @Override
+@@ -50,7 +46,6 @@
+         }
+         try {
+             assignCredentialsToJpaProperties(credentials);
+-            buildChildInjector();
+             buildAndStartPersistServices();
+         } catch (Exception e) {
+             clearInstances();
+@@ -66,26 +61,15 @@
+         // connectionProperties.put(AvailableSettings.SESSION_SCOPED_INTERCEPTOR, interceptor);
+     }
+ 
+-    private void buildChildInjector()
+-    {
+-        List<Module> modules = new LinkedList<>();
+-        // add the connectionProperties to the JPAModule - we'll 'inject' userName & password here!
+-        modules.add(new JpaPersistModule(Resource.ID_PERSISTENCE).properties(connectionProperties));
+-        modules.add(new at.mjst.finbase.desktop.model.persistence._Module());
+-        // create childInjector!
+-        persistenceInjector = injector.createChildInjector(modules);
+-    }
+-
+     private void buildAndStartPersistServices()
+     {
+-        service = getSessionInstance(PersistService.class);
++        service = injector.getInstance(PersistService.class);
+         service.start();
+     }
+ 
+     private void clearInstances()
+     {
+         service = null;
+-        persistenceInjector = null; // throw away childInjector and (maybe) its object graph
+     }
+ 
+     @Override
+@@ -112,10 +96,4 @@
+     {
+         return (service != null); // todo: where to test for connection still alive?
+     }
+-
+-    @Override
+-    public <T> T getSessionInstance(Class<T> type)
+-    {
+-        return persistenceInjector.getInstance(type);
+-    }
+ }
+Index: src/main/java/at/mjst/finbase/desktop/model/persistence/_Module.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>/*\n * Copyright (c) 2017, Ing. Michael J. Stallinger and/or his affiliates. All rights reserved.\n * This source code is subject to license terms, see the LICENSE file for details.\n */\npackage at.mjst.finbase.desktop.model.persistence;\n\nimport com.google.inject.AbstractModule;\nimport com.google.inject.Binder;\nimport com.google.inject.Singleton;\n\n/**\n * _Module for configuration of persistenceInjector (this is a guice child-injector creating classes that need\n * initialized {@link com.google.inject.persist.PersistService} and open db-connection to properly inject\n * {@link javax.persistence.EntityManager} and {@link com.google.inject.persist.jpa.JpaLocalTxnInterceptor})\n *\n * @author Ing. Michael J. Stallinger (projects@mjst.at)\n * @since 2017-01-12\n */\npublic class _Module extends AbstractModule\n{\n    /**\n     * Configures a {@link Binder} via the exposed methods.\n     */\n    @Override\n    protected void configure()\n    {\n        install(new at.mjst.finbase.desktop.model.persistence.dao._Module());\n        // Bind the AuditLogContainer as singleton within this child-injectors lifetime\n        bind(AuditLogContainer.class).in(Singleton.class);\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/at/mjst/finbase/desktop/model/persistence/_Module.java	(revision da71c0bd1e8e51688fbad14289749bd281ca4a72)
++++ src/main/java/at/mjst/finbase/desktop/model/persistence/_Module.java	(revision )
+@@ -6,7 +6,6 @@
+ 
+ import com.google.inject.AbstractModule;
+ import com.google.inject.Binder;
+-import com.google.inject.Singleton;
+ 
+ /**
+  * _Module for configuration of persistenceInjector (this is a guice child-injector creating classes that need
+@@ -25,7 +24,5 @@
+     protected void configure()
+     {
+         install(new at.mjst.finbase.desktop.model.persistence.dao._Module());
+-        // Bind the AuditLogContainer as singleton within this child-injectors lifetime
+-        bind(AuditLogContainer.class).in(Singleton.class);
+     }
+ }
+Index: src/main/java/at/mjst/finbase/desktop/model/persistence/dao/AuditLogDAO.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>/*\n * Copyright (c) 2017, Ing. Michael J. Stallinger and/or his affiliates. All rights reserved.\n * This source code is subject to license terms, see the LICENSE file for details.\n */\npackage at.mjst.finbase.desktop.model.persistence.dao;\n\nimport com.google.inject.Inject;\nimport com.google.inject.Provider;\nimport com.google.inject.persist.Transactional;\n\nimport java.util.List;\n\nimport javax.persistence.EntityManager;\nimport javax.persistence.TypedQuery;\nimport javax.persistence.criteria.CriteriaBuilder;\nimport javax.persistence.criteria.CriteriaQuery;\nimport javax.persistence.criteria.Root;\n\nimport at.mjst.finbase.desktop.model.entity.AuditLog;\n\n/**\n * ToDo: Short class description\n * ToDo: See hibernate stragegy: http://salilstock.blogspot.co.at/2013/01/eliminating-hibernate-boiler-plate-code.html\n *\n * @author Ing. Michael J. Stallinger (projects@mjst.at)\n * @since 2016-07-26\n */\n//\n// Classical example code:\n//\n//  EntityManager em = sp.getNewEntityManager();\n//  em.getTransaction().begin();\n//  try {\n//      em.persist(entity);\n//      em.find(entity.class, id);\n//  } finally {\n//      em.getTransaction().commit();\n//      em.close();\n//  }\n//\npublic class AuditLogDAO\n{\n    @Inject\n    private Provider<EntityManager> entityManagerProvider;\n    // Transactional only possible, if this one (or its provider?) is injected via Injector!\n\n    @Transactional\n    public AuditLog find(Long id)\n    {\n        return getEm().find(AuditLog.class, id);\n    }\n\n    /**\n     * According to <a href=\"http://stackoverflow.com/a/21679881/700165\">this stackOverflow article</a>, it is\n     * strongly recommended, to only inject a provider and get the em-instance through the provider! Also, every CRUD\n     * method should be marked with {@link Transactional}\n     *\n     * @return a new instance of {@link EntityManager} using a provider\n     */\n    public EntityManager getEm()\n    {\n        return entityManagerProvider.get();\n    }\n\n    @Transactional\n    public void insertOrUpdate(AuditLog logEntry)\n    {\n        EntityManager em = getEm();\n        System.out.println(\"Is transaction active? \" + em.getTransaction().isActive());\n        em.persist(logEntry);\n    }\n\n    /**\n     * Hint: The {@link Transactional} annotation invokes a TxnInterceptor, which starts a {@link\n     * com.google.inject.persist.UnitOfWork} (and the transaction). The {@link EntityManager}-{@link Provider} provides\n     * always the same instance inside these blocks. Note, that the {@link EntityManager} will be closed outside the\n     * last unit of work!\n     *\n     * @return a list of {@link AuditLog}s\n     */\n    @Transactional\n    public List<AuditLog> queryAll()\n    {\n        try {\n            EntityManager em = getEm();\n            CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();\n            CriteriaQuery<AuditLog> criteriaQuery = criteriaBuilder.createQuery(AuditLog.class);\n            Root<AuditLog> root = criteriaQuery.from(AuditLog.class);\n            criteriaQuery.select(root);\n            TypedQuery<AuditLog> q2 = em.createQuery(criteriaQuery);\n            List<AuditLog> auditLogs = q2.getResultList();\n            System.out.println(auditLogs.size() + \" Logs(s) found!\");\n            return auditLogs;\n        } catch (Exception e) {\n            e.printStackTrace();\n            return null;\n        }\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/at/mjst/finbase/desktop/model/persistence/dao/AuditLogDAO.java	(revision da71c0bd1e8e51688fbad14289749bd281ca4a72)
++++ src/main/java/at/mjst/finbase/desktop/model/persistence/dao/AuditLogDAO.java	(revision )
+@@ -8,6 +8,7 @@
+ import com.google.inject.Provider;
+ import com.google.inject.persist.Transactional;
+ 
++import java.time.LocalDateTime;
+ import java.util.List;
+ 
+ import javax.persistence.EntityManager;
+@@ -62,14 +63,6 @@
+         return entityManagerProvider.get();
+     }
+ 
+-    @Transactional
+-    public void insertOrUpdate(AuditLog logEntry)
+-    {
+-        EntityManager em = getEm();
+-        System.out.println("Is transaction active? " + em.getTransaction().isActive());
+-        em.persist(logEntry);
+-    }
+-
+     /**
+      * Hint: The {@link Transactional} annotation invokes a TxnInterceptor, which starts a {@link
+      * com.google.inject.persist.UnitOfWork} (and the transaction). The {@link EntityManager}-{@link Provider} provides
+@@ -96,4 +89,24 @@
+             return null;
+         }
+     }
++
++    @Transactional
++    public void merge(AuditLog log, LocalDateTime now)
++    {
++        EntityManager em = getEm();
++        System.out.println("Is transaction active? " + em.getTransaction().isActive());
++        AuditLog log2 = em.merge(log);
++        log2.setTimestampOff(LocalDateTime.now()); // todo: on and off are changed on update?!
++        insertOrUpdate(log2);
++        // todo: much better: http://stackoverflow.com/a/41203093/700165
++        // todo: implement, so that the same instance of DAO also can use same instance of em?!
++    }
++
++    @Transactional
++    public void insertOrUpdate(AuditLog logEntry)
++    {
++        EntityManager em = getEm();
++        System.out.println("Is transaction active? " + em.getTransaction().isActive());
++        em.persist(logEntry);
++    }
+ }
+Index: src/main/java/at/mjst/finbase/desktop/model/entity/_Module.java
+===================================================================
+--- src/main/java/at/mjst/finbase/desktop/model/entity/_Module.java	(revision da71c0bd1e8e51688fbad14289749bd281ca4a72)
++++ src/main/java/at/mjst/finbase/desktop/model/entity/_Module.java	(revision da71c0bd1e8e51688fbad14289749bd281ca4a72)
+@@ -1,25 +0,0 @@
+-/*
+- * Copyright (c) 2017, Ing. Michael J. Stallinger and/or his affiliates. All rights reserved.
+- * This source code is subject to license terms, see the LICENSE file for details.
+- */
+-package at.mjst.finbase.desktop.model.entity;
+-
+-import com.google.inject.AbstractModule;
+-import com.google.inject.Binder;
+-
+-/**
+- * Guice dependency injection module configuration.
+- *
+- * @author Ing. Michael J. Stallinger (projects@mjst.at)
+- * @since 2017-01-12
+- */
+-public class _Module extends AbstractModule
+-{
+-    /**
+-     * Configures a {@link Binder} via the exposed methods.
+-     */
+-    @Override
+-    protected void configure()
+-    {
+-    }
+-}
+Index: src/main/java/at/mjst/finbase/desktop/model/ConnectionProperties.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/at/mjst/finbase/desktop/model/ConnectionProperties.java	(revision )
++++ src/main/java/at/mjst/finbase/desktop/model/ConnectionProperties.java	(revision )
+@@ -0,0 +1,28 @@
++/*
++ * Copyright (c) 2017, Ing. Michael J. Stallinger and/or his affiliates. All rights reserved.
++ * This source code is subject to license terms, see the LICENSE file for details.
++ */
++package at.mjst.finbase.desktop.model;
++
++import com.google.inject.BindingAnnotation;
++
++import java.lang.annotation.Retention;
++import java.lang.annotation.Target;
++
++import static java.lang.annotation.ElementType.FIELD;
++import static java.lang.annotation.ElementType.METHOD;
++import static java.lang.annotation.ElementType.PARAMETER;
++import static java.lang.annotation.RetentionPolicy.RUNTIME;
++
++/**
++ * Annotates an {@link com.google.common.eventbus.EventBus} as 'Model to Controller'-bus.
++ *
++ * @author Ing. Michael J. Stallinger (projects@mjst.at)
++ * @since 2017-04-09
++ */
++@BindingAnnotation
++@Target({FIELD, PARAMETER, METHOD})
++@Retention(RUNTIME)
++public @interface ConnectionProperties
++{
++}
