@@ -6,9 +6,6 @@ package at.mjst.finbase.desktop.controller.bind;
 
 import at.mjst.finbase.desktop.common.field.FieldIdentifier;
 import at.mjst.finbase.desktop.model.entity.Entity;
-import javafx.beans.value.ObservableValue;
-import javafx.scene.control.TableColumn;
-import javafx.util.Callback;
 
 /**
  * Generates a new instance of {@link GenericCellValueFactory}
@@ -16,15 +13,11 @@ import javafx.util.Callback;
  * @author Ing. Michael J. Stallinger (projects@mjst.at)
  * @since 2017-04-06
  */
-public class GenericCellValueFactoryProvider implements CellValueFactoryProvider
+class GenericCellValueFactoryProvider extends CellValueFactoryProvider
 {
     @Override
-    public <S extends Entity, T> Callback<TableColumn.CellDataFeatures<S, T>, ObservableValue<T>> get(
-            FieldIdentifier identifier)
+    <S extends Entity, T> CellValueFactory<S, T> generateInstance(FieldIdentifier identifier)
     {
-        if (identifier == null) {
-            throw new RuntimeException("Missing FieldIdentifier!");
-        }
         return new GenericCellValueFactory<>(identifier);
     }
 }

@@ -12,6 +12,7 @@ import java.util.ResourceBundle;
 import javax.inject.Inject;
 
 import at.mjst.finbase.desktop.common.field.FieldIdentifier;
+import at.mjst.finbase.desktop.controller.bind.CellValueFactory;
 import at.mjst.finbase.desktop.controller.bind.CellValueFactoryProvider;
 import at.mjst.finbase.desktop.dto.columnselection.ColumnDefinition;
 import at.mjst.finbase.desktop.dto.columnselection.ColumnSelection;
@@ -121,7 +122,9 @@ public class CustomTableViewController<S extends Entity> implements Initializabl
     private <I> TableColumn<S, I> generateTableColumn(ColumnDefinition columnDefinition)
     {
         TableColumn<S, I> col = new CustomTableColumn<>(columnDefinition);
-        col.setCellValueFactory(cellValueFactoryProvider.get(columnDefinition.identifier()));
+        // generate and set the CellValueFactory
+        CellValueFactory<S, I> cellValueFactory = cellValueFactoryProvider.get(columnDefinition.identifier());
+        col.setCellValueFactory(cellValueFactory);
         // ToDo: col.setCellFactory() for formatting, if needed
         return col;
     }

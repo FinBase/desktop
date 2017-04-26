@@ -19,8 +19,7 @@ import javafx.util.Callback;
  * @author Ing. Michael J. Stallinger (projects@mjst.at)
  * @since 2017-01-19
  */
-public class GenericCellValueFactory<S extends Entity, T>
-        implements Callback<TableColumn.CellDataFeatures<S, T>, ObservableValue<T>>
+class GenericCellValueFactory<S extends Entity, T> implements CellValueFactory<S, T>
 {
     @NonNls
     private static final String ERR_DATA_TYPE = "Field datatype mismatch for '%s' (%s)";
@@ -31,7 +30,7 @@ public class GenericCellValueFactory<S extends Entity, T>
     /**
      * @param fieldIdentifier field identifier assigned to column
      */
-    public GenericCellValueFactory(FieldIdentifier fieldIdentifier)
+    GenericCellValueFactory(FieldIdentifier fieldIdentifier)
     {
         this.fieldIdentifier = fieldIdentifier;
     }
