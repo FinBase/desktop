@@ -6,15 +6,11 @@ package at.mjst.finbase.desktop;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.google.inject.Module;
 
 import org.jetbrains.annotations.NonNls;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import at.mjst.finbase.desktop.controller.ControllerFactory;
-import at.mjst.finbase.desktop.model.service.LoginService;
+import at.mjst.finbase.desktop.model.LoginService;
 import at.mjst.finbase.desktop.util.NlsManager;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -135,9 +131,7 @@ public class FinBase extends Application
         } else {
             stage = PRODUCTION;
         }
-        List<Module> modules = new LinkedList<>();
-        initGuiceModules(modules);
-        injector = Guice.createInjector(stage, modules);
+        injector = Guice.createInjector(stage, new _Module());
     }
 
     private boolean developmentMode()
@@ -145,13 +139,5 @@ public class FinBase extends Application
         // ToDo: extract to config-class and store the args...
         // ToDo: FixMe! Does not work without args!
         return this.getParameters().getNamed().get(PARAM_DEVELOP).equals(TRUE);
-    }
-
-    private void initGuiceModules(List<Module> modules)
-    {
-        modules.add(new at.mjst.finbase.desktop.controller._Module());
-        modules.add(new at.mjst.finbase.desktop.dto._Module());
-        modules.add(new at.mjst.finbase.desktop.eventsystem._Module());
-        modules.add(new at.mjst.finbase.desktop.model._Module());
     }
 }
