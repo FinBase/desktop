@@ -12,6 +12,7 @@ import java.util.ResourceBundle;
 import javax.inject.Inject;
 
 import at.mjst.finbase.desktop.common.field.FieldIdentifier;
+import at.mjst.finbase.desktop.controller.modules.CommandDispatcher;
 import at.mjst.finbase.desktop.dto.columnselection.ColumnSelection;
 import at.mjst.finbase.desktop.eventsystem.events.AuditLogDataEvent;
 import at.mjst.finbase.desktop.eventsystem.events.TabSwitchEvent;
@@ -21,7 +22,6 @@ import at.mjst.finbase.desktop.model.service.AuditLogService;
 import at.mjst.finbase.desktop.model.service.columnselection.ArrayBasedGenerator;
 import at.mjst.finbase.desktop.view.CustomTableView;
 import javafx.collections.FXCollections;
-import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 
@@ -44,7 +44,7 @@ public class AuditLogTableViewController implements Initializable
             // will be ignored, hopefully
     };
     @Inject
-    private AuditLogService service;
+    private CommandDispatcher<AuditLogService> dispatcher;
     /**
      * This should not be used, it is only implemented,
      * to enable the reference the {@link CustomTableViewController} beyond.
@@ -59,6 +59,7 @@ public class AuditLogTableViewController implements Initializable
     private ColumnSelection columnSelection;
     @Inject
     private ArrayBasedGenerator columnSelectionGenerator;
+    // todo: via dispatcher too! maybe special layer that uses a dispatcher...
 
     @Override
     public void initialize(URL location, ResourceBundle resources)
@@ -82,28 +83,17 @@ public class AuditLogTableViewController implements Initializable
     protected void loadData()
     {
         // ToDo: do not always load on tab-getFocus ;)
-        System.out.println("Lading DATA!!");
-        try {
-            new Thread(new Task<Boolean>()
-            {
-                @Override
-                protected Boolean call() throws Exception
-                {
-                    return service.executeLoad();
-                }
-            }).start();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        AuditLogLoadCommand loadCommand = AuditLogLoadCommand.createCommand(true);
+        dispatcher.startCommand(loadCommand);
     }
 
     @Subscribe
     public void onDataLoaded(AuditLogDataEvent event)
     {
         System.out.println("EVENT RECEIVED!");
-        if (event.getSender() == service) {
-            System.out.println("it's for me :)");
-            customTableView.setItems(FXCollections.observableList(event.getList()));
-        }
+        //        if (event.getSender() == dispatcher.getService()) { todo: how to check? need check?? use a command-id?
+        //            System.out.println("it's for me :)");
+        customTableView.setItems(FXCollections.observableList(event.getList()));
+        //        }
     }
 }

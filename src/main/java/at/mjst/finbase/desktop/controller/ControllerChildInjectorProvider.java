@@ -27,7 +27,7 @@ public class ControllerChildInjectorProvider implements ChildInjectorProvider
     {
         List<Module> modules = new LinkedList<>();
         modules.add(new at.mjst.finbase.desktop.controller.bind._Module());
-        //        modules.add(new at.mjst.finbase.desktop.controller.modules._Module());
+        modules.add(new at.mjst.finbase.desktop.controller.modules._Module());
         // todo: add further controller modules
         return injector.createChildInjector(modules);
     }

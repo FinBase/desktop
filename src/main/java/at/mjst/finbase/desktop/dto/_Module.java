@@ -22,5 +22,6 @@ public class _Module extends AbstractModule
     protected void configure()
     {
         install(new at.mjst.finbase.desktop.dto.columnselection._Module());
+        install(new at.mjst.finbase.desktop.model.service.columnselection._Module()); // TODO: !!! FIXME!!!
     }
 }

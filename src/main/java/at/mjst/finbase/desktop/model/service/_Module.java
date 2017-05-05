@@ -21,7 +21,6 @@ public class _Module extends AbstractModule
     @Override
     protected void configure()
     {
-        install(new at.mjst.finbase.desktop.model.service.columnselection._Module());
         bind(AuditLogService.class).to(AuditLogDbService.class);
         bind(UserService.class).to(UserDbService.class);
     }

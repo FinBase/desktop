@@ -2,16 +2,16 @@
  * Copyright (c) 2017, Ing. Michael J. Stallinger and/or his affiliates. All rights reserved.
  * This source code is subject to license terms, see the LICENSE file for details.
  */
-package at.mjst.finbase.desktop.model;
+package at.mjst.finbase.desktop.model.modules;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Binder;
 
 /**
- * Guice dependency injection module configuration.
+ * ToDo: Short class description
  *
  * @author Ing. Michael J. Stallinger (projects@mjst.at)
- * @since 2016-07-15
+ * @since 2017-01-11
  */
 public class _Module extends AbstractModule
 {
@@ -21,9 +21,6 @@ public class _Module extends AbstractModule
     @Override
     protected void configure()
     {
-        bind(ConnectionContextProvider.class).to(ManagedConnectionContextProvider.class);
-        // create the ConnectionManager as eager singleton
-        bind(ConnectionManager.class).to(ConnectionManagerImpl.class).asEagerSingleton();
-        // .. rest is being bound in modules-package!!
+        //        install(new at.mjst.finbase.desktop.model.modules.columnselection._Module());
     }
 }

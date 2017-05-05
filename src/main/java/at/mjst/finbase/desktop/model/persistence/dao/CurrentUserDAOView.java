@@ -16,8 +16,8 @@ public class CurrentUserDAOView implements CurrentUserDAO
     public String getCurrentUser()
     {
         // ToDo: Generate a VIEW for this one (use another class -> UserDbService)!
-//        CREATE or REPLACE VIEW USER_INFO AS
-//        (SELECT USER(), User, Host FROM mysql.user usr WHERE USER() like CONCAT(User, '@', Host));
+        //        CREATE or REPLACE VIEW USER_INFO AS
+        //        (SELECT USER(), User, Host FROM mysql.user usr WHERE USER() like CONCAT(User, '@', Host));
         return null;
     }
 }

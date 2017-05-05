@@ -1,10 +1,8 @@
 /*
- * Copyright (c) 2016, Ing. Michael J. Stallinger and/or his affiliates. All rights reserved.
+ * Copyright (c) 2017, Ing. Michael J. Stallinger and/or his affiliates. All rights reserved.
  * This source code is subject to license terms, see the LICENSE file for details.
  */
 package at.mjst.finbase.desktop.model;
-
-import at.mjst.finbase.desktop.dto.Credentials;
 
 /**
  * ToDo: Short class description
@@ -12,13 +10,15 @@ import at.mjst.finbase.desktop.dto.Credentials;
  * @author Ing. Michael J. Stallinger (projects@mjst.at)
  * @since 2016-07-31
  */
-public interface SessionProvider
+public interface ConnectionContext
 {
-    void initConnection(Credentials credentials);
+    String name();
 
-    void closeConnection();
-
-    boolean initialized();
+    boolean isInitialized();
 
     <T> T getSessionInstance(Class<T> type);
+
+    void registerDispatcher(Object obj);
+
+    void deregisterDispatcher(Object obj);
 }

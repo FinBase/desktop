@@ -1,12 +1,11 @@
 /*
- * Copyright (c) 2016, Ing. Michael J. Stallinger and/or his affiliates. All rights reserved.
+ * Copyright (c) 2017, Ing. Michael J. Stallinger and/or his affiliates. All rights reserved.
  * This source code is subject to license terms, see the LICENSE file for details.
  */
 package at.mjst.finbase.desktop.model.service;
 
 import com.google.inject.Inject;
 
-import at.mjst.finbase.desktop.model.SessionProvider;
 import at.mjst.finbase.desktop.model.persistence.dao.CurrentUserDAO;
 
 /**
@@ -18,11 +17,10 @@ import at.mjst.finbase.desktop.model.persistence.dao.CurrentUserDAO;
 class UserDbService implements UserService
 {
     @Inject
-    private SessionProvider sessionProvider;
+    private CurrentUserDAO currentUserDAO;
 
     public String getCurrentUser()
     {
-        CurrentUserDAO dao = sessionProvider.getSessionInstance(CurrentUserDAO.class);
-        return dao.getCurrentUser();
+        return currentUserDAO.getCurrentUser();
     }
 }

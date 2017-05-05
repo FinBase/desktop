@@ -8,6 +8,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.persist.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -62,14 +63,6 @@ public class AuditLogDAO
         return entityManagerProvider.get();
     }
 
-    @Transactional
-    public void insertOrUpdate(AuditLog logEntry)
-    {
-        EntityManager em = getEm();
-        System.out.println("Is transaction active? " + em.getTransaction().isActive());
-        em.persist(logEntry);
-    }
-
     /**
      * Hint: The {@link Transactional} annotation invokes a TxnInterceptor, which starts a {@link
      * com.google.inject.persist.UnitOfWork} (and the transaction). The {@link EntityManager}-{@link Provider} provides
@@ -95,5 +88,25 @@ public class AuditLogDAO
             e.printStackTrace();
             return null;
         }
+    }
+
+    @Transactional
+    public void merge(AuditLog log, LocalDateTime now)
+    {
+        EntityManager em = getEm();
+        System.out.println("Is transaction active? " + em.getTransaction().isActive());
+        AuditLog log2 = em.merge(log);
+        log2.setTimestampOff(LocalDateTime.now()); // todo: on and off are changed on update?!
+        insertOrUpdate(log2);
+        // todo: much better: http://stackoverflow.com/a/41203093/700165
+        // todo: implement, so that the same instance of DAO also can use same instance of em?!
+    }
+
+    @Transactional
+    public void insertOrUpdate(AuditLog logEntry)
+    {
+        EntityManager em = getEm();
+        System.out.println("Is transaction active? " + em.getTransaction().isActive());
+        em.persist(logEntry);
     }
 }

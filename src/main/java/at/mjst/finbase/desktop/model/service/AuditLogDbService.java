@@ -12,7 +12,6 @@ import java.util.List;
 
 import at.mjst.finbase.desktop.eventsystem.ModelBus;
 import at.mjst.finbase.desktop.eventsystem.events.AuditLogDataEvent;
-import at.mjst.finbase.desktop.model.SessionProvider;
 import at.mjst.finbase.desktop.model.entity.AuditLog;
 import at.mjst.finbase.desktop.model.persistence.AuditLogContainer;
 import at.mjst.finbase.desktop.model.persistence.dao.AuditLogDAO;
@@ -27,7 +26,11 @@ import at.mjst.finbase.desktop.util.NlsManager;
 class AuditLogDbService implements AuditLogService
 {
     @Inject
-    private SessionProvider sessionProvider;
+    private AuditLogContainer auditLogContainer;
+    @Inject
+    private UserService userService;
+    @Inject
+    private AuditLogDAO auditLogDAO;
     @Inject
     @ModelBus
     private EventBus eventBus;
@@ -37,31 +40,28 @@ class AuditLogDbService implements AuditLogService
         AuditLog log = createNewAuditLog();
         log.setApplication(NlsManager.getNls("finbase.title"));
         log.setTimestampOn(LocalDateTime.now());
-        UserService userService = sessionProvider.getSessionInstance(UserService.class);
+        //         = sessionProvider.getSessionInstance(UserService.class);
         log.setUser(userService.getCurrentUser());
-        getAuditLogDAO().insertOrUpdate(log);
+        auditLogDAO.insertOrUpdate(log);
     }
 
     private AuditLog createNewAuditLog()
     {
-        AuditLog log = sessionProvider.getSessionInstance(AuditLog.class); // normal creation via main-injector?
-        AuditLogContainer container = sessionProvider.getSessionInstance(AuditLogContainer.class);
-        container.setAuditLog(log);
+        AuditLog log = new AuditLog();
+        auditLogContainer.setAuditLog(log);
         return log;
     }
-
-    private AuditLogDAO getAuditLogDAO()
-    {
-        return sessionProvider.getSessionInstance(AuditLogDAO.class);
-    }
+    //    private AuditLogDAO getAuditLogDAO()
+    //    {
+    //        return sessionProvider.getSessionInstance(AuditLogDAO.class);
+    //    }
 
     public void recordLogout()
     {
-        AuditLogContainer container = sessionProvider.getSessionInstance(AuditLogContainer.class);
-        AuditLog log = container.getAuditLog();
+        //        AuditLogContainer container = sessionProvider.getSessionInstance(AuditLogContainer.class);
+        AuditLog log = auditLogContainer.getAuditLog(); // todo: only works, if id is passed!
         if (log != null) {
-            log.setTimestampOff(LocalDateTime.now());
-            getAuditLogDAO().insertOrUpdate(log);
+            auditLogDAO.merge(log, LocalDateTime.now());
         } else {
             throw new RuntimeException("Session AuditLog not found!");
         }
@@ -69,8 +69,8 @@ class AuditLogDbService implements AuditLogService
 
     public boolean executeLoad()
     {
-        AuditLogDAO dao = getAuditLogDAO();
-        List<AuditLog> list = dao.queryAll();
+        //        AuditLogDAO dao = getAuditLogDAO();
+        List<AuditLog> list = auditLogDAO.queryAll();
         if (list != null) {
             System.out.println("done!");
             eventBus.post(new AuditLogDataEvent(this, list));

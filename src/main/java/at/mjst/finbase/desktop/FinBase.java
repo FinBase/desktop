@@ -10,7 +10,7 @@ import com.google.inject.Injector;
 import org.jetbrains.annotations.NonNls;
 
 import at.mjst.finbase.desktop.controller.ControllerFactory;
-import at.mjst.finbase.desktop.model.service.LoginService;
+import at.mjst.finbase.desktop.model.ConnectionManager;
 import at.mjst.finbase.desktop.util.NlsManager;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -118,9 +118,9 @@ public class FinBase extends Application
     @Override
     public void stop() throws Exception
     {
-        // Force the sessionProvider to stop it's service
-        LoginService loginService = getInjector().getInstance(LoginService.class);
-        loginService.doLogout();
+        // Force all connection contexts to stop their services
+        ConnectionManager connectionManager = getInjector().getInstance(ConnectionManager.class);
+        connectionManager.closeAllConnections();
     }
 
     private void initInjector()

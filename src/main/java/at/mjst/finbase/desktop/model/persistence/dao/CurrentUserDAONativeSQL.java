@@ -5,6 +5,7 @@
 package at.mjst.finbase.desktop.model.persistence.dao;
 
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 import com.google.inject.persist.Transactional;
 
 import javax.persistence.EntityManager;
@@ -18,13 +19,13 @@ import javax.persistence.EntityManager;
 public class CurrentUserDAONativeSQL implements CurrentUserDAO
 {
     @Inject
-    private EntityManager em;
+    private Provider<EntityManager> emp;
 
     @Override
     @Transactional
     public String getCurrentUser()
     {
         // WARNING! Native SQL - also executed on other db-systems!!
-        return (String) em.createNativeQuery("select USER()").getSingleResult();
+        return (String) emp.get().createNativeQuery("select USER()").getSingleResult();
     }
 }

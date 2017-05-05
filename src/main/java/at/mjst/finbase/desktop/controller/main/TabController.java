@@ -14,8 +14,8 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import at.mjst.finbase.desktop.eventsystem.UIBus;
+import at.mjst.finbase.desktop.eventsystem.events.ConnectionEvent;
 import at.mjst.finbase.desktop.eventsystem.events.ControlActivationEvent;
-import at.mjst.finbase.desktop.eventsystem.events.LoginEvent;
 import at.mjst.finbase.desktop.eventsystem.events.TabSwitchEvent;
 import at.mjst.finbase.desktop.view.IdentifiedTab;
 import javafx.beans.value.ChangeListener;
@@ -58,10 +58,10 @@ public class TabController implements Initializable
     }
 
     @Subscribe
-    public void onLogin(LoginEvent event)
+    public void onLogin(ConnectionEvent event)
     {
         System.out.println("Event in TabController " + event);
-        tabPane.setDisable(!(event instanceof LoginEvent.LoginSuccess));
+        tabPane.setDisable(!(event instanceof ConnectionEvent.Established));
     }
 
     @Nullable

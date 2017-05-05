@@ -12,8 +12,8 @@ import java.util.ResourceBundle;
 
 import at.mjst.finbase.desktop.dto.Credentials;
 import at.mjst.finbase.desktop.dto.SimpleCredentials;
-import at.mjst.finbase.desktop.eventsystem.events.LoginEvent;
-import at.mjst.finbase.desktop.model.service.LoginService;
+import at.mjst.finbase.desktop.eventsystem.events.ConnectionEvent;
+import at.mjst.finbase.desktop.model.ConnectionManager;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -21,6 +21,8 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+
+import static at.mjst.finbase.desktop.model.ConnectionManager.LOCAL;
 
 /**
  * fxml-UIBus for loginPane.
@@ -37,7 +39,7 @@ public class LoginController implements Initializable
     @FXML
     private Button loginButton;
     @Inject
-    private LoginService loginService;
+    private ConnectionManager connectionManager;
 
     public void execOnUsername()
     {
@@ -50,7 +52,7 @@ public class LoginController implements Initializable
     }
 
     @Subscribe
-    private void onLogoff(LoginEvent.LogoffSuccess event)
+    private void onLogoff(ConnectionEvent.Closed event)
     {
         System.out.println("Event in LoginController " + event);
         setLoggedOffState();
@@ -81,7 +83,7 @@ public class LoginController implements Initializable
     }
 
     @Subscribe
-    private void onLoginFailed(LoginEvent.LoginFailedEvent event)
+    private void onLoginFailed(ConnectionEvent.Failure event)
     {
         System.out.println("Event in LoginController " + event);
         setLoggedOffState();
@@ -96,11 +98,12 @@ public class LoginController implements Initializable
     public void execLoginButton()
     {
         Credentials credentials = SimpleCredentials.create(userNameField.getText(), passwordField.getText());
-        if (credentials.valid() && !loginService.loggedIn()) {
+        if (credentials.valid() && !connectionManager.isInitialized(LOCAL)) {
             setLoggedInState(); // immediately set loggedIn state on UI to disable any interaction!
-            loginService.doLogin(credentials); // todo: exec this and others via thread (or WITHIN service-class?)
+            connectionManager.initConnection(LOCAL, credentials);
+            // todo: exec this and others via thread/command
         } else {
-            loginService.doLogout();
+            connectionManager.closeConnectionAsync(LOCAL);
         }
     }
 
