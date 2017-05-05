@@ -4,6 +4,7 @@
  */
 package at.mjst.finbase.desktop.dto.columnselection;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -21,7 +22,8 @@ import at.mjst.finbase.desktop.model.service.columnselection.Persister;
  */
 public class ColumnSelectionImpl implements ColumnSelection
 {
-    private List<ColumnDefinition> selection = new ArrayList<>();
+    private final List<ColumnDefinition> selection = new ArrayList<>();
+    // todo: inject later...
     private Loader loader;
     private Persister persister;
 
@@ -51,6 +53,7 @@ public class ColumnSelectionImpl implements ColumnSelection
      * @param columnDefinition the item to add
      * @return true, if the item is allowed to be added
      */
+    @Contract("null -> false")
     private boolean validateNewItem(ColumnDefinition columnDefinition)
     {
         return (columnDefinition != null) && (!selection.contains(columnDefinition));

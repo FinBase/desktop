@@ -4,6 +4,8 @@
  */
 package at.mjst.finbase.desktop.dto.columnselection;
 
+import org.jetbrains.annotations.Contract;
+
 import at.mjst.finbase.desktop.common.field.FieldIdentifier;
 
 /**
@@ -13,10 +15,10 @@ import at.mjst.finbase.desktop.common.field.FieldIdentifier;
  * @author Ing. Michael J. Stallinger (projects@mjst.at)
  * @since 2017-04-06
  */
-public class ColumnDefinition
+public final class ColumnDefinition
 {
-    private FieldIdentifier identifier;
-    private ColumnProperties properties = new ColumnProperties();
+    private final FieldIdentifier identifier;
+    private final ColumnProperties properties = new ColumnProperties();
 
     /**
      * Required as constructor
@@ -31,11 +33,13 @@ public class ColumnDefinition
     /**
      * @return the properties for this definition
      */
+    @Contract(pure = true)
     public ColumnProperties getProperties()
     {
         return properties;
     }
 
+    @Contract(pure = true)
     @Override
     public int hashCode()
     {
@@ -49,6 +53,7 @@ public class ColumnDefinition
                 ((ColumnDefinition) obj).identifier()));
     }
 
+    @Contract(" -> !null")
     @Override
     public String toString()
     {
@@ -58,6 +63,7 @@ public class ColumnDefinition
     /**
      * @return this definitions identifier
      */
+    @Contract(pure = true)
     public FieldIdentifier identifier()
     {
         return identifier;

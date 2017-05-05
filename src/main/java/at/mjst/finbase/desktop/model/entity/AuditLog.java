@@ -18,9 +18,6 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import at.mjst.finbase.desktop.common.field.Field;
-import at.mjst.finbase.desktop.common.field.LocalDateTimeField;
-import at.mjst.finbase.desktop.common.field.LongField;
-import at.mjst.finbase.desktop.common.field.StringField;
 
 import static at.mjst.finbase.desktop.model.entity.Entity.SCHEMA_FINBASE;
 
@@ -43,11 +40,11 @@ public class AuditLog extends AbstractEntity
     public static final String FIELD_TIMESTAMP_ON = "timestamp_on";
     public static final String FIELD_TIMESTAMP_OFF = "timestamp_off";
     // These 'Field'-Objects wrap ObjectProperties<>, to access them via column-names!
-    private final LongField id = new LongField(FIELD_ID, this);
-    private final StringField user = new StringField(FIELD_USER, this);
-    private final LocalDateTimeField timestampOn = new LocalDateTimeField(FIELD_TIMESTAMP_ON, this);
-    private final LocalDateTimeField timestampOff = new LocalDateTimeField(FIELD_TIMESTAMP_OFF, this);
-    private final StringField application = new StringField(FIELD_APPLICATION, this);
+    private final Field<Long> id = Field.createLong(FIELD_ID, this);
+    private final Field<String> user = Field.createString(FIELD_USER, this);
+    private final Field<LocalDateTime> timestampOn = Field.createLocalDateTime(FIELD_TIMESTAMP_ON, this);
+    private final Field<LocalDateTime> timestampOff = Field.createLocalDateTime(FIELD_TIMESTAMP_OFF, this);
+    private final Field<String> application = Field.createString(FIELD_APPLICATION, this);
 
     /**
      * For testing purposes only

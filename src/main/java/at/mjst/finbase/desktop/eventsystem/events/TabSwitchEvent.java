@@ -4,6 +4,8 @@
  */
 package at.mjst.finbase.desktop.eventsystem.events;
 
+import org.jetbrains.annotations.Contract;
+
 import at.mjst.finbase.desktop.controller.main.TabId;
 
 /**
@@ -12,7 +14,7 @@ import at.mjst.finbase.desktop.controller.main.TabId;
  * @author Ing. Michael J. Stallinger (projects@mjst.at)
  * @since 2016-08-03
  */
-public class TabSwitchEvent extends Event
+public final class TabSwitchEvent extends Event
 {
     private final TabId oldTabId;
     private final TabId newTabId;
@@ -29,11 +31,13 @@ public class TabSwitchEvent extends Event
         this.newTabId = newTabId;
     }
 
+    @Contract(pure = true)
     public TabId getOldTabId()
     {
         return oldTabId;
     }
 
+    @Contract(pure = true)
     public TabId getNewTabId()
     {
         return newTabId;

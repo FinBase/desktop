@@ -4,7 +4,6 @@
  */
 package at.mjst.finbase.desktop.controller.top;
 
-import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 
@@ -12,7 +11,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import at.mjst.finbase.desktop.dto.Credentials;
-import at.mjst.finbase.desktop.eventsystem.UIBus;
+import at.mjst.finbase.desktop.dto.SimpleCredentials;
 import at.mjst.finbase.desktop.eventsystem.events.LoginEvent;
 import at.mjst.finbase.desktop.model.service.LoginService;
 import javafx.application.Platform;
@@ -38,12 +37,7 @@ public class LoginController implements Initializable
     @FXML
     private Button loginButton;
     @Inject
-    private Credentials credentials;
-    @Inject
     private LoginService loginService;
-    @Inject
-    @UIBus
-    private EventBus eventBus;
 
     public void execOnUsername()
     {
@@ -101,8 +95,7 @@ public class LoginController implements Initializable
 
     public void execLoginButton()
     {
-        credentials.setUserName(userNameField.getText());
-        credentials.setPassword(passwordField.getText());
+        Credentials credentials = SimpleCredentials.create(userNameField.getText(), passwordField.getText());
         if (credentials.valid() && !loginService.loggedIn()) {
             setLoggedInState(); // immediately set loggedIn state on UI to disable any interaction!
             loginService.doLogin(credentials); // todo: exec this and others via thread (or WITHIN service-class?)

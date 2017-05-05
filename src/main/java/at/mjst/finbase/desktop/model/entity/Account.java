@@ -21,8 +21,6 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 import at.mjst.finbase.desktop.common.field.Field;
-import at.mjst.finbase.desktop.common.field.IntegerField;
-import at.mjst.finbase.desktop.common.field.StringField;
 
 import static at.mjst.finbase.desktop.model.entity.Account.FIELD_NAME;
 import static at.mjst.finbase.desktop.model.entity.Entity.SCHEMA_FINBASE;
@@ -44,10 +42,10 @@ public class Account extends AbstractEntity
     public static final String FIELD_NAME = "name";
     public static final String FIELD_DESCRIPTION = "description";
     // These 'Field'-Objects wrap ObjectProperties<>, to access them via column-names!
-    private final IntegerField id = new IntegerField(FIELD_ID, this);
-    private final StringField name = new StringField(FIELD_NAME, this);
-    private final StringField description = new StringField(FIELD_DESCRIPTION, this);
-    private final IntegerField flags = new IntegerField(FIELD_FLAGS, this);
+    private final Field<Integer> id = Field.createInteger(FIELD_ID, this);
+    private final Field<String> name = Field.createString(FIELD_NAME, this);
+    private final Field<String> description = Field.createString(FIELD_DESCRIPTION, this);
+    private final Field<Integer> flags = Field.createInteger(FIELD_FLAGS, this);
     // todo: register...?!
     private TraAggregated traAggregated;
 

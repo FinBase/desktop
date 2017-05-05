@@ -4,13 +4,15 @@
  */
 package at.mjst.finbase.desktop.eventsystem.events;
 
+import org.jetbrains.annotations.Contract;
+
 /**
  * ToDo: Short class description
  *
  * @author Ing. Michael J. Stallinger (projects@mjst.at)
  * @since 2017-04-12
  */
-public class ControlActivationEvent extends Event
+public final class ControlActivationEvent extends Event
 {
     private final boolean enabled;
 
@@ -24,6 +26,7 @@ public class ControlActivationEvent extends Event
         this.enabled = enabled;
     }
 
+    @Contract(pure = true)
     public boolean getEnabled()
     {
         return enabled;

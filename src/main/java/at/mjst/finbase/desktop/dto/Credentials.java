@@ -1,8 +1,10 @@
 /*
- * Copyright (c) 2016, Ing. Michael J. Stallinger and/or his affiliates. All rights reserved.
+ * Copyright (c) 2017, Ing. Michael J. Stallinger and/or his affiliates. All rights reserved.
  * This source code is subject to license terms, see the LICENSE file for details.
  */
 package at.mjst.finbase.desktop.dto;
+
+import org.jetbrains.annotations.Contract;
 
 /**
  * ToDo: Short class description
@@ -12,6 +14,7 @@ package at.mjst.finbase.desktop.dto;
  */
 public interface Credentials
 {
+    @Contract("null -> fail")
     static void validate(Credentials credentials)
     {
         if ((credentials == null) || !credentials.valid()) {
@@ -23,13 +26,9 @@ public interface Credentials
 
     String getUserName();
 
-    void setUserName(String userName);
-
     boolean isUserNameEmpty();
 
     String getPassword();
-
-    void setPassword(String password);
 
     boolean isPasswordEmpty();
 }

@@ -4,6 +4,8 @@
  */
 package at.mjst.finbase.desktop.eventsystem.events;
 
+import org.jetbrains.annotations.Contract;
+
 import java.util.List;
 
 import at.mjst.finbase.desktop.model.entity.AuditLog;
@@ -14,7 +16,7 @@ import at.mjst.finbase.desktop.model.entity.AuditLog;
  * @author Ing. Michael J. Stallinger (projects@mjst.at)
  * @since 2017-04-19
  */
-public class AuditLogDataEvent extends Event
+public final class AuditLogDataEvent extends Event
 {
     private final List<AuditLog> list;
 
@@ -24,6 +26,7 @@ public class AuditLogDataEvent extends Event
         this.list = list;
     }
 
+    @Contract(pure = true)
     public List<AuditLog> getList()
     {
         return list;

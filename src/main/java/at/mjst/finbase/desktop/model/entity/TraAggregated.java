@@ -4,6 +4,8 @@
  */
 package at.mjst.finbase.desktop.model.entity;
 
+import org.hibernate.annotations.Immutable;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Collection;
@@ -14,11 +16,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import at.mjst.finbase.desktop.common.field.BigDecimalField;
 import at.mjst.finbase.desktop.common.field.Field;
-import at.mjst.finbase.desktop.common.field.IntegerField;
-import at.mjst.finbase.desktop.common.field.LocalDateField;
-import at.mjst.finbase.desktop.common.field.LongField;
 
 import static at.mjst.finbase.desktop.model.entity.Entity.SCHEMA_FINBASE;
 
@@ -29,7 +27,7 @@ import static at.mjst.finbase.desktop.model.entity.Entity.SCHEMA_FINBASE;
  * @since 2017-03-29
  */
 @Entity
-//@Immutable // mark entity as readonly (hibernate)
+@Immutable // mark entity as readonly (hibernate)
 @Table(name = TraAggregated.VIEW_TRA_AGGREGATED, schema = SCHEMA_FINBASE)
 public class TraAggregated extends AbstractEntity
 {
@@ -42,13 +40,13 @@ public class TraAggregated extends AbstractEntity
     protected static final String FIELD_VALUE_DATE_TO = "value_date_to";
     protected static final String FIELD_TRANSACTION_COUNT = "transaction_count";
     // 'Field'-Objects
-    private final IntegerField accId = new IntegerField(FIELD_ID, this);
-    private final BigDecimalField balance = new BigDecimalField(FIELD_BALANCE, this);
-    private final BigDecimalField balance_pos = new BigDecimalField(FIELD_BALANCE_POS, this);
-    private final BigDecimalField balance_neg = new BigDecimalField(FIELD_BALANCE_NEG, this);
-    private final LocalDateField valueDateFrom = new LocalDateField(FIELD_VALUE_DATE_FROM, this);
-    private final LocalDateField valueDateTo = new LocalDateField(FIELD_VALUE_DATE_TO, this);
-    private final LongField transaction_count = new LongField(FIELD_TRANSACTION_COUNT, this);
+    private final Field<Integer> accId = Field.createInteger(FIELD_ID, this);
+    private final Field<BigDecimal> balance = Field.createBigDecimal(FIELD_BALANCE, this);
+    private final Field<BigDecimal> balance_pos = Field.createBigDecimal(FIELD_BALANCE_POS, this);
+    private final Field<BigDecimal> balance_neg = Field.createBigDecimal(FIELD_BALANCE_NEG, this);
+    private final Field<LocalDate> valueDateFrom = Field.createLocalDate(FIELD_VALUE_DATE_FROM, this);
+    private final Field<LocalDate> valueDateTo = Field.createLocalDate(FIELD_VALUE_DATE_TO, this);
+    private final Field<Long> transaction_count = Field.createLong(FIELD_TRANSACTION_COUNT, this);
 
     @Basic
     @Column(name = FIELD_BALANCE_POS, precision = 4, updatable = false)

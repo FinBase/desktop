@@ -4,6 +4,8 @@
  */
 package at.mjst.finbase.desktop.common.field;
 
+import org.jetbrains.annotations.Contract;
+
 import at.mjst.finbase.desktop.util.HashCodeBuilder;
 
 /**
@@ -13,7 +15,7 @@ import at.mjst.finbase.desktop.util.HashCodeBuilder;
  * @author Ing. Michael J. Stallinger (projects@mjst.at)
  * @since 2017-02-23
  */
-public class FieldIdentifier
+public final class FieldIdentifier
 {
     private static final String DEFAULT_SEPARATOR = ".";
     private static final String IDENTIFIER_FORMAT = ("%s" + DEFAULT_SEPARATOR + "%s");
@@ -21,7 +23,7 @@ public class FieldIdentifier
     // table- and field-name as string
     private final String tableName;
     private final String fieldName;
-    private int hashCode;
+    private final int hashCode;
 
     /**
      * Creates the identifier by name. The full identifier will be tableName.fieldName
@@ -33,15 +35,15 @@ public class FieldIdentifier
     {
         this.tableName = tableName;
         this.fieldName = fieldName;
-        generateHashCode();
+        this.hashCode = generateHashCode();
     }
 
     /**
-     * Builds the hashCode for the current identifier, to make the class truly immutable and therefore threadsafe!
+     * @return the hashCode for the current identifier, to make the class truly immutable and therefore threadsafe!
      */
-    private void generateHashCode()
+    private int generateHashCode()
     {
-        this.hashCode = new HashCodeBuilder().append(tableName, fieldName).hashCode();
+        return new HashCodeBuilder().append(tableName, fieldName).hashCode();
     }
 
     /**
@@ -55,12 +57,13 @@ public class FieldIdentifier
         if (parts.length == 2) {
             this.tableName = parts[0];
             this.fieldName = parts[1];
-            generateHashCode();
+            this.hashCode = generateHashCode();
         } else {
             throw new RuntimeException(String.format(ERR_IDENTIFIER, tableAndFieldName));
         }
     }
 
+    @Contract(pure = true)
     @Override
     public int hashCode()
     {
@@ -102,6 +105,7 @@ public class FieldIdentifier
     /**
      * @return the field name
      */
+    @Contract(pure = true)
     public String fieldName()
     {
         return fieldName;
@@ -110,6 +114,7 @@ public class FieldIdentifier
     /**
      * @return the table name
      */
+    @Contract(pure = true)
     public String tableName()
     {
         return tableName;

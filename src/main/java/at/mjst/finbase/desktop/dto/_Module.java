@@ -22,8 +22,5 @@ public class _Module extends AbstractModule
     protected void configure()
     {
         install(new at.mjst.finbase.desktop.dto.columnselection._Module());
-        // bind Credentials-interface to specific implementation
-        //        bind(Credentials.class).to(ObfuscatedCredentials.class);
-        bind(Credentials.class).to(SimpleCredentials.class);
     }
 }
