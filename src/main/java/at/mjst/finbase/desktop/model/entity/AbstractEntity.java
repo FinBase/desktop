@@ -43,7 +43,7 @@ public abstract class AbstractEntity implements Entity, FieldRegistry
      * @param tableName    table name of related entity
      * @param entityGetter getter, implemented to fetch the related entity
      */
-    void registerToOneRelation(String tableName, RelatedEntityGetter entityGetter)
+    protected void registerToOneRelation(String tableName, RelatedEntityGetter entityGetter)
     {
         relationMap.put(tableName, entityGetter);
     }
@@ -179,7 +179,7 @@ public abstract class AbstractEntity implements Entity, FieldRegistry
      *
      * @param businessKey collection, to add the fields to
      */
-    abstract void buildBusinessKey(Collection<Field<?>> businessKey);
+    protected abstract void buildBusinessKey(Collection<Field<?>> businessKey);
 
     /**
      * Checks, if all fields from the array are this entities fields
@@ -217,7 +217,7 @@ public abstract class AbstractEntity implements Entity, FieldRegistry
      * @author Ing. Michael J. Stallinger (projects@mjst.at)
      * @since 2017-04-04
      */
-    interface RelatedEntityGetter
+    protected interface RelatedEntityGetter
     {
         /**
          * This method executes the implemented getter-function to ...

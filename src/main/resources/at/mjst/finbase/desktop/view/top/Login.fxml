@@ -8,9 +8,13 @@
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
+<!--
+  ~ Copyright (c) 2017, Ing. Michael J. Stallinger and/or his affiliates. All rights reserved.
+  ~ This source code is subject to license terms, see the LICENSE file for details.
+  -->
 <GridPane xmlns:fx="http://javafx.com/fxml/1" hgap="10.0" maxHeight="1.7976931348623157E308" minHeight="-Infinity"
           minWidth="-Infinity" xmlns="http://javafx.com/javafx/8.0.76-ea"
-          fx:controller="at.mjst.finbase.desktop.controller.top.LoginController">
+          fx:controller="at.mjst.finbase.desktop.controller.modules.login.LoginController">
     <columnConstraints>
         <ColumnConstraints hgrow="SOMETIMES"/>
         <ColumnConstraints hgrow="SOMETIMES"/>

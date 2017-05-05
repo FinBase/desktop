@@ -9,8 +9,8 @@ import com.google.inject.Injector;
 
 import org.jetbrains.annotations.NonNls;
 
-import at.mjst.finbase.desktop.controller.ControllerFactory;
-import at.mjst.finbase.desktop.model.ConnectionManager;
+import at.mjst.finbase.desktop.controller.factory.ControllerFactory;
+import at.mjst.finbase.desktop.model.connection.ConnectionManager;
 import at.mjst.finbase.desktop.util.NlsManager;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;

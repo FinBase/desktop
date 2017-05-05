@@ -5,25 +5,18 @@
 package at.mjst.finbase.desktop.model;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.Binder;
 
 /**
- * Guice dependency injection module configuration.
+ * ToDo: Short class description
  *
  * @author Ing. Michael J. Stallinger (projects@mjst.at)
- * @since 2016-07-15
+ * @since 2017-05-06
  */
 public class _Module extends AbstractModule
 {
-    /**
-     * Configures a {@link Binder} via the exposed methods.
-     */
     @Override
     protected void configure()
     {
-        bind(ConnectionContextProvider.class).to(ManagedConnectionContextProvider.class);
-        // create the ConnectionManager as eager singleton
-        bind(ConnectionManager.class).to(ConnectionManagerImpl.class).asEagerSingleton();
-        // .. rest is being bound in modules-package!!
+        install(new at.mjst.finbase.desktop.model.connection._Module()); // sub-packages are installed from there!
     }
 }

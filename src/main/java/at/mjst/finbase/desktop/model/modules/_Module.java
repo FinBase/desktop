@@ -21,6 +21,10 @@ public class _Module extends AbstractModule
     @Override
     protected void configure()
     {
-        //        install(new at.mjst.finbase.desktop.model.modules.columnselection._Module());
+        install(new at.mjst.finbase.desktop.model.modules.columnselection._Module());
+        install(new at.mjst.finbase.desktop.model.modules.auditlog._Module());
+        install(new at.mjst.finbase.desktop.model.modules.account._Module());
+        install(new at.mjst.finbase.desktop.model.modules.transaction._Module());
+        install(new at.mjst.finbase.desktop.model.modules.user._Module());
     }
 }

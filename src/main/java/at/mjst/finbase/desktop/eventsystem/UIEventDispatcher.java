@@ -7,7 +7,6 @@ package at.mjst.finbase.desktop.eventsystem;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
-import at.mjst.finbase.desktop.eventsystem.events.Event;
 import javafx.application.Platform;
 
 /**

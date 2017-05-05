@@ -6,7 +6,7 @@
   -->
 <?import javafx.scene.layout.Pane?>
 <Pane xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="at.mjst.finbase.desktop.controller.main.AuditLogTableViewController">
+      fx:controller="at.mjst.finbase.desktop.controller.modules.auditlog.AuditLogTableViewController">
     <fx:include fx:id="customTableView" source="CustomTableView.fxml"/>
     <!-- ToDo: put other components, table-filter, custom additions, ... here -->
 </Pane>

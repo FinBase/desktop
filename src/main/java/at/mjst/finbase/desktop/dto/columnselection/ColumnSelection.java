@@ -4,8 +4,8 @@
  */
 package at.mjst.finbase.desktop.dto.columnselection;
 
-import at.mjst.finbase.desktop.model.service.columnselection.Loader;
-import at.mjst.finbase.desktop.model.service.columnselection.Persister;
+import at.mjst.finbase.desktop.dto.columnselection.columnselection.Loader;
+import at.mjst.finbase.desktop.dto.columnselection.columnselection.Persister;
 
 /**
  * Provides selected column properties and selection order

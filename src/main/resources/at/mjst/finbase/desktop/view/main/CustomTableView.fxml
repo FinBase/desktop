@@ -8,7 +8,7 @@
 <?import javafx.scene.control.TableColumn?>
 <CustomTableView xmlns:fx="http://javafx.com/fxml/1"
                  fx:id="customTableView"
-                 fx:controller="at.mjst.finbase.desktop.controller.main.CustomTableViewController">
+                 fx:controller="at.mjst.finbase.desktop.controller.modules.CustomTableViewController">
     <columns>
         <TableColumn fx:id="controlColumn">
 

@@ -18,7 +18,7 @@ public class _Module extends AbstractModule
     protected void configure()
     {
         install(new at.mjst.finbase.desktop.controller._Module());
-        install(new at.mjst.finbase.desktop.dto._Module());
+        install(new at.mjst.finbase.desktop.dto._Module()); // todo: to be removed!
         install(new at.mjst.finbase.desktop.eventsystem._Module());
         install(new at.mjst.finbase.desktop.model._Module());
     }

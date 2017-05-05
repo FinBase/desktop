@@ -4,7 +4,7 @@
  */
 package at.mjst.finbase.desktop.view;
 
-import at.mjst.finbase.desktop.controller.main.TabId;
+import at.mjst.finbase.desktop.controller.modules.TabId;
 import javafx.scene.control.Tab;
 
 /**

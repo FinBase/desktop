@@ -11,8 +11,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import at.mjst.finbase.desktop.model.service.columnselection.Loader;
-import at.mjst.finbase.desktop.model.service.columnselection.Persister;
+import at.mjst.finbase.desktop.dto.columnselection.columnselection.Loader;
+import at.mjst.finbase.desktop.dto.columnselection.columnselection.Persister;
 
 /**
  * ToDo: Short class description

@@ -5,24 +5,18 @@
 package at.mjst.finbase.desktop.controller;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.Binder;
 
 /**
- * Guice dependency injection module configuration.
+ * ToDo: Short class description
  *
  * @author Ing. Michael J. Stallinger (projects@mjst.at)
- * @since 2016-07-14
+ * @since 2017-05-06
  */
 public class _Module extends AbstractModule
 {
-    /**
-     * Configures a {@link Binder} via the exposed methods.
-     */
     @Override
     protected void configure()
     {
-        requireBinding(ControllerFactory.class);
-        bind(ChildInjectorProvider.class).to(ControllerChildInjectorProvider.class);
+        install(new at.mjst.finbase.desktop.controller.factory._Module()); // sub-packages are installed from there!
     }
 }
-
