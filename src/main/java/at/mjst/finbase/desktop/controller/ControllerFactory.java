@@ -20,11 +20,27 @@ import javafx.util.Callback;
  */
 public class ControllerFactory implements Callback<Class<?>, Object>
 {
+    /**
+     * Injector, that creates the controller instances (usually, a child-injector here)
+     */
+    private final Injector childInjector;
+    /**
+     * UI-{@link EventBus}
+     */
+    private final EventBus eventBus;
+
+    /**
+     * Creates the controller-factory with required dependencies
+     *
+     * @param childInjectorProvider provider, that returns an {@link Injector} that creates the controller instances
+     * @param eventBus              the {@link EventBus} for the UI
+     */
     @Inject
-    @UIBus
-    private EventBus eventBus;
-    @Inject
-    private Injector injector;
+    public ControllerFactory(ChildInjectorProvider childInjectorProvider, @UIBus EventBus eventBus)
+    {
+        this.childInjector = childInjectorProvider.get();
+        this.eventBus = eventBus;
+    }
 
     /**
      * The <code>call</code> method is called when required, and is given a
@@ -38,8 +54,9 @@ public class ControllerFactory implements Callback<Class<?>, Object>
     public Object call(Class<?> param)
     {
         try {
+            System.out.println("Injecting..." + param.toString());
             // use the injector to create the controller-instance, so it has control over the complete object-graph!
-            Object obj = injector.getInstance(param);
+            Object obj = childInjector.getInstance(param);
             // set the eventBus to every controller class
             eventBus.register(obj);
             return obj;

@@ -21,7 +21,8 @@ public class _Module extends AbstractModule
     @Override
     protected void configure()
     {
-        install(new at.mjst.finbase.desktop.controller.bind._Module());
+        requireBinding(ControllerFactory.class);
+        bind(ChildInjectorProvider.class).to(ControllerChildInjectorProvider.class);
     }
 }
 
