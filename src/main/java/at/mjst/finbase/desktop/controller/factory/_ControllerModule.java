@@ -19,5 +19,6 @@ public class _ControllerModule extends AbstractModule
     {
         install(new at.mjst.finbase.desktop.controller.bind._Module());
         install(new at.mjst.finbase.desktop.controller.command._Module());
+        install(new at.mjst.finbase.desktop.controller.modules._Module());
     }
 }

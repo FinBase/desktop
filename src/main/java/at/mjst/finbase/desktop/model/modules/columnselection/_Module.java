@@ -17,5 +17,7 @@ public class _Module extends AbstractModule
     @Override
     protected void configure()
     {
+        bind(ArrayBasedGenerator.class).to(ArrayBasedGeneratorImpl.class);
+        bind(EntityBasedGenerator.class).to(EntityBasedGeneratorImpl.class);
     }
 }

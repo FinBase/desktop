@@ -3,9 +3,9 @@
  * This source code is subject to license terms, see the LICENSE file for details.
  */
 /**
- * Enables persistence / generation for {@link at.mjst.finbase.desktop.dto.columnselection.ColumnSelection}s
+ * Enables persistence / generation for {@link at.mjst.finbase.desktop.controller.modules.columnselection.ColumnSelection}s
  *
  * @author Ing. Michael J. Stallinger (projects@mjst.at)
  * @since 2017-04-06
  */
-package at.mjst.finbase.desktop.dto.columnselection.columnselection;
+package at.mjst.finbase.desktop.model.modules.columnselection;

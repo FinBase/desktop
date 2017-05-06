@@ -8,4 +8,4 @@
  * @author Ing. Michael J. Stallinger (projects@mjst.at)
  * @since 2017-04-06
  */
-package at.mjst.finbase.desktop.dto.columnselection;
+package at.mjst.finbase.desktop.controller.modules.columnselection;
