@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NonNls;
  * @author Ing. Michael J. Stallinger (projects@mjst.at)
  * @since 2017-04-09
  */
-public abstract class EventBusProvider implements Provider<EventBus>
+abstract class EventBusProvider implements Provider<EventBus>
 {
     @Override
     abstract public EventBus get();

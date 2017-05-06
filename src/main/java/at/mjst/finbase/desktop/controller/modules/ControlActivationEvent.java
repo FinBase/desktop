@@ -14,7 +14,7 @@ import at.mjst.finbase.desktop.eventsystem.Event;
  * @author Ing. Michael J. Stallinger (projects@mjst.at)
  * @since 2017-04-12
  */
-public final class ControlActivationEvent extends Event
+final class ControlActivationEvent extends Event
 {
     private final boolean enabled;
 

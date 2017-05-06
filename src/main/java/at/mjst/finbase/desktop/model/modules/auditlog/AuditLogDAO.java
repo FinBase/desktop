@@ -37,7 +37,7 @@ import javax.persistence.criteria.Root;
 //      em.close();
 //  }
 //
-public class AuditLogDAO
+class AuditLogDAO
 {
     @Inject
     private Provider<EntityManager> entityManagerProvider;

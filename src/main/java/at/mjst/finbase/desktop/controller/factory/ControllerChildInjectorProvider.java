@@ -13,7 +13,7 @@ import com.google.inject.Injector;
  * @author Ing. Michael J. Stallinger (projects@mjst.at)
  * @since 2017-04-23
  */
-public class ControllerChildInjectorProvider implements ChildInjectorProvider
+class ControllerChildInjectorProvider implements ChildInjectorProvider
 {
     @Inject
     private Injector injector;

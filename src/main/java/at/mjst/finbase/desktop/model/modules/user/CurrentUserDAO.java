@@ -10,7 +10,7 @@ package at.mjst.finbase.desktop.model.modules.user;
  * @author Ing. Michael J. Stallinger (projects@mjst.at)
  * @since 2017-01-13
  */
-public interface CurrentUserDAO
+interface CurrentUserDAO
 {
     String getCurrentUser();
 }

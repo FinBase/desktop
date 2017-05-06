@@ -16,7 +16,7 @@ import javax.persistence.EntityManager;
  * @author Ing. Michael J. Stallinger (projects@mjst.at)
  * @since 2017-01-13
  */
-public class CurrentUserDAONativeSQL implements CurrentUserDAO
+class CurrentUserDAONativeSQL implements CurrentUserDAO
 {
     @Inject
     private Provider<EntityManager> emp;

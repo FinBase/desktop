@@ -11,7 +11,7 @@ package at.mjst.finbase.desktop.model.modules.auditlog;
  * @author Ing. Michael J. Stallinger (projects@mjst.at)
  * @since 2017-01-12
  */
-public class AuditLogContainer
+class AuditLogContainer
 {
     private AuditLog auditLog;
 

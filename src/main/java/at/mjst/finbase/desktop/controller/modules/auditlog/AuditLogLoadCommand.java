@@ -16,7 +16,7 @@ import at.mjst.finbase.desktop.model.modules.auditlog.AuditLogService;
  * @author Ing. Michael J. Stallinger (projects@mjst.at)
  * @since 2017-05-03
  */
-public final class AuditLogLoadCommand extends Command<AuditLogService>
+final class AuditLogLoadCommand extends Command<AuditLogService>
 {
     private final boolean param1;
 
