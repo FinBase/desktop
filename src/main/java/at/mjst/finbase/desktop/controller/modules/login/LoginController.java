@@ -11,7 +11,6 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import at.mjst.finbase.desktop.common.credentials.Credentials;
-import at.mjst.finbase.desktop.common.credentials.SimpleCredentials;
 import at.mjst.finbase.desktop.model.connection.ConnectionEvent;
 import at.mjst.finbase.desktop.model.connection.ConnectionManager;
 import javafx.application.Platform;
@@ -97,7 +96,7 @@ public class LoginController implements Initializable
 
     public void execLoginButton()
     {
-        Credentials credentials = SimpleCredentials.create(userNameField.getText(), passwordField.getText());
+        Credentials credentials = Credentials.create(userNameField.getText(), passwordField.getText(), false);
         if (credentials.valid() && !connectionManager.isInitialized(LOCAL)) {
             setLoggedInState(); // immediately set loggedIn state on UI to disable any interaction!
             connectionManager.initConnection(LOCAL, credentials);

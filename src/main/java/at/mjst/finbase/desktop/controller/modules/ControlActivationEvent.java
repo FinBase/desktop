@@ -5,6 +5,7 @@
 package at.mjst.finbase.desktop.controller.modules;
 
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import at.mjst.finbase.desktop.eventsystem.Event;
 
@@ -22,10 +23,16 @@ final class ControlActivationEvent extends Event
      * @param sender  the event's sender
      * @param enabled specifies, if the control is enabled or disabled
      */
-    public ControlActivationEvent(Object sender, boolean enabled)
+    private ControlActivationEvent(Object sender, boolean enabled)
     {
         super(sender);
         this.enabled = enabled;
+    }
+
+    @NotNull
+    public static ControlActivationEvent create(Object sender, boolean enabled)
+    {
+        return new ControlActivationEvent(sender, enabled);
     }
 
     @Contract(pure = true)

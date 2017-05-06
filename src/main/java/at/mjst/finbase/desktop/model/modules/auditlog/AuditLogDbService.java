@@ -70,7 +70,7 @@ class AuditLogDbService implements AuditLogService
         List<AuditLog> list = auditLogDAO.queryAll();
         if (list != null) {
             System.out.println("done!");
-            eventBus.post(new AuditLogDataEvent(this, list));
+            eventBus.post(AuditLogDataEvent.create(this, list));
             return true;
         } else {
             return false;

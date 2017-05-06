@@ -82,11 +82,11 @@ public class TabController implements Initializable
         public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue)
         {
             System.out.println("TabPane disabled state changed! " + oldValue + "->" + newValue);
-            eventBus.post(new ControlActivationEvent(this, !newValue)); // note: NOT disabled == enabled
+            eventBus.post(ControlActivationEvent.create(this, !newValue)); // note: NOT disabled == enabled
             // here...
             if (!newValue) {
                 TabId tabId = getTabId(tabPane.getSelectionModel().getSelectedItem());
-                eventBus.post(new TabSwitchEvent(this, null, tabId));
+                eventBus.post(TabSwitchEvent.create(this, null, tabId));
             }
         }
     }
@@ -101,7 +101,7 @@ public class TabController implements Initializable
         {
             TabId oldTabId = getTabId(oldValue);
             TabId newTabId = getTabId(newValue);
-            eventBus.post(new TabSwitchEvent(this, oldTabId, newTabId));
+            eventBus.post(TabSwitchEvent.create(this, oldTabId, newTabId));
         }
     }
 }

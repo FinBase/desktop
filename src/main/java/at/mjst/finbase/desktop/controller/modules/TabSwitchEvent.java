@@ -5,6 +5,7 @@
 package at.mjst.finbase.desktop.controller.modules;
 
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import at.mjst.finbase.desktop.eventsystem.Event;
 
@@ -24,11 +25,17 @@ public final class TabSwitchEvent extends Event
      * @param oldTabId tab switched from
      * @param newTabId tab switched to
      */
-    public TabSwitchEvent(Object sender, TabId oldTabId, TabId newTabId)
+    private TabSwitchEvent(Object sender, TabId oldTabId, TabId newTabId)
     {
         super(sender);
         this.oldTabId = oldTabId;
         this.newTabId = newTabId;
+    }
+
+    @NotNull
+    public static TabSwitchEvent create(Object sender, TabId oldTabId, TabId newTabId)
+    {
+        return new TabSwitchEvent(sender, oldTabId, newTabId);
     }
 
     @Contract(pure = true)

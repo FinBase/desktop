@@ -4,6 +4,8 @@
  */
 package at.mjst.finbase.desktop.model.connection;
 
+import org.jetbrains.annotations.NotNull;
+
 import at.mjst.finbase.desktop.eventsystem.Event;
 
 /**
@@ -22,6 +24,36 @@ public abstract class ConnectionEvent extends Event
         super(context);
     }
 
+    @NotNull
+    public static AnnounceShutdown announceShutdown(ConnectionContext context)
+    {
+        return new AnnounceShutdown(context);
+    }
+
+    @NotNull
+    public static Established established(ConnectionContext context)
+    {
+        return new Established(context);
+    }
+
+    @NotNull
+    public static Closed closed(ConnectionContext context)
+    {
+        return new Closed(context);
+    }
+
+    @NotNull
+    public static Failure failure(ConnectionContext context, String errorText)
+    {
+        return new Failure(context, errorText);
+    }
+
+    @NotNull
+    public static ContextRegistered contextRegistered(ConnectionContext context)
+    {
+        return new ContextRegistered(context);
+    }
+
     public ConnectionContext getContext()
     {
         return (ConnectionContext) getSender();
@@ -35,7 +67,7 @@ public abstract class ConnectionEvent extends Event
         /**
          * @param context the event's sender/connection context
          */
-        public AnnounceShutdown(ConnectionContext context)
+        private AnnounceShutdown(ConnectionContext context)
         {
             super(context);
         }
@@ -49,7 +81,7 @@ public abstract class ConnectionEvent extends Event
         /**
          * @param context the event's sender/connection context
          */
-        public ContextRegistered(ConnectionContext context)
+        private ContextRegistered(ConnectionContext context)
         {
             super(context);
         }
@@ -63,7 +95,7 @@ public abstract class ConnectionEvent extends Event
         /**
          * @param context the event's sender/connection context
          */
-        public Established(ConnectionContext context)
+        private Established(ConnectionContext context)
         {
             super(context);
         }
@@ -77,7 +109,7 @@ public abstract class ConnectionEvent extends Event
         /**
          * @param context the event's sender/connection context
          */
-        public Closed(ConnectionContext context)
+        private Closed(ConnectionContext context)
         {
             super(context);
         }
@@ -94,7 +126,7 @@ public abstract class ConnectionEvent extends Event
          * @param context   the event's sender/connection context
          * @param errorText error information in textual form
          */
-        public Failure(ConnectionContext context, String errorText)
+        private Failure(ConnectionContext context, String errorText)
         {
             super(context);
             this.errorText = errorText;

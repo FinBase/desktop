@@ -5,6 +5,7 @@
 package at.mjst.finbase.desktop.common.credentials;
 
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * ToDo: Short class description
@@ -23,6 +24,16 @@ public interface Credentials
     }
 
     boolean valid();
+
+    @NotNull
+    static Credentials create(String userName, String password, boolean obfuscatePassword)
+    {
+        if (obfuscatePassword) {
+            return new ObfuscatedCredentials(userName, password);
+        } else {
+            return new SimpleCredentials(userName, password);
+        }
+    }
 
     String getUserName();
 

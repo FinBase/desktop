@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
  * @author Ing. Michael J. Stallinger (projects@mjst.at)
  * @since 2017-01-05
  */
-public final class SimpleCredentials implements Credentials
+final class SimpleCredentials implements Credentials
 {
     /**
      * Username (typically provided by user)
@@ -28,21 +28,10 @@ public final class SimpleCredentials implements Credentials
      * @param userName the user name
      * @param password password stored in plain text
      */
-    private SimpleCredentials(@NotNull String userName, @NotNull String password)
+    SimpleCredentials(@NotNull String userName, @NotNull String password)
     {
         this.userName = userName;
         this.password = password;
-    }
-
-    /**
-     * @param userName the user name
-     * @param password password stored in plain text
-     * @return a new instance of SimpleCredentials
-     */
-    @NotNull
-    public static Credentials create(@NotNull String userName, @NotNull String password)
-    {
-        return new SimpleCredentials(userName, password);
     }
 
     @Override

@@ -23,7 +23,7 @@ public class Event
     /**
      * @param sender the event's sender
      */
-    public Event(Object sender)
+    protected Event(Object sender)
     {
         this.sender = sender;
     }

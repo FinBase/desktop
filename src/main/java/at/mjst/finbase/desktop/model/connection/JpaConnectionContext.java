@@ -101,11 +101,11 @@ class JpaConnectionContext implements ManagedConnectionContext
             service.start();
             initialized = true;
             auditLogService.recordLogin();
-            eventBus.post(new ConnectionEvent.Established(this));
+            eventBus.post(ConnectionEvent.established(this));
         } catch (Exception e) {
             e.printStackTrace(); // ToDo: log me!
             Throwable cause = Throwables.getRootCause(e);
-            eventBus.post(new ConnectionEvent.Failure(this, cause.getMessage()));
+            eventBus.post(ConnectionEvent.failure(this, cause.getMessage()));
         }
     }
 
@@ -131,14 +131,14 @@ class JpaConnectionContext implements ManagedConnectionContext
         } finally {
             initialized = false;
         }
-        eventBus.post(new ConnectionEvent.Closed(this));
+        eventBus.post(ConnectionEvent.closed(this));
     }
 
     @Override
     public void closeConnectionAsync()
     {
         if (isInitialized()) {
-            eventBus.post(new ConnectionEvent.AnnounceShutdown(this));
+            eventBus.post(ConnectionEvent.announceShutdown(this));
         } else {
             throw new RuntimeException("Connection has not been initialized!");
         }

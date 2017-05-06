@@ -104,7 +104,7 @@ class ConnectionManagerImpl implements ConnectionManager
         ManagedConnectionContext context = managedConnectionContextProvider.get(connectionName);
         putContext(connectionName, context);
         // Post to listeners, that there's a new connection-object / injector
-        eventBus.post(new ConnectionEvent.ContextRegistered(context));
+        eventBus.post(ConnectionEvent.contextRegistered(context));
         return context;
     }
 

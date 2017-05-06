@@ -5,6 +5,7 @@
 package at.mjst.finbase.desktop.model.modules.auditlog;
 
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -20,10 +21,16 @@ public final class AuditLogDataEvent extends Event
 {
     private final List<AuditLog> list;
 
-    public AuditLogDataEvent(Object sender, List<AuditLog> list)
+    private AuditLogDataEvent(Object sender, List<AuditLog> list)
     {
         super(sender);
         this.list = list;
+    }
+
+    @NotNull
+    public static AuditLogDataEvent create(Object sender, List<AuditLog> list)
+    {
+        return new AuditLogDataEvent(sender, list);
     }
 
     @Contract(pure = true)
