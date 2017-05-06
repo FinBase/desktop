@@ -10,9 +10,9 @@ import com.google.inject.Inject;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import at.mjst.finbase.desktop.common.util.NlsManager;
 import at.mjst.finbase.desktop.eventsystem.ModelBus;
 import at.mjst.finbase.desktop.model.modules.user.UserService;
-import at.mjst.finbase.desktop.util.NlsManager;
 
 /**
  * ToDo: Short class description

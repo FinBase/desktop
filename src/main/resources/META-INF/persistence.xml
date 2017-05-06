@@ -9,9 +9,9 @@
              version="2.1">
     <persistence-unit name="FinBaseDesktop" transaction-type="RESOURCE_LOCAL">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-        <class>at.mjst.finbase.desktop.model.entity.AuditLog</class>
-        <class>at.mjst.finbase.desktop.model.entity.Account</class>
-        <class>at.mjst.finbase.desktop.model.entity.TraAggregated</class>
+        <class>at.mjst.finbase.desktop.model.modules.auditlog.AuditLog</class>
+        <class>at.mjst.finbase.desktop.model.modules.account.Account</class>
+        <class>at.mjst.finbase.desktop.model.modules.transaction.TraAggregated</class>
         <properties>
             <!--Configuring JDBC properties -->
             <!-- todo: configurable! -->

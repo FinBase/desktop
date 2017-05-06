@@ -7,11 +7,11 @@ package at.mjst.finbase.desktop.dto.columnselection.columnselection;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import at.mjst.finbase.desktop.common.field.Field;
-import at.mjst.finbase.desktop.common.field.FieldIdentifier;
 import at.mjst.finbase.desktop.dto.columnselection.ColumnDefinition;
 import at.mjst.finbase.desktop.dto.columnselection.ColumnSelection;
 import at.mjst.finbase.desktop.model.entity.Entity;
+import at.mjst.finbase.desktop.model.entity.Field;
+import at.mjst.finbase.desktop.model.entity.FieldIdentifier;
 
 /**
  * Implementation of {@link EntityBasedGenerator}

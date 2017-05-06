@@ -11,10 +11,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-import at.mjst.finbase.desktop.common.field.Field;
-import at.mjst.finbase.desktop.common.field.FieldIdentifier;
-import at.mjst.finbase.desktop.common.field.FieldRegistry;
-import at.mjst.finbase.desktop.util.HashCodeBuilder;
+import at.mjst.finbase.desktop.common.util.HashCodeBuilder;
 
 /**
  * This is the superclass of all data-entities.

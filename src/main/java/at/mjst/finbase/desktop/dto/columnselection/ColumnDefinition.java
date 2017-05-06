@@ -6,7 +6,7 @@ package at.mjst.finbase.desktop.dto.columnselection;
 
 import org.jetbrains.annotations.Contract;
 
-import at.mjst.finbase.desktop.common.field.FieldIdentifier;
+import at.mjst.finbase.desktop.model.entity.FieldIdentifier;
 
 /**
  * Represents a container for column properties, identified by {@link FieldIdentifier}. For

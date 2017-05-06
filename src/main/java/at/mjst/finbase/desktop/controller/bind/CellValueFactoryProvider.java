@@ -8,8 +8,8 @@ import com.google.inject.Injector;
 
 import javax.inject.Inject;
 
-import at.mjst.finbase.desktop.common.field.FieldIdentifier;
 import at.mjst.finbase.desktop.model.entity.Entity;
+import at.mjst.finbase.desktop.model.entity.FieldIdentifier;
 import javafx.util.Callback;
 
 /**

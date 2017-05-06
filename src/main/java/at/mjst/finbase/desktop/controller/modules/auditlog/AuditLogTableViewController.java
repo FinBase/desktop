@@ -11,7 +11,6 @@ import java.util.ResourceBundle;
 
 import javax.inject.Inject;
 
-import at.mjst.finbase.desktop.common.field.FieldIdentifier;
 import at.mjst.finbase.desktop.controller.command.CommandDispatcher;
 import at.mjst.finbase.desktop.controller.modules.CustomTableViewController;
 import at.mjst.finbase.desktop.controller.modules.TabId;
@@ -19,6 +18,7 @@ import at.mjst.finbase.desktop.controller.modules.TabSwitchEvent;
 import at.mjst.finbase.desktop.dto.columnselection.ColumnSelection;
 import at.mjst.finbase.desktop.dto.columnselection.columnselection.ArrayBasedGenerator;
 import at.mjst.finbase.desktop.model.entity.Entity;
+import at.mjst.finbase.desktop.model.entity.FieldIdentifier;
 import at.mjst.finbase.desktop.model.modules.auditlog.AuditLog;
 import at.mjst.finbase.desktop.model.modules.auditlog.AuditLogDataEvent;
 import at.mjst.finbase.desktop.model.modules.auditlog.AuditLogService;

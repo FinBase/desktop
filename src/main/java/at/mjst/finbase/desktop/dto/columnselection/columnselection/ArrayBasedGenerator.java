@@ -4,7 +4,7 @@
  */
 package at.mjst.finbase.desktop.dto.columnselection.columnselection;
 
-import at.mjst.finbase.desktop.common.field.FieldIdentifier;
+import at.mjst.finbase.desktop.model.entity.FieldIdentifier;
 
 /**
  * Generates a {@link at.mjst.finbase.desktop.dto.columnselection.ColumnSelection} from

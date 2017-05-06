@@ -2,11 +2,11 @@
  * Copyright (c) 2017, Ing. Michael J. Stallinger and/or his affiliates. All rights reserved.
  * This source code is subject to license terms, see the LICENSE file for details.
  */
-package at.mjst.finbase.desktop.common.field;
+package at.mjst.finbase.desktop.model.entity;
 
 import org.jetbrains.annotations.Contract;
 
-import at.mjst.finbase.desktop.util.HashCodeBuilder;
+import at.mjst.finbase.desktop.common.util.HashCodeBuilder;
 
 /**
  * Key-Object for identifying a field within a table.

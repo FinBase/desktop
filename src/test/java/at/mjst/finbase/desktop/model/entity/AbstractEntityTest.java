@@ -9,10 +9,6 @@ import org.junit.Test;
 
 import java.util.Collection;
 
-import at.mjst.finbase.desktop.common.field.Field;
-import at.mjst.finbase.desktop.common.field.IntegerField;
-import at.mjst.finbase.desktop.common.field.StringField;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -174,7 +170,7 @@ class EntityWithoutFields extends AbstractEntity
     }
 
     @Override
-    void buildBusinessKey(Collection<Field<?>> businessKey)
+    protected void buildBusinessKey(Collection<Field<?>> businessKey)
     {
     }
 }
@@ -196,8 +192,8 @@ class EntityWOBusinessKey extends AbstractEntity
     /**
      * Fields
      */
-    Field<String> name = new StringField(FIELD_NAME, this);
-    private Field<Integer> id = new IntegerField(FIELD_ID, this);
+    Field<String> name = Field.createString(FIELD_NAME, this);
+    private Field<Integer> id = Field.createInteger(FIELD_ID, this);
 
     /**
      * @param id   initial value for id
@@ -248,7 +244,7 @@ class EntityWOBusinessKey extends AbstractEntity
     }
 
     @Override
-    void buildBusinessKey(Collection<Field<?>> businessKey)
+    protected void buildBusinessKey(Collection<Field<?>> businessKey)
     {
     }
 }
@@ -280,7 +276,7 @@ class EntityWithBusinessKey extends EntityWOBusinessKey
     }
 
     @Override
-    void buildBusinessKey(Collection<Field<?>> businessKey)
+    protected void buildBusinessKey(Collection<Field<?>> businessKey)
     {
         businessKey.add(name);
     }

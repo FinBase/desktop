@@ -11,12 +11,12 @@ import java.util.ResourceBundle;
 
 import javax.inject.Inject;
 
-import at.mjst.finbase.desktop.common.field.FieldIdentifier;
 import at.mjst.finbase.desktop.controller.bind.CellValueFactory;
 import at.mjst.finbase.desktop.controller.bind.CellValueFactoryProvider;
 import at.mjst.finbase.desktop.dto.columnselection.ColumnDefinition;
 import at.mjst.finbase.desktop.dto.columnselection.ColumnSelection;
 import at.mjst.finbase.desktop.model.entity.Entity;
+import at.mjst.finbase.desktop.model.entity.FieldIdentifier;
 import at.mjst.finbase.desktop.view.ConfigurableButtonCell;
 import at.mjst.finbase.desktop.view.CustomTableColumn;
 import javafx.fxml.FXML;

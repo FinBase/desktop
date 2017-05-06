@@ -17,8 +17,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import at.mjst.finbase.desktop.common.field.Field;
 import at.mjst.finbase.desktop.model.entity.AbstractEntity;
+import at.mjst.finbase.desktop.model.entity.Field;
 
 import static at.mjst.finbase.desktop.model.entity.Entity.SCHEMA_FINBASE;
 

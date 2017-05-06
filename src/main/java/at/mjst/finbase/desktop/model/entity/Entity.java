@@ -6,9 +6,6 @@ package at.mjst.finbase.desktop.model.entity;
 
 import java.util.Collection;
 
-import at.mjst.finbase.desktop.common.field.Field;
-import at.mjst.finbase.desktop.common.field.FieldIdentifier;
-
 /**
  * ToDo: Short class description
  *
